@@ -928,7 +928,11 @@ actions['edit-name'] = () => askName(false).then(ok => { if (ok) { toast('Name s
 actions['set-lang'] = () => { S.settings.lang = S.settings.lang === 'ja' ? 'en' : 'ja'; save(); I18N.refreshMeta(); go('parent'); };
 actions['set-sound'] = () => { S.settings.sound = !S.settings.sound; save(); Snd.init(); Snd.play('ok'); go('parent'); };
 actions['set-voice'] = () => { S.settings.voice = !S.settings.voice; save(); go('parent'); };
-actions['set-limit'] = () => { const i = LIMIT_OPTS.indexOf(S.settings.dailyLimitMinutes); S.settings.dailyLimitMinutes = LIMIT_OPTS[(i + 1) % LIMIT_OPTS.length]; save(); go('parent'); };
+actions['set-limit'] = async () => {
+  const cur1 = S.settings.dailyLimitMinutes;
+  const k = await modal({ title: 'Daily play limit', buttons: LIMIT_OPTS.map(m => ({ label: m ? m + ' min' : 'None', cls: m === cur1 ? 'mint' : '' })) });
+  S.settings.dailyLimitMinutes = LIMIT_OPTS[k]; save(); go('parent');
+};
 actions.reset = async () => {
   if (!(await confirmDialog('Erase progress?', '<p>Coins and items will be deleted too.</p>', 'Next', 'Cancel'))) return;
   if (!(await confirmDialog('Are you sure?', '<p>This cannot be undone.</p>', 'Erase', 'Cancel'))) return;

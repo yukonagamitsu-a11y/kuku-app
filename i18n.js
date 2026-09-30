@@ -64,7 +64,7 @@ const JA_EXACT = {
   'Erase progress?': 'きろくを けしますか？', 'Coins and items will be deleted too.': 'コインや アイテムも ぜんぶ きえます。',
   Next: 'つぎへ', 'Are you sure?': 'ほんとうに けしますか？', 'This cannot be undone.': 'もとには もどせません。',
   Erase: 'けす', 'Progress erased': 'きろくを けしました',
-  'Player name': 'なまえ', Edit: 'へんしゅう', Language: 'ことば', Save: 'ほぞん',
+  'Daily play limit': '1にちの あそぶ めやす', 'Player name': 'なまえ', Edit: 'へんしゅう', Language: 'ことば', Save: 'ほぞん',
   "What's your name?": 'なまえを おしえてね', 'Type your name': 'なまえを いれてね', 'Name saved!': 'なまえを ほぞんしたよ',
   // ほめことば・はげまし
   'Great job!': 'すごい！', 'You did it!': 'やったね！', 'Genius!': 'てんさい！', 'Perfect!': 'かんぺき！',
