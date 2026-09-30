@@ -1,5 +1,5 @@
 /* オフラインで動くための Service Worker（キャッシュ優先） */
-const CACHE = 'kuku-app-v3';
+const CACHE = 'kuku-app-v4';
 const FILES = [
   './', './index.html', './style.css', './data.js', './avatar.js', './app.js', './manifest.json', './fonts/Fredoka-400.ttf', './fonts/Fredoka-700.ttf',
   './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png',

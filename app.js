@@ -251,8 +251,8 @@ function go(name, params) {
 let selDans = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 function danPickerHTML() {
   const all = selDans.size === 9;
-  return `<button class="dan-chip ${all ? 'on' : ''}" data-act="dan-all">All</button>` +
-    [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button class="dan-chip ${!all && selDans.has(n) ? 'on' : ''}" data-act="dan-tog" data-n="${n}">×${n}</button>`).join('');
+  return `<button class="dan-chip ${all ? 'on' : ''}" data-act="dan-all" lang="ja" translate="no">ぜんぶ</button>` +
+    [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button class="dan-chip ${!all && selDans.has(n) ? 'on' : ''}" data-act="dan-tog" data-n="${n}" lang="ja" translate="no">${n}のだん</button>`).join('');
 }
 actions['dan-all'] = () => { selDans = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]); $('#picker').innerHTML = danPickerHTML(); };
 actions['dan-tog'] = el => {
@@ -304,7 +304,7 @@ screens.learn = () => {
     body: `<p class="section-title">Which times table?</p><div class="dan-grid">` +
       [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => {
         const stamp = S.stamps.includes(n), master = S.masteredDans.includes(n);
-        return `<button class="btn ${DAN_COLORS[(n - 1) % 5]} dan-card" data-act="dan" data-n="${n}">${n} Times Table<small>${master ? 'Master!' : stamp ? 'Stamp earned' : 'Practice'}</small>${master ? '<span class="stamp">👑</span>' : stamp ? '<span class="stamp">⭐</span>' : ''}</button>`;
+        return `<button class="btn ${DAN_COLORS[(n - 1) % 5]} dan-card" data-act="dan" data-n="${n}"><span lang="ja" translate="no">${n}のだん</span><small>${master ? 'Master!' : stamp ? 'Stamp earned' : 'Practice'}</small>${master ? '<span class="stamp">👑</span>' : stamp ? '<span class="stamp">⭐</span>' : ''}</button>`;
       }).join('') + '</div>',
   });
 };
@@ -314,7 +314,7 @@ let L = null;
 screens.dan = ({ n }) => {
   L = { n, sel: 1, playing: false };
   app.innerHTML = frame({
-    title: `${n} Times Table`, back: 'learn',
+    title: `<span lang="ja" translate="no">${n}のだん</span>`, back: 'learn',
     body: `<div class="cols learn">
       <div class="panel kuku-list" id="klist">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(b => `
         <div class="krow ${b === 1 ? 'sel' : ''}" data-act="row" data-b="${b}" id="kr${b}">
@@ -405,10 +405,10 @@ actions['dq-ans'] = el => {
 };
 function finishDQ() {
   let note = '';
-  if (DQ.ok >= 8) { if (!S.stamps.includes(DQ.n)) S.stamps.push(DQ.n); note = `⭐ ${DQ.n} Times Table stamp earned!`; }
+  if (DQ.ok >= 8) { if (!S.stamps.includes(DQ.n)) S.stamps.push(DQ.n); note = `⭐ ${DQ.n}のだん stamp earned!`; }
   else note = 'Practice a little more and try again!';
   const n = DQ.n;
-  finishSession({ title: `${n} Times Table Quiz`, ok: DQ.ok, total: 9, coins: DQ.ok, note, retry: () => go('dan', { n }), retryLabel: 'Back to learning' });
+  finishSession({ title: `${n}のだん Quiz`, ok: DQ.ok, total: 9, coins: DQ.ok, note, retry: () => go('dan', { n }), retryLabel: 'Back to learning' });
 }
 
 /* =============== あそぼう =============== */
@@ -748,7 +748,7 @@ screens.result = () => {
   else msg = "Good effort! Let's try again together";
   const gainHTML = r.gained.map(id => {
     const it = ITEM_BY_ID[id], m = r.masters.find(x => x.item === id);
-    return `<div class="gain-card"><div class="thumbbox">${thumb(it)}</div><div>${m ? `${m.dan} Times Table Master!<br>` : ''}<b>${it.name}</b><div class="stars-lg" style="font-size:20px">${'★'.repeat(it.rar)}</div></div></div>`;
+    return `<div class="gain-card"><div class="thumbbox">${thumb(it)}</div><div>${m ? `${m.dan}のだん Master!<br>` : ''}<b>${it.name}</b><div class="stars-lg" style="font-size:20px">${'★'.repeat(it.rar)}</div></div></div>`;
   }).join('');
   app.innerHTML = frame({
     title: esc(r.title), back: 'home',
@@ -758,7 +758,7 @@ screens.result = () => {
         ${r.total ? `<div class="coin-line">Correct: ${r.ok}${r.unit === 'q' ? '' : ` / ${r.total}`}</div>` : ''}
         <div class="coin-line">🪙 Coins +${r.coins}</div>
         ${r.note ? `<div class="coin-line" style="margin-top:6px">${r.note}</div>` : ''}
-        ${r.masters.length ? `<div class="coin-line">🎉 ${r.masters.map(m => m.dan + ' Times Table').join(', ')} mastered!</div>` : ''}
+        ${r.masters.length ? `<div class="coin-line">🎉 ${r.masters.map(m => m.dan + 'のだん').join(', ')} mastered!</div>` : ''}
         ${gainHTML ? `<div class="gain">${gainHTML}</div>` : ''}
         ${r.mist && r.mist.length ? `<div class="section-title">Check these answers</div><div class="mist-list">${r.mist.map(q => `<span class="mist">${q.a}×${q.b}＝${q.a * q.b}</span>`).join('')}</div>` : ''}
         <div class="row-btns">
@@ -799,7 +799,7 @@ function zukanHTML() {
     const list = ITEMS.filter(i => i.cat === c.id);
     return `<div class="sect">${c.icon} ${c.name}</div><div class="grid">${list.map(i => {
       const own = isOwned(i.id);
-      const hint = i.lim ? `Master the ${i.lim} times table` : i.sp ? 'Score 100 on a test' : 'Shop or Capsules';
+      const hint = i.lim ? `Master ${i.lim}のだん` : i.sp ? 'Score 100 on a test' : 'Shop or Capsules';
       return `<div class="cell ${own ? '' : 'sil'}"><div class="tb">${thumb(i)}</div>${own ? i.name : '？？？'}<span class="stars">${starsOf(i.rar)}</span>${own ? '' : `<span style="font-size:14px;color:var(--ink-soft)">${hint}</span>`}</div>`;
     }).join('')}</div>`;
   }).join('');
@@ -870,7 +870,7 @@ screens.parent = () => {
   for (let d = 1; d <= 9; d++) {
     let m = 0, at = 0, co = 0;
     for (let b = 1; b <= 9; b++) { const k = qkey(d, b); m += S.mastery[k] || 0; at += S.attempts[k] || 0; co += S.correct[k] || 0; }
-    rows.push(`<div class="bar-row"><span class="lbl">×${d}</span><div class="bar"><i style="width:${m / 27 * 100}%"></i></div><span class="val">${at ? `${Math.round(co / at * 100)}% correct (${at} tries)` : 'Not yet'}</span></div>`);
+    rows.push(`<div class="bar-row"><span class="lbl">${d}のだん</span><div class="bar"><i style="width:${m / 27 * 100}%"></i></div><span class="val">${at ? `${Math.round(co / at * 100)}% correct (${at} tries)` : 'Not yet'}</span></div>`);
   }
   const mins = S.today.date === dateStr() ? Math.floor(S.today.seconds / 60) : 0;
   const lim = S.settings.dailyLimitMinutes;
