@@ -1,3 +1,5 @@
+@font-face { font-family: "Fredoka"; font-weight: 400 500; font-style: normal; font-display: swap; src: url(fonts/Fredoka-400.ttf) format("truetype"); }
+@font-face { font-family: "Fredoka"; font-weight: 600 900; font-style: normal; font-display: swap; src: url(fonts/Fredoka-700.ttf) format("truetype"); }
 :root {
   --bg: #FFF1F5;
   --pink: #FF8FB8; --pink-d: #e0709c;
@@ -8,7 +10,7 @@
   --ink: #5A3E48; --ink-soft: #8d6f7a;
   --card: #ffffff;
   --r: 28px;
-  --font: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Yu Gothic", "M PLUS Rounded 1c", "Noto Sans JP", "Noto Sans CJK JP", "Meiryo", sans-serif;
+  --font: "Fredoka", "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Yu Gothic", "M PLUS Rounded 1c", "Noto Sans JP", "Noto Sans CJK JP", "Meiryo", sans-serif;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; height: 100%; overflow: hidden; overscroll-behavior: none; background: var(--bg); }

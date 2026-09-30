@@ -155,7 +155,7 @@ function modal({ title, html = '', buttons }) {
     document.body.appendChild(o);
   });
 }
-const confirmDialog = (title, html, yes = 'うん', no = 'やめる') => modal({ title, html, buttons: [{ label: no, cls: 'lemon' }, { label: yes, cls: 'pink' }] }).then(i => i === 1);
+const confirmDialog = (title, html, yes = 'OK', no = 'Cancel') => modal({ title, html, buttons: [{ label: no, cls: 'lemon' }, { label: yes, cls: 'pink' }] }).then(i => i === 1);
 
 /* =============== 進み具合・れんぞく・あそぶ時間 =============== */
 function touchStreak() {
@@ -197,7 +197,7 @@ function overLimit() {
 }
 function guardPlay(fn) {
   if (!overLimit()) { fn(); return; }
-  modal({ title: 'きょうは ここまで！', html: '<p>たくさん がんばったね。<br>また あした あそぼうね！</p>', buttons: [{ label: 'おしまい', cls: 'pink' }] }).then(() => go('home'));
+  modal({ title: "That's all for today!", html: "<p>You worked so hard.<br>Let's play again tomorrow!</p>", buttons: [{ label: 'Done', cls: 'pink' }] }).then(() => go('home'));
 }
 
 /* =============== 出題 =============== */
@@ -229,14 +229,14 @@ const screens = {};
 const actions = {};
 
 function statsHTML() {
-  return `<span class="chip">🔥 れんぞく <b>${curStreak()}</b>にち</span><span class="chip" id="coinChip">🪙 コイン <b>${S.coins}</b>こ</span>`;
+  return `<span class="chip">🔥 Streak <b>${curStreak()}</b> ${curStreak() === 1 ? 'day' : 'days'}</span><span class="chip" id="coinChip">🪙 Coins <b>${S.coins}</b></span>`;
 }
 function updateCoin() { const c = $('#coinChip b'); if (c) c.textContent = S.coins; }
 function frame({ title, back, body, home, mainCls = '' }) {
   return `<div class="screen"><header class="top">
-    ${back ? `<button class="btn round" data-act="go" data-to="${back}" aria-label="もどる">←</button>` : ''}
+    ${back ? `<button class="btn round" data-act="go" data-to="${back}" aria-label="Back">←</button>` : ''}
     <h1>${title}</h1><div class="stats">${statsHTML()}</div>
-    ${home ? '<button class="btn round gear" id="gear" aria-label="ほごしゃ">⚙️</button>' : ''}
+    ${home ? '<button class="btn round gear" id="gear" aria-label="Parents">⚙️</button>' : ''}
   </header><main class="main ${mainCls}">${body}</main></div>`;
 }
 function go(name, params) {
@@ -251,8 +251,8 @@ function go(name, params) {
 let selDans = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 function danPickerHTML() {
   const all = selDans.size === 9;
-  return `<button class="dan-chip ${all ? 'on' : ''}" data-act="dan-all">ぜんぶ</button>` +
-    [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button class="dan-chip ${!all && selDans.has(n) ? 'on' : ''}" data-act="dan-tog" data-n="${n}">${n}のだん</button>`).join('');
+  return `<button class="dan-chip ${all ? 'on' : ''}" data-act="dan-all">All</button>` +
+    [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button class="dan-chip ${!all && selDans.has(n) ? 'on' : ''}" data-act="dan-tog" data-n="${n}">×${n}</button>`).join('');
 }
 actions['dan-all'] = () => { selDans = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]); $('#picker').innerHTML = danPickerHTML(); };
 actions['dan-tog'] = el => {
@@ -267,24 +267,24 @@ actions['dan-tog'] = el => {
 screens.home = () => {
   let hello;
   const l = S.streak.lastPlayed;
-  if (!S.seenHello && !l) hello = 'はじめまして！ ここちゃんだよ。いっしょに あそぼう！';
-  else if (l && l !== dateStr() && l !== yesterdayStr()) hello = 'またあえたね！ あいたかったよ！';
+  if (!S.seenHello && !l) hello = "Hi! I'm Coco. Let's play together!";
+  else if (l && l !== dateStr() && l !== yesterdayStr()) hello = 'Welcome back! I missed you!';
   else hello = pick(HELLO_MSG);
   app.innerHTML = frame({
-    title: 'くくの ひみつのまち', home: true,
+    title: 'Times Table Town', home: true,
     body: `<div class="home">
       <div class="home-chars">
         <div class="bubble">${hello}</div>
         <div class="duo">
-          <div class="char mine">${avatarSVG(S.avatar, { face: 'happy' })}<span class="name">のんちゃん</span></div>
+          <div class="char mine">${avatarSVG(S.avatar, { face: 'happy' })}<span class="name">Non</span></div>
           <div class="char nav">${avatarSVG(NPC.coco, { face: 'happy', cls: 'bob' })}<span class="name">${NPC.coco.name}</span></div>
         </div>
       </div>
       <nav class="menu">
-        <button class="btn pink" data-act="go" data-to="learn"><span class="ico">📖</span>おぼえよう<small>となえて おぼえる</small></button>
-        <button class="btn mint" data-act="go" data-to="play"><span class="ico">🎈</span>あそぼう<small>ゲームで れんしゅう</small></button>
-        <button class="btn lemon" data-act="go" data-to="testsel"><span class="ico">✏️</span>ためしてみよう<small>10もん チャレンジ</small></button>
-        <button class="btn lav" data-act="go" data-to="closet"><span class="ico">👗</span>きせかえルーム<small>ごほうびで おしゃれ</small></button>
+        <button class="btn pink" data-act="go" data-to="learn"><span class="ico">📖</span>Learn<small>Chant and remember</small></button>
+        <button class="btn mint" data-act="go" data-to="play"><span class="ico">🎈</span>Play<small>Practice with games</small></button>
+        <button class="btn lemon" data-act="go" data-to="testsel"><span class="ico">✏️</span>Test<small>10-question challenge</small></button>
+        <button class="btn lav" data-act="go" data-to="closet"><span class="ico">👗</span>Dress-Up Room<small>Rewards and outfits</small></button>
       </nav></div>`,
   });
   S.seenHello = true; save();
@@ -293,18 +293,18 @@ screens.home = () => {
   const stop = () => { clearTimeout(gt); gear.classList.remove('holding'); };
   gear.addEventListener('pointerdown', e => { e.preventDefault(); gear.classList.add('holding'); gt = setTimeout(() => { stop(); go('parent'); }, 900); });
   ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => gear.addEventListener(ev, stop));
-  gear.addEventListener('click', () => toast('ほごしゃの かたは ながおしで ひらけます'));
+  gear.addEventListener('click', () => toast('Grown-ups: press and hold to open'));
 };
 
 /* =============== おぼえよう =============== */
 const DAN_COLORS = ['pink', 'mint', 'lemon', 'sky', 'lav'];
 screens.learn = () => {
   app.innerHTML = frame({
-    title: 'おぼえよう', back: 'home',
-    body: `<p class="section-title">どの だんを おぼえる？</p><div class="dan-grid">` +
+    title: 'Learn', back: 'home',
+    body: `<p class="section-title">Which times table?</p><div class="dan-grid">` +
       [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => {
         const stamp = S.stamps.includes(n), master = S.masteredDans.includes(n);
-        return `<button class="btn ${DAN_COLORS[(n - 1) % 5]} dan-card" data-act="dan" data-n="${n}">${n}のだん<small>${master ? 'マスター！' : stamp ? 'スタンプ ゲット' : 'れんしゅう'}</small>${master ? '<span class="stamp">👑</span>' : stamp ? '<span class="stamp">⭐</span>' : ''}</button>`;
+        return `<button class="btn ${DAN_COLORS[(n - 1) % 5]} dan-card" data-act="dan" data-n="${n}">${n} Times Table<small>${master ? 'Master!' : stamp ? 'Stamp earned' : 'Practice'}</small>${master ? '<span class="stamp">👑</span>' : stamp ? '<span class="stamp">⭐</span>' : ''}</button>`;
       }).join('') + '</div>',
   });
 };
@@ -314,17 +314,17 @@ let L = null;
 screens.dan = ({ n }) => {
   L = { n, sel: 1, playing: false };
   app.innerHTML = frame({
-    title: `${n}のだん`, back: 'learn',
+    title: `${n} Times Table`, back: 'learn',
     body: `<div class="cols learn">
       <div class="panel kuku-list" id="klist">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(b => `
         <div class="krow ${b === 1 ? 'sel' : ''}" data-act="row" data-b="${b}" id="kr${b}">
-          <span class="eq">${n}×${b}＝${n * b}</span><span class="yomi">${kukuReading[n][b]}</span>
-          <button class="speak voice-btn" data-act="speak" data-b="${b}" aria-label="よむ">🔊</button>
+          <span class="eq">${n}×${b}＝${n * b}</span><span class="yomi" lang="ja">${kukuReading[n][b]}</span>
+          <button class="speak voice-btn" data-act="speak" data-b="${b}" aria-label="Listen">🔊</button>
         </div>`).join('')}</div>
       <div class="array-col"><div class="panel array-panel" id="arr"></div>
         <div class="row-btns">
-          <button class="btn sky voice-btn" id="readAll" data-act="readall">🔊 ぜんぶよむ</button>
-          <button class="btn pink" data-act="dq-start">✨ おぼえたかな？</button>
+          <button class="btn sky voice-btn" id="readAll" data-act="readall">🔊 Read all</button>
+          <button class="btn pink" data-act="dq-start">✨ Quiz me!</button>
         </div></div></div>`,
   });
   cleanup = () => { L.playing = false; };
@@ -335,7 +335,7 @@ function showArray(b) {
   document.querySelectorAll('.krow').forEach(r => r.classList.toggle('sel', +r.dataset.b === b));
   const e = DAN_EMOJI[n];
   $('#arr').innerHTML = `<div class="array-title">${n} × ${b} ＝ ${n * b}</div>
-    <div class="array-sub">${n}こずつ ${b}グループ → ぜんぶで ${n * b}こ</div>
+    <div class="array-sub">${b} ${b === 1 ? "group" : "groups"} of ${n} → ${n * b} in all</div>
     <div class="groups">${Array.from({ length: b }, (_, i) => `<div class="grp g${n <= 2 ? n : n === 4 ? 4 : 3}" style="animation-delay:${i * 50}ms">${Array.from({ length: n }, () => `<span>${e}</span>`).join('')}</div>`).join('')}</div>`;
 }
 actions.row = el => {
@@ -346,11 +346,11 @@ actions.speak = (el, ev) => { ev.stopPropagation(); actions.row(el.closest('.kro
 function stopReadAll() {
   L.playing = false; Voice.cancel();
   document.querySelectorAll('.krow.now').forEach(r => r.classList.remove('now'));
-  const b = $('#readAll'); if (b) b.textContent = '🔊 ぜんぶよむ';
+  const b = $('#readAll'); if (b) b.textContent = '🔊 Read all';
 }
 actions.readall = () => {
   if (L.playing) { stopReadAll(); return; }
-  L.playing = true; $('#readAll').textContent = '⏹ とめる';
+  L.playing = true; $('#readAll').textContent = '⏹ Stop';
   const step = b => {
     if (!L.playing || cur !== 'dan') return;
     if (b > 9) { stopReadAll(); return; }
@@ -377,9 +377,9 @@ function renderDQ() {
   DQ.ans = q.blank === 'ans' ? n * b : b; DQ.wrong = false; DQ.locked = false;
   const eq = q.blank === 'ans' ? `${n}×${b}＝<span class="ans-box" id="qbox">？</span>` : `${n}×<span class="ans-box" id="qbox">？</span>＝${n * b}`;
   app.innerHTML = frame({
-    title: `おぼえたかな？ ${i + 1}/9`, back: 'dan-back', mainCls: 'fl',
+    title: `Quiz ${i + 1}/9`, back: 'dan-back', mainCls: 'fl',
     body: `<div class="panel" style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px">
-      <div class="qbanner">${eq}<span class="sub" id="qsub">こたえを えらんでね</span></div>
+      <div class="qbanner">${eq}<span class="sub" id="qsub">Pick the answer</span></div>
       <div class="choices">${opts.map(v => `<button class="btn" data-act="dq-ans" data-v="${v}">${v}</button>`).join('')}</div></div>`,
   });
 }
@@ -405,22 +405,22 @@ actions['dq-ans'] = el => {
 };
 function finishDQ() {
   let note = '';
-  if (DQ.ok >= 8) { if (!S.stamps.includes(DQ.n)) S.stamps.push(DQ.n); note = `⭐ ${DQ.n}のだん スタンプ ゲット！`; }
-  else note = 'もういちど おぼえて チャレンジしよう！';
+  if (DQ.ok >= 8) { if (!S.stamps.includes(DQ.n)) S.stamps.push(DQ.n); note = `⭐ ${DQ.n} Times Table stamp earned!`; }
+  else note = 'Practice a little more and try again!';
   const n = DQ.n;
-  finishSession({ title: `${n}のだん おぼえたかな？`, ok: DQ.ok, total: 9, coins: DQ.ok, note, retry: () => go('dan', { n }), retryLabel: 'もういちど よむ' });
+  finishSession({ title: `${n} Times Table Quiz`, ok: DQ.ok, total: 9, coins: DQ.ok, note, retry: () => go('dan', { n }), retryLabel: 'Back to learning' });
 }
 
 /* =============== あそぼう =============== */
 screens.play = () => {
   app.innerHTML = frame({
-    title: 'あそぼう', back: 'home',
-    body: `<p class="section-title">どの だんを あそぶ？</p><div class="dan-picker" id="picker">${danPickerHTML()}</div>
-      <p class="section-title">ゲームを えらんでね！</p>
+    title: 'Play', back: 'home',
+    body: `<p class="section-title">Which times tables?</p><div class="dan-picker" id="picker">${danPickerHTML()}</div>
+      <p class="section-title">Pick a game!</p>
       <div class="menu" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:8px">
-        <button class="btn pink" data-act="g-balloon"><span class="ico">🎈</span>ふうせんわり<small>こたえの ふうせんを タップ</small></button>
-        <button class="btn mint" data-act="g-shop"><span class="ico">🍪</span>かわいいおみせやさん<small>ちゅうもんを うけよう</small></button>
-        <button class="btn lav" data-act="g-mole"><span class="ico">🔨</span>もぐらたたき<small>こたえの もぐらを タップ</small></button>
+        <button class="btn pink" data-act="g-balloon"><span class="ico">🎈</span>Balloon Pop<small>Tap the right balloon</small></button>
+        <button class="btn mint" data-act="g-shop"><span class="ico">🍪</span>Sweet Shop<small>Fill the orders</small></button>
+        <button class="btn lav" data-act="g-mole"><span class="ico">🔨</span>Whack-a-Mole<small>Tap the right mole</small></button>
       </div>`,
   });
 };
@@ -433,7 +433,7 @@ let G = null;
 screens.balloon = () => {
   const dans = [...selDans];
   app.innerHTML = frame({
-    title: 'ふうせんわり', back: 'play', mainCls: 'fl',
+    title: 'Balloon Pop', back: 'play', mainCls: 'fl',
     body: `<div class="qbanner" id="bq"></div><div class="timebar"><i id="tb"></i></div>
       <div class="field" id="field"><div class="mascot l" id="mL"></div><div class="mascot r" id="mR"></div></div>`,
   });
@@ -497,15 +497,15 @@ screens.balloon = () => {
   };
   const end = () => {
     G.over = true; cancelAnimationFrame(G.raf);
-    say('じかんだよ！ よくがんばったね', 'ok'); faces('cheer');
+    say("Time's up! Great effort!", 'ok'); faces('cheer');
     setTimeout(() => {
       if (cur !== 'balloon') return;
-      finishSession({ title: 'ふうせんわり', ok: G.ok, total: G.ok, coins: G.ok, unit: 'もん', retry: () => go('balloon') });
+      finishSession({ title: 'Balloon Pop', ok: G.ok, total: G.ok, coins: G.ok, unit: 'q', retry: () => go('balloon') });
     }, 1400);
   };
   field.addEventListener('pointerdown', e => {
     if (G.over) return;
-    if (e.pointerType === 'touch' && (e.width > 100 || e.height > 100)) return; // てのひら対策
+    if (e.pointerType === 'touch' && (e.width > 100 || e.height > 100)) return; // palm rejection
     const el = e.target.closest('.balloon'); if (!el) return;
     const b = G.bal.find(x => x.el === el); if (!b || b.popped) return;
     const { a, b: bb } = G.q, ans = a * bb;
@@ -535,18 +535,18 @@ screens.shopgame = () => {
 };
 function nextCustomer() {
   const g = SG;
-  if (g.n >= g.total) { finishSession({ title: 'かわいいおみせやさん', ok: g.ok, total: g.total, coins: g.ok, retry: () => go('shopgame') }); return; }
+  if (g.n >= g.total) { finishSession({ title: 'Sweet Shop', ok: g.ok, total: g.total, coins: g.ok, retry: () => go('shopgame') }); return; }
   g.q = pickQ(g.dans, g.last); g.last = qkey(g.q.a, g.q.b);
   g.wrong = false; g.locked = false; g.cust = pick(FRIENDS); g.good = pick(SHOP_GOODS);
   const { a, b } = g.q, opts = choices(a, b);
   app.innerHTML = frame({
-    title: `かわいいおみせやさん ${g.n + 1}/${g.total}`, back: 'play',
+    title: `Sweet Shop ${g.n + 1}/${g.total}`, back: 'play',
     body: `<div class="cols shop-wrap">
-      <div class="side"><div class="bubble" id="sbub">「${g.good.name}を ${a}こずつ、${b}ふくろ ください！」</div>
+      <div class="side"><div class="bubble" id="sbub">"I'd like ${a} ${g.good.name} in each bag. ${b} bags, please!"</div>
         <div class="char" id="cust" style="width:min(220px,60%)">${avatarSVG(NPC[g.cust], { face: 'normal' })}</div></div>
       <div class="panel" style="display:flex;flex-direction:column;gap:12px">
-        <div class="counter" id="counter"><span style="align-self:center;color:var(--ink-soft);font-weight:700">ここに ${g.good.e} が はいるよ</span></div>
-        <div class="section-title">${a}こずつ ${b}ふくろ → ぜんぶで いくつかな？</div>
+        <div class="counter" id="counter"><span style="align-self:center;color:var(--ink-soft);font-weight:700">${g.good.e} will go here</span></div>
+        <div class="section-title">${a} in each bag × ${b} bags → How many in all?</div>
         <div class="choices">${opts.map(v => `<button class="btn" data-act="shop-ans" data-v="${v}">${v}</button>`).join('')}</div>
       </div></div>`,
   });
@@ -563,7 +563,7 @@ actions['shop-ans'] = el => {
     $('#counter').innerHTML = Array.from({ length: b }, (_, i) =>
       `<div class="bag" style="animation-delay:${i * 130}ms;grid-template-columns:repeat(${Math.min(a, 3)},auto)">${Array.from({ length: a }, () => `<span>${g.good.e}</span>`).join('')}</div>`).join('');
     cust.innerHTML = avatarSVG(NPC[g.cust], { face: 'cheer', cls: 'jump' });
-    bub.textContent = `ありがとう！ ぜんぶで ${ans}こ！ ${kukuReading[a][b]}`;
+    bub.textContent = `Thank you! ${ans} in all!`;
     setTimeout(() => { if (cur === 'shopgame' && !g.dead) nextCustomer(); }, 1700 + b * 130);
   } else {
     if (!g.wrong) { g.wrong = true; record(a, b, false); }
@@ -587,7 +587,7 @@ const moleSVG = v => `<svg class="moleimg" viewBox="0 0 100 120" aria-hidden="tr
   <text x="50" y="106" text-anchor="middle" font-size="34" font-weight="900" fill="#5A3E48" font-family="inherit">${v}</text></svg>`;
 screens.mole = () => {
   app.innerHTML = frame({
-    title: 'もぐらたたき', back: 'play', mainCls: 'fl',
+    title: 'Whack-a-Mole', back: 'play', mainCls: 'fl',
     body: `<div class="qbanner" id="mq"></div><div class="timebar"><i id="mtb"></i></div>
       <div class="moles" id="moles">${Array.from({ length: 6 }, (_, i) => `<div class="hole" data-i="${i}"><div class="mole"></div><div class="dirt"></div></div>`).join('')}</div>`,
   });
@@ -634,8 +634,8 @@ screens.mole = () => {
   };
   const end = () => {
     MO.over = true; clearInterval(MO.iv);
-    say('じかんだよ！ よくがんばったね', 'ok');
-    setTimeout(() => { if (cur === 'mole') finishSession({ title: 'もぐらたたき', ok: MO.ok, total: MO.ok, coins: MO.ok, unit: 'もん', retry: () => go('mole') }); }, 1400);
+    say("Time's up! Great effort!", 'ok');
+    setTimeout(() => { if (cur === 'mole') finishSession({ title: 'Whack-a-Mole', ok: MO.ok, total: MO.ok, coins: MO.ok, unit: 'q', retry: () => go('mole') }); }, 1400);
   };
   field.addEventListener('pointerdown', e => {
     if (MO.over) return;
@@ -660,10 +660,10 @@ screens.mole = () => {
 /* =============== ためしてみよう =============== */
 screens.testsel = () => {
   app.innerHTML = frame({
-    title: 'ためしてみよう', back: 'home',
-    body: `<p class="section-title">どの だんを ためす？</p><div class="dan-picker" id="picker">${danPickerHTML()}</div>
-      <div class="row-btns"><button class="btn lemon" style="min-width:min(420px,90%);min-height:84px;font-size:32px" data-act="test-go">✏️ スタート！</button></div>
-      <p class="section-title" style="color:var(--ink-soft)">10もん。ぜんぶ せいかいで とくべつな プレゼント！</p>`,
+    title: 'Test', back: 'home',
+    body: `<p class="section-title">Which times tables?</p><div class="dan-picker" id="picker">${danPickerHTML()}</div>
+      <div class="row-btns"><button class="btn lemon" style="min-width:min(420px,90%);min-height:84px;font-size:32px" data-act="test-go">✏️ Start!</button></div>
+      <p class="section-title" style="color:var(--ink-soft)">10 questions. Get them all right for a special prize!</p>`,
   });
 };
 actions['test-go'] = () => startTest([...selDans]);
@@ -687,13 +687,13 @@ screens.test = () => { setWake(true); renderTest(); };
 function renderTest() {
   const q = T.qs[T.i];
   const keys = [7, 8, 9, 4, 5, 6, 1, 2, 3].map(n => `<button class="btn" data-act="key" data-k="${n}">${n}</button>`).join('') +
-    `<button class="btn lemon wide" data-act="key" data-k="back">⌫ もどす</button><button class="btn" data-act="key" data-k="0">0</button><button class="btn pink wide" data-act="key" data-k="ok">きめる</button>`;
+    `<button class="btn lemon wide" data-act="key" data-k="back">⌫ Delete</button><button class="btn" data-act="key" data-k="0">0</button><button class="btn pink wide" data-act="key" data-k="ok">Enter</button>`;
   let lower;
   if (T.phase === 'ask') lower = `<div class="keypad">${keys}</div>`;
-  else if (T.fb) lower = `<div class="fb ok">⭕ せいかい！ ${pick(OK_MSG)}</div><div class="row-btns"><button class="btn pink" data-act="test-next">つぎへ ▶</button></div>`;
-  else lower = `<div class="fb ng">💡 こたえは ${q.a * q.b} だよ<small>${kukuReading[q.a][q.b]}</small><small>${pick(NG_MSG)}</small></div><div class="row-btns"><button class="btn pink" data-act="test-next">つぎへ ▶</button></div>`;
+  else if (T.fb) lower = `<div class="fb ok">⭕ Correct! ${pick(OK_MSG)}</div><div class="row-btns"><button class="btn pink" data-act="test-next">Next ▶</button></div>`;
+  else lower = `<div class="fb ng">💡 The answer is ${q.a * q.b}<small lang="ja">${kukuReading[q.a][q.b]}</small><small>${pick(NG_MSG)}</small></div><div class="row-btns"><button class="btn pink" data-act="test-next">Next ▶</button></div>`;
   app.innerHTML = frame({
-    title: `ためしてみよう ${T.i + 1}/${T.qs.length}`, back: 'testsel', mainCls: 'fl',
+    title: `Test ${T.i + 1}/${T.qs.length}`, back: 'testsel', mainCls: 'fl',
     body: `<div class="qbanner" style="margin:6px 0">${q.a}×${q.b}＝<span class="ans-box" id="ansbox">${T.phase === 'ask' ? (T.input || '　') : (T.fb ? q.a * q.b : T.input)}</span></div>${lower}`,
   });
 }
@@ -721,10 +721,10 @@ function finishTest() {
   if (perfect && grantItem('sp_gold')) gained.push('sp_gold');
   const mist = T.mist.slice(), dans = T.dans;
   finishSession({
-    title: 'ためしてみよう', ok, total, coins: ok, score: Math.round(ok / total * 100), gained, mist,
-    note: perfect ? '🌟 100てん！ とくべつな プレゼント！' : '',
+    title: 'Test', ok, total, coins: ok, score: Math.round(ok / total * 100), gained, mist,
+    note: perfect ? '🌟 100 points! A special prize!' : '',
     retry: mist.length ? () => startTest(dans, mist) : () => startTest(dans),
-    retryLabel: mist.length ? 'まちがえた もんだいを もういちど' : 'もういちど ためす',
+    retryLabel: mist.length ? 'Retry the ones I missed' : 'Try again',
   });
 }
 
@@ -742,29 +742,29 @@ screens.result = () => {
   const r = lastRes, ratio = r.total ? r.ok / r.total : 0;
   const face = ratio >= .8 || r.gained.length ? 'cheer' : 'happy';
   let msg;
-  if (!r.total) msg = 'また いっしょに あそぼうね！';
-  else if (ratio >= .9) msg = 'すごい！ かんぺき！';
-  else if (ratio >= .6) msg = 'よくできたね！';
-  else msg = 'がんばったね！ つぎも いっしょに やろう';
+  if (!r.total) msg = "Let's play together again!";
+  else if (ratio >= .9) msg = 'Amazing! Perfect!';
+  else if (ratio >= .6) msg = 'Well done!';
+  else msg = "Good effort! Let's try again together";
   const gainHTML = r.gained.map(id => {
     const it = ITEM_BY_ID[id], m = r.masters.find(x => x.item === id);
-    return `<div class="gain-card"><div class="thumbbox">${thumb(it)}</div><div>${m ? `${m.dan}のだん マスター！<br>` : ''}<b>${it.name}</b><div class="stars-lg" style="font-size:20px">${'★'.repeat(it.rar)}</div></div></div>`;
+    return `<div class="gain-card"><div class="thumbbox">${thumb(it)}</div><div>${m ? `${m.dan} Times Table Master!<br>` : ''}<b>${it.name}</b><div class="stars-lg" style="font-size:20px">${'★'.repeat(it.rar)}</div></div></div>`;
   }).join('');
   app.innerHTML = frame({
     title: esc(r.title), back: 'home',
     body: `<div class="cols"><div class="side">${avatarSVG(S.avatar, { face, cls: face === 'cheer' ? 'jump' : '' })}</div>
       <div class="result"><div class="big">${msg}</div>
-        ${r.score != null ? `<div class="big" style="color:var(--pink-d)">${r.score}てん</div>` : ''}
-        ${r.total ? `<div class="coin-line">せいかい ${r.ok}${r.unit === 'もん' ? 'もん' : ` / ${r.total}`}</div>` : ''}
-        <div class="coin-line">🪙 コイン +${r.coins}</div>
+        ${r.score != null ? `<div class="big" style="color:var(--pink-d)">${r.score} points</div>` : ''}
+        ${r.total ? `<div class="coin-line">Correct: ${r.ok}${r.unit === 'q' ? '' : ` / ${r.total}`}</div>` : ''}
+        <div class="coin-line">🪙 Coins +${r.coins}</div>
         ${r.note ? `<div class="coin-line" style="margin-top:6px">${r.note}</div>` : ''}
-        ${r.masters.length ? `<div class="coin-line">🎉 ${r.masters.map(m => m.dan + 'のだん').join('・')} マスター！</div>` : ''}
+        ${r.masters.length ? `<div class="coin-line">🎉 ${r.masters.map(m => m.dan + ' Times Table').join(', ')} mastered!</div>` : ''}
         ${gainHTML ? `<div class="gain">${gainHTML}</div>` : ''}
-        ${r.mist && r.mist.length ? `<div class="section-title">こたえを みてみよう</div><div class="mist-list">${r.mist.map(q => `<span class="mist">${q.a}×${q.b}＝${q.a * q.b}</span>`).join('')}</div>` : ''}
+        ${r.mist && r.mist.length ? `<div class="section-title">Check these answers</div><div class="mist-list">${r.mist.map(q => `<span class="mist">${q.a}×${q.b}＝${q.a * q.b}</span>`).join('')}</div>` : ''}
         <div class="row-btns">
-          <button class="btn pink" data-act="retry">${r.retryLabel || 'もういちど！'}</button>
-          <button class="btn mint" data-act="go" data-to="closet">👗 きせかえルーム</button>
-          <button class="btn lemon" data-act="go" data-to="home">🏠 ホーム</button>
+          <button class="btn pink" data-act="retry">${r.retryLabel || 'Play again!'}</button>
+          <button class="btn mint" data-act="go" data-to="closet">👗 Dress-Up Room</button>
+          <button class="btn lemon" data-act="go" data-to="home">🏠 Home</button>
         </div></div></div>`,
   });
   Snd.play(r.total && ratio >= .6 ? 'fan' : 'ok');
@@ -782,44 +782,44 @@ function closetGrid() {
   if (C.tab === 'wear') {
     const own = list.filter(i => isOwned(i.id));
     let h = '';
-    if (!REQUIRED_CATS.includes(cat)) h += `<button class="cell ${!S.avatar[cat] ? 'eq' : ''}" data-act="unequip" data-cat="${cat}"><div class="tb" style="font-size:40px">🚫</div>なし</button>`;
+    if (!REQUIRED_CATS.includes(cat)) h += `<button class="cell ${!S.avatar[cat] ? 'eq' : ''}" data-act="unequip" data-cat="${cat}"><div class="tb" style="font-size:40px">🚫</div>None</button>`;
     h += own.map(i => `<button class="cell ${S.avatar[cat] === i.id ? 'eq' : ''}" data-act="equip" data-id="${i.id}"><div class="tb">${thumb(i)}</div>${i.name}<span class="stars">${starsOf(i.rar)}</span>${S.avatar[cat] === i.id ? '<span class="tag">✅</span>' : ''}</button>`).join('');
-    if (!own.length) h += `<p style="grid-column:1/-1;text-align:center">まだ ないよ。ショップや ガチャで てにいれよう！</p>`;
+    if (!own.length) h += `<p style="grid-column:1/-1;text-align:center">Nothing yet. Get some from the Shop or Capsules!</p>`;
     return `<div class="grid">${h}</div>`;
   }
   // ショップ
   const shop = list.filter(i => !i.lim && !i.sp);
   return `<div class="grid">${shop.map(i => isOwned(i.id)
-    ? `<div class="cell dim"><div class="tb">${thumb(i)}</div>${i.name}<span class="stars">${starsOf(i.rar)}</span><span class="tag">✅</span><span>もってる</span></div>`
+    ? `<div class="cell dim"><div class="tb">${thumb(i)}</div>${i.name}<span class="stars">${starsOf(i.rar)}</span><span class="tag">✅</span><span>Owned</span></div>`
     : `<button class="cell" data-act="buy" data-id="${i.id}"><div class="tb">${thumb(i)}</div>${i.name}<span class="stars">${starsOf(i.rar)}</span><span class="price">🪙 ${PRICE[i.rar]}</span></button>`).join('')}</div>`;
 }
 function zukanHTML() {
   const total = ITEMS.length, have = ITEMS.filter(i => isOwned(i.id)).length;
-  return `<p class="section-title" style="margin-top:0">あつめた かず ${have} / ${total}</p>` + CATS.map(c => {
+  return `<p class="section-title" style="margin-top:0">Collected ${have} / ${total}</p>` + CATS.map(c => {
     const list = ITEMS.filter(i => i.cat === c.id);
     return `<div class="sect">${c.icon} ${c.name}</div><div class="grid">${list.map(i => {
       const own = isOwned(i.id);
-      const hint = i.lim ? `${i.lim}のだん マスターで` : i.sp ? 'テスト 100てんで' : 'ショップ・ガチャ';
+      const hint = i.lim ? `Master the ${i.lim} times table` : i.sp ? 'Score 100 on a test' : 'Shop or Capsules';
       return `<div class="cell ${own ? '' : 'sil'}"><div class="tb">${thumb(i)}</div>${own ? i.name : '？？？'}<span class="stars">${starsOf(i.rar)}</span>${own ? '' : `<span style="font-size:14px;color:var(--ink-soft)">${hint}</span>`}</div>`;
     }).join('')}</div>`;
   }).join('');
 }
 function gachaHTML() {
   return `<div class="gacha"><div class="capsule-wrap" id="capWrap">${capsuleSVG('#ff8fb8', '#fff3a8')}</div>
-    <p style="font-weight:800;margin:4px 0">なにが でるかな？ ★が おおいほど レア！</p>
-    <button class="btn pink" style="min-height:84px;font-size:32px" data-act="gacha" ${C.rolling ? 'disabled' : ''}>ガチャ 🪙 ${GACHA_COST}</button>
-    <p style="color:var(--ink-soft);font-weight:700">かぶっても だいじょうぶ！ 🪙 ${GACHA_REFUND}こ もどるよ</p></div>`;
+    <p style="font-weight:800;margin:4px 0">What will come out? More ★ means rarer!</p>
+    <button class="btn pink" style="min-height:84px;font-size:32px" data-act="gacha" ${C.rolling ? 'disabled' : ''}>Open a capsule 🪙 ${GACHA_COST}</button>
+    <p style="color:var(--ink-soft);font-weight:700">Got a duplicate? You get 🪙 ${GACHA_REFUND} back!</p></div>`;
 }
 screens.closet = p => {
   if (p && p.tab) C.tab = p.tab;
-  const tabs = [['wear', '👗 きせかえ'], ['shop', '🛍️ ショップ'], ['gacha', '🎁 ガチャ'], ['zukan', '📚 ずかん']];
+  const tabs = [['wear', '👗 Dress Up'], ['shop', '🛍️ Shop'], ['gacha', '🎁 Capsules'], ['zukan', '📚 Collection']];
   let content;
   if (C.tab === 'gacha') content = gachaHTML();
   else if (C.tab === 'zukan') content = zukanHTML();
   else content = `<div class="cats">${CATS.map(c => `<button class="cat ${C.cat === c.id ? 'on' : ''}" data-act="cat" data-c="${c.id}">${c.icon} ${c.name}</button>`).join('')}</div>${closetGrid()}`;
   const prev = $('#cpanel'), top = prev ? prev.scrollTop : 0;
   app.innerHTML = frame({
-    title: 'きせかえルーム', back: 'home',
+    title: 'Dress-Up Room', back: 'home',
     body: `<div class="cols"><div class="side">${sceneSVG(S.avatar, { face: 'happy' })}</div>
       <div style="display:flex;flex-direction:column;min-height:0">
         <div class="tabs">${tabs.map(t => `<button class="btn tab small ${C.tab === t[0] ? 'on' : ''}" data-act="tab" data-t="${t[0]}">${t[1]}</button>`).join('')}</div>
@@ -837,15 +837,15 @@ actions.equip = el => {
 actions.unequip = el => { S.avatar[el.dataset.cat] = null; save(); go('closet'); };
 actions.buy = async el => {
   const it = ITEM_BY_ID[el.dataset.id], price = PRICE[it.rar];
-  if (S.coins < price) { toast('コインが たりないよ。あそんで ためよう！'); return; }
-  const yes = await confirmDialog(it.name, `<div class="thumbbox">${thumb(it)}</div><p>🪙 ${price}こで かう？</p>`, 'かう！', 'やめる');
+  if (S.coins < price) { toast('Not enough coins. Play to earn more!'); return; }
+  const yes = await confirmDialog(it.name, `<div class="thumbbox">${thumb(it)}</div><p>Buy for 🪙 ${price}?</p>`, 'Buy!', 'Cancel');
   if (!yes || S.coins < price) return;
   S.coins -= price; grantItem(it.id); save(); Snd.play('coin'); confetti();
-  toast('てにいれたよ！ きせかえで つけてみよう'); go('closet');
+  toast('Got it! Try it on in Dress Up'); go('closet');
 };
 actions.gacha = () => {
   if (C.rolling) return;
-  if (S.coins < GACHA_COST) { toast('コインが たりないよ。あそんで ためよう！'); return; }
+  if (S.coins < GACHA_COST) { toast('Not enough coins. Play to earn more!'); return; }
   C.rolling = true; S.coins -= GACHA_COST; save(); updateCoin();
   const wrap = $('#capWrap'); wrap.classList.add('shake'); Snd.play('shake');
   setTimeout(() => {
@@ -856,9 +856,9 @@ actions.gacha = () => {
     if (dup) S.coins += GACHA_REFUND; else grantItem(it.id);
     save(); Snd.play('reveal'); confetti();
     modal({
-      title: dup ? 'また でたよ！' : '✨ あたらしい なかま！',
-      html: `<div class="thumbbox">${thumb(it)}</div><p><b>${it.name}</b></p><div class="stars-lg">${starsOf(it.rar)}</div><p>${dup ? `かぶったから 🪙 ${GACHA_REFUND}こ もどるよ` : 'きせかえルームで つけてみよう！'}</p>`,
-      buttons: [{ label: 'やったね！', cls: 'pink' }],
+      title: dup ? 'You got it again!' : '✨ New friend!',
+      html: `<div class="thumbbox">${thumb(it)}</div><p><b>${it.name}</b></p><div class="stars-lg">${starsOf(it.rar)}</div><p>${dup ? `Duplicate! 🪙 ${GACHA_REFUND} back to you` : 'Try it on in the Dress-Up Room!'}</p>`,
+      buttons: [{ label: 'Yay!', cls: 'pink' }],
     }).then(() => { if (cur === 'closet') go('closet'); });
   }, 1500);
 };
@@ -870,32 +870,32 @@ screens.parent = () => {
   for (let d = 1; d <= 9; d++) {
     let m = 0, at = 0, co = 0;
     for (let b = 1; b <= 9; b++) { const k = qkey(d, b); m += S.mastery[k] || 0; at += S.attempts[k] || 0; co += S.correct[k] || 0; }
-    rows.push(`<div class="bar-row"><span class="lbl">${d}のだん</span><div class="bar"><i style="width:${m / 27 * 100}%"></i></div><span class="val">${at ? `せいかい ${Math.round(co / at * 100)}%（${at}かい）` : 'まだ'}</span></div>`);
+    rows.push(`<div class="bar-row"><span class="lbl">×${d}</span><div class="bar"><i style="width:${m / 27 * 100}%"></i></div><span class="val">${at ? `${Math.round(co / at * 100)}% correct (${at} tries)` : 'Not yet'}</span></div>`);
   }
   const mins = S.today.date === dateStr() ? Math.floor(S.today.seconds / 60) : 0;
   const lim = S.settings.dailyLimitMinutes;
   app.innerHTML = frame({
-    title: 'ほごしゃの かたへ', back: 'home',
+    title: 'For Parents', back: 'home',
     body: `<div class="parent">
-      <h2>📊 だんごとの ようす（バー＝おぼえた ぐあい）</h2>${rows.join('')}
-      <h2>💪 にがてな くく トップ5</h2>
-      <div class="mist-list" style="justify-content:flex-start">${weak.length ? weak.map(k => { const [a, b] = k.split('x'); return `<span class="mist">${a}×${b}＝${a * b}（まちがい ${S.mistakes[k]}かい）</span>`; }).join('') : '<span>まだ ありません</span>'}</div>
-      <h2>⚙️ せってい</h2>
-      <div class="set-row">おと（こうかおん）<button class="btn small toggle ${S.settings.sound ? 'on' : ''}" data-act="set-sound">${S.settings.sound ? 'ON' : 'OFF'}</button></div>
-      <div class="set-row">よみあげ（こえ）<button class="btn small toggle ${S.settings.voice ? 'on' : ''}" data-act="set-voice">${S.settings.voice ? 'ON' : 'OFF'}</button></div>
-      <div class="set-row">1にちの あそぶ めやす（きょう ${mins}ふん）<button class="btn small" data-act="set-limit">${lim ? lim + 'ふん' : 'なし'}</button></div>
-      <h2>🗑️ データ</h2>
-      <div class="set-row">すべての きろくを けす<button class="btn small danger" data-act="reset">リセット</button></div>
-      <p style="color:var(--ink-soft);font-size:17px">きろくは この たんまつの なかだけに ほぞんされ、がいぶには おくられません。</p></div>`,
+      <h2>📊 Progress by times table (bar = how well remembered)</h2>${rows.join('')}
+      <h2>💪 Top 5 tricky problems</h2>
+      <div class="mist-list" style="justify-content:flex-start">${weak.length ? weak.map(k => { const [a, b] = k.split('x'); return `<span class="mist">${a}×${b}＝${a * b}(missed ${S.mistakes[k]}x)</span>`; }).join('') : '<span>None yet</span>'}</div>
+      <h2>⚙️ Settings</h2>
+      <div class="set-row">Sound effects<button class="btn small toggle ${S.settings.sound ? 'on' : ''}" data-act="set-sound">${S.settings.sound ? 'ON' : 'OFF'}</button></div>
+      <div class="set-row">Voice reading<button class="btn small toggle ${S.settings.voice ? 'on' : ''}" data-act="set-voice">${S.settings.voice ? 'ON' : 'OFF'}</button></div>
+      <div class="set-row">Daily play limit (today: ${mins} min)<button class="btn small" data-act="set-limit">${lim ? lim + ' min' : 'None'}</button></div>
+      <h2>🗑️ Data</h2>
+      <div class="set-row">Erase all progress<button class="btn small danger" data-act="reset">Reset</button></div>
+      <p style="color:var(--ink-soft);font-size:17px">Progress is saved only on this device and is never sent anywhere.</p></div>`,
   });
 };
 actions['set-sound'] = () => { S.settings.sound = !S.settings.sound; save(); Snd.init(); Snd.play('ok'); go('parent'); };
 actions['set-voice'] = () => { S.settings.voice = !S.settings.voice; save(); go('parent'); };
 actions['set-limit'] = () => { const i = LIMIT_OPTS.indexOf(S.settings.dailyLimitMinutes); S.settings.dailyLimitMinutes = LIMIT_OPTS[(i + 1) % LIMIT_OPTS.length]; save(); go('parent'); };
 actions.reset = async () => {
-  if (!(await confirmDialog('きろくを けしますか？', '<p>コインや アイテムも ぜんぶ きえます。</p>', 'つぎへ', 'やめる'))) return;
-  if (!(await confirmDialog('ほんとうに けしますか？', '<p>もとには もどせません。</p>', 'けす', 'やめる'))) return;
-  S = defaultState(); save(); toast('きろくを けしました'); go('home');
+  if (!(await confirmDialog('Erase progress?', '<p>Coins and items will be deleted too.</p>', 'Next', 'Cancel'))) return;
+  if (!(await confirmDialog('Are you sure?', '<p>This cannot be undone.</p>', 'Erase', 'Cancel'))) return;
+  S = defaultState(); save(); toast('Progress erased'); go('home');
 };
 
 /* =============== 共通イベント =============== */

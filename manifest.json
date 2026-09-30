@@ -1,8 +1,8 @@
 {
-  "name": "くくの ひみつのまち",
-  "short_name": "くくのまち",
-  "description": "きせかえアバターと いっしょに 九九を おぼえよう",
-  "lang": "ja",
+  "name": "Times Table Town",
+  "short_name": "Times Table",
+  "description": "Learn multiplication tables with dress-up avatars",
+  "lang": "en",
   "start_url": "./index.html",
   "scope": "./",
   "display": "fullscreen",
