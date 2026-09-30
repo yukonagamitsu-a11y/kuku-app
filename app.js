@@ -276,7 +276,7 @@ screens.home = () => {
       <div class="home-chars">
         <div class="bubble">${hello}</div>
         <div class="duo">
-          <div class="char mine">${avatarSVG(S.avatar, { face: 'happy' })}<span class="name">わたし</span></div>
+          <div class="char mine">${avatarSVG(S.avatar, { face: 'happy' })}<span class="name">のんちゃん</span></div>
           <div class="char nav">${avatarSVG(NPC.coco, { face: 'happy', cls: 'bob' })}<span class="name">${NPC.coco.name}</span></div>
         </div>
       </div>
