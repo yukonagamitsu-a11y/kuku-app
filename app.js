@@ -22,9 +22,11 @@ const defaultState = () => ({
   mastery: {}, mistakes: {}, attempts: {}, correct: {},
   masteredDans: [], stamps: [],
   today: { date: null, seconds: 0 },
-  settings: { sound: true, voice: true, dailyLimitMinutes: 20 },
+  settings: { sound: true, voice: true, dailyLimitMinutes: 20, lang: null },
   seenHello: false,
+  name: '',
 });
+function defaultLang() { return /^ja/i.test(navigator.language || '') ? 'ja' : 'en'; }
 function loadState() {
   const d = defaultState();
   try {
@@ -35,9 +37,13 @@ function loadState() {
       s.streak = Object.assign(defaultState().streak, raw.streak || {});
       s.settings = Object.assign(defaultState().settings, raw.settings || {});
       s.today = Object.assign(defaultState().today, raw.today || {});
+      const existing = (raw.coins > 0) || (raw.streak && raw.streak.lastPlayed) || (raw.items && raw.items.length > 4);
+      if (!s.name) s.name = existing ? 'Non' : '';
+      if (!s.settings.lang) s.settings.lang = existing ? 'en' : defaultLang();
       return s;
     }
   } catch (e) { /* 読めなくても はじめから */ }
+  d.settings.lang = defaultLang();
   return d;
 }
 let S = loadState();
@@ -157,6 +163,30 @@ function modal({ title, html = '', buttons }) {
 }
 const confirmDialog = (title, html, yes = 'OK', no = 'Cancel') => modal({ title, html, buttons: [{ label: no, cls: 'lemon' }, { label: yes, cls: 'pink' }] }).then(i => i === 1);
 
+function askName(first) {
+  return new Promise(res => {
+    const ph = I18N.lang() === 'ja' ? (I18N.tr('Type your name') || 'Type your name') : 'Type your name';
+    const o = document.createElement('div'); o.className = 'overlay';
+    o.innerHTML = `<div class="modal"><h2>What's your name?</h2>
+      <input id="nameIn" class="name-in" maxlength="12" autocomplete="off" placeholder="${ph}" value="${esc(S.name || '')}">
+      <div class="row-btns">${first ? '<button class="btn small" data-l="en">English</button><button class="btn small" data-l="ja">日本語</button>' : '<button class="btn lemon" data-i="0">Cancel</button>'}<button class="btn pink" data-i="1">Save</button></div></div>`;
+    const save1 = () => {
+      const v = $('#nameIn', o).value.trim();
+      if (!v) { $('#nameIn', o).focus(); return; }
+      S.name = v; save(); o.remove(); res(true);
+    };
+    o.addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      Snd.play('tap');
+      if (b.dataset.l) { S.settings.lang = b.dataset.l; save(); I18N.refreshMeta(); const cur1 = $('#nameIn', o).value; o.remove(); S.name = cur1.trim() || S.name; askName(first).then(res); return; }
+      if (b.dataset.i === '0') { o.remove(); res(false); } else save1();
+    });
+    o.addEventListener('keydown', e => { if (e.key === 'Enter') save1(); });
+    document.body.appendChild(o);
+    setTimeout(() => { const i = $('#nameIn', o); if (i) i.focus(); }, 50);
+  });
+}
+
 /* =============== 進み具合・れんぞく・あそぶ時間 =============== */
 function touchStreak() {
   const t = dateStr(), st = S.streak;
@@ -266,6 +296,7 @@ actions['dan-tog'] = el => {
 /* =============== ホーム =============== */
 screens.home = () => {
   let hello;
+  const petD = getDef(S.avatar.pet);
   const l = S.streak.lastPlayed;
   if (!S.seenHello && !l) hello = "Hi! I'm Coco. Let's play together!";
   else if (l && l !== dateStr() && l !== yesterdayStr()) hello = 'Welcome back! I missed you!';
@@ -276,7 +307,7 @@ screens.home = () => {
       <div class="home-chars">
         <div class="bubble">${hello}</div>
         <div class="duo">
-          <div class="char mine">${avatarSVG(S.avatar, { face: 'happy' })}<span class="name">Non</span></div>
+          <div class="char mine ${petD ? 'haspet' : ''}"><div class="stage">${avatarSVG(S.avatar, { face: 'happy' })}${petD ? `<svg class="homepet" viewBox="-4 -20 68 88" aria-hidden="true">${petSVG(petD.kind)}</svg>` : ''}</div><span class="name">${esc(S.name || '')}</span></div>
           <div class="char nav">${avatarSVG(NPC.coco, { face: 'happy', cls: 'bob' })}<span class="name">${NPC.coco.name}</span></div>
         </div>
       </div>
@@ -288,6 +319,7 @@ screens.home = () => {
       </nav></div>`,
   });
   S.seenHello = true; save();
+  if (!S.name) askName(true).then(() => { if (cur === 'home') go('home'); });
   // ほごしゃ用：ながおしで ひらく
   const gear = $('#gear'); let gt = null;
   const stop = () => { clearTimeout(gt); gear.classList.remove('holding'); };
@@ -415,7 +447,7 @@ function finishDQ() {
 screens.play = () => {
   app.innerHTML = frame({
     title: 'Play', back: 'home',
-    body: `<p class="section-title">Which times tables?</p><div class="dan-picker" id="picker">${danPickerHTML()}</div>
+    body: `<p class="section-title">Which times tables to play?</p><div class="dan-picker" id="picker">${danPickerHTML()}</div>
       <p class="section-title">Pick a game!</p>
       <div class="menu" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:8px">
         <button class="btn pink" data-act="g-balloon"><span class="ico">🎈</span>Balloon Pop<small>Tap the right balloon</small></button>
@@ -661,7 +693,7 @@ screens.mole = () => {
 screens.testsel = () => {
   app.innerHTML = frame({
     title: 'Test', back: 'home',
-    body: `<p class="section-title">Which times tables?</p><div class="dan-picker" id="picker">${danPickerHTML()}</div>
+    body: `<p class="section-title">Which times tables to test?</p><div class="dan-picker" id="picker">${danPickerHTML()}</div>
       <div class="row-btns"><button class="btn lemon" style="min-width:min(420px,90%);min-height:84px;font-size:32px" data-act="test-go">✏️ Start!</button></div>
       <p class="section-title" style="color:var(--ink-soft)">10 questions. Get them all right for a special prize!</p>`,
   });
@@ -881,6 +913,8 @@ screens.parent = () => {
       <h2>💪 Top 5 tricky problems</h2>
       <div class="mist-list" style="justify-content:flex-start">${weak.length ? weak.map(k => { const [a, b] = k.split('x'); return `<span class="mist">${a}×${b}＝${a * b}(missed ${S.mistakes[k]}x)</span>`; }).join('') : '<span>None yet</span>'}</div>
       <h2>⚙️ Settings</h2>
+      <div class="set-row"><span>Player name</span><span class="nm"><b>${esc(S.name || '')}</b><button class="btn small" data-act="edit-name">Edit</button></span></div>
+      <div class="set-row"><span>Language</span><button class="btn small" data-act="set-lang">${S.settings.lang === 'ja' ? '日本語' : 'English'}</button></div>
       <div class="set-row">Sound effects<button class="btn small toggle ${S.settings.sound ? 'on' : ''}" data-act="set-sound">${S.settings.sound ? 'ON' : 'OFF'}</button></div>
       <div class="set-row">Voice reading<button class="btn small toggle ${S.settings.voice ? 'on' : ''}" data-act="set-voice">${S.settings.voice ? 'ON' : 'OFF'}</button></div>
       <div class="set-row">Daily play limit (today: ${mins} min)<button class="btn small" data-act="set-limit">${lim ? lim + ' min' : 'None'}</button></div>
@@ -889,6 +923,8 @@ screens.parent = () => {
       <p style="color:var(--ink-soft);font-size:17px">Progress is saved only on this device and is never sent anywhere.</p></div>`,
   });
 };
+actions['edit-name'] = () => askName(false).then(ok => { if (ok) { toast('Name saved!'); go('parent'); } });
+actions['set-lang'] = () => { S.settings.lang = S.settings.lang === 'ja' ? 'en' : 'ja'; save(); I18N.refreshMeta(); go('parent'); };
 actions['set-sound'] = () => { S.settings.sound = !S.settings.sound; save(); Snd.init(); Snd.play('ok'); go('parent'); };
 actions['set-voice'] = () => { S.settings.voice = !S.settings.voice; save(); go('parent'); };
 actions['set-limit'] = () => { const i = LIMIT_OPTS.indexOf(S.settings.dailyLimitMinutes); S.settings.dailyLimitMinutes = LIMIT_OPTS[(i + 1) % LIMIT_OPTS.length]; save(); go('parent'); };
@@ -909,7 +945,7 @@ document.addEventListener('click', e => {
 });
 // タップまわりの安全対策（ダブルタップ拡大・長押し・複数指・てのひら）
 document.addEventListener('contextmenu', e => e.preventDefault());
-document.addEventListener('selectstart', e => e.preventDefault());
+document.addEventListener('selectstart', e => { if (e.target && e.target.closest && e.target.closest('input')) return; e.preventDefault(); });
 document.addEventListener('dblclick', e => e.preventDefault());
 document.addEventListener('gesturestart', e => e.preventDefault());
 document.addEventListener('touchstart', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
@@ -929,4 +965,5 @@ if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
   navigator.serviceWorker.register('sw.js').catch(() => { /* オフライン対応なしでも動く */ });
 }
 tickTime();
+I18N.start();
 go('home');

@@ -272,3 +272,12 @@ body.no-voice .voice-btn { display: none !important; }
 .hole.wob .mole { animation: wob .5s ease; }
 .moleimg { display: block; width: 100%; }
 @media (orientation: portrait) { .moles { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); } }
+
+/* 名前入力・ホームのペット */
+.name-in { font: inherit; font-size: 28px; font-weight: 700; text-align: center; border: 4px solid var(--pink); border-radius: 22px; padding: 10px 16px; width: min(420px, 78vw); color: var(--ink); background: #fff; user-select: text; -webkit-user-select: text; outline: none; margin: 10px 0; }
+.name-in:focus { border-color: var(--pink-d); }
+.set-row .nm { display: flex; align-items: center; gap: 12px; }
+.duo .char .stage { display: flex; align-items: flex-end; justify-content: center; width: 100%; min-height: 0; }
+.duo .char .stage .avatar { width: auto; flex: 1 1 auto; min-width: 0; }
+.duo .char.haspet { flex: 1.45; }
+.homepet { flex: 0 0 38%; width: 38%; height: auto; margin-left: -8%; max-height: 26vh; animation: bob 2.6s ease-in-out infinite; }
