@@ -420,13 +420,13 @@ screens.play = () => {
       <div class="menu" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:8px">
         <button class="btn pink" data-act="g-balloon"><span class="ico">🎈</span>ふうせんわり<small>こたえの ふうせんを タップ</small></button>
         <button class="btn mint" data-act="g-shop"><span class="ico">🍪</span>かわいいおみせやさん<small>ちゅうもんを うけよう</small></button>
-        <button class="btn lav" data-act="g-memory"><span class="ico">🃏</span>ひらめきカード<small>しきと こたえを ペアに</small></button>
+        <button class="btn lav" data-act="g-mole"><span class="ico">🔨</span>もぐらたたき<small>こたえの もぐらを タップ</small></button>
       </div>`,
   });
 };
 actions['g-balloon'] = () => guardPlay(() => go('balloon'));
 actions['g-shop'] = () => guardPlay(() => go('shopgame'));
-actions['g-memory'] = () => guardPlay(() => go('memory'));
+actions['g-mole'] = () => guardPlay(() => go('mole'));
 
 /* ---- ふうせんわり ---- */
 let G = null;
@@ -574,57 +574,87 @@ actions['shop-ans'] = el => {
   }
 };
 
-/* ---- ひらめきカード ---- */
-let MG = null;
-screens.memory = () => {
-  const dans = [...selDans], qs = [], prods = new Set();
-  for (let t = 0; qs.length < 6 && t < 300; t++) {
-    const q = pickQ(dans, null);
-    if (qs.some(x => x.a === q.a && x.b === q.b) || prods.has(q.a * q.b)) continue;
-    qs.push(q); prods.add(q.a * q.b);
-  }
-  const cards = shuffle(qs.flatMap(q => [
-    { id: qkey(q.a, q.b), type: 'q', label: `${q.a}×${q.b}`, q },
-    { id: qkey(q.a, q.b), type: 'a', label: String(q.a * q.b), q },
-  ]));
-  MG = { cards, open: [], done: new Set(), lock: false, wrong: new Set(), pairs: qs.length };
-  setWake(true);
+/* ---- もぐらたたき ---- */
+let MO = null;
+const moleSVG = v => `<svg class="moleimg" viewBox="0 0 100 120" aria-hidden="true">
+  <rect x="14" y="30" width="72" height="80" rx="26" fill="#a9734a"/>
+  <rect x="26" y="62" width="48" height="36" rx="16" fill="#e8c7a4"/>
+  <rect x="26" y="40" width="10" height="14" rx="5" fill="#4a3340"/><rect x="64" y="40" width="10" height="14" rx="5" fill="#4a3340"/>
+  <circle cx="29" cy="44" r="2.6" fill="#fff"/><circle cx="67" cy="44" r="2.6" fill="#fff"/>
+  <rect x="40" y="52" width="20" height="13" rx="6" fill="#ff8fb8"/>
+  <circle cx="20" cy="58" r="6" fill="#ff9bb5" opacity=".6"/><circle cx="80" cy="58" r="6" fill="#ff9bb5" opacity=".6"/>
+  <rect x="18" y="72" width="64" height="44" rx="10" fill="#fff" stroke="#ff8fb8" stroke-width="5"/>
+  <text x="50" y="106" text-anchor="middle" font-size="34" font-weight="900" fill="#5A3E48" font-family="inherit">${v}</text></svg>`;
+screens.mole = () => {
   app.innerHTML = frame({
-    title: 'ひらめきカード', back: 'play',
-    body: `<p class="section-title" id="mgmsg">しきと こたえの ペアを みつけよう！</p>
-      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(clamp(110px,17vmin,170px),1fr));margin-top:10px">${cards.map((c, i) =>
-        `<button class="btn mcard" data-act="mcard" data-i="${i}" style="min-height:clamp(96px,20vmin,160px);font-size:clamp(28px,5vmin,44px)">✨</button>`).join('')}</div>`,
+    title: 'もぐらたたき', back: 'play', mainCls: 'fl',
+    body: `<div class="qbanner" id="mq"></div><div class="timebar"><i id="mtb"></i></div>
+      <div class="moles" id="moles">${Array.from({ length: 6 }, (_, i) => `<div class="hole" data-i="${i}"><div class="mole"></div><div class="dirt"></div></div>`).join('')}</div>`,
   });
-  cleanup = () => { MG.dead = true; };
-};
-actions.mcard = el => {
-  const g = MG, i = +el.dataset.i;
-  if (g.lock || g.done.has(i) || g.open.includes(i)) return;
-  const c = g.cards[i];
-  el.textContent = c.label; el.classList.add(c.type === 'q' ? 'sky' : 'lemon'); Snd.play('tap');
-  g.open.push(i);
-  if (g.open.length < 2) return;
-  const [x, y] = g.open, cx = g.cards[x], cy = g.cards[y];
-  const btn = k => document.querySelector(`.mcard[data-i="${k}"]`);
-  if (cx.id === cy.id && cx.type !== cy.type) {
-    g.done.add(x); g.done.add(y); g.open = [];
-    [x, y].forEach(k => { btn(k).classList.remove('sky', 'lemon'); btn(k).classList.add('mint'); });
-    if (!g.wrong.has(cx.id)) record(cx.q.a, cx.q.b, true);
-    Snd.play('ok'); burstEl(btn(y)); $('#mgmsg').textContent = `${pick(OK_MSG)} ${kukuReading[cx.q.a][cx.q.b]}`;
-    if (g.done.size === g.cards.length) {
-      g.lock = true;
-      setTimeout(() => { if (cur === 'memory' && !g.dead) finishSession({ title: 'ひらめきカード', ok: g.pairs, total: g.pairs, coins: g.pairs, retry: () => go('memory') }); }, 1200);
+  setWake(true);
+  const holes = [...document.querySelectorAll('.hole')];
+  MO = { dans: [...selDans], t: 60, ok: 0, q: null, last: null, wrong: false, over: false, last_spawn: 0, slots: holes.map(() => ({ v: null, hide: 0 })) };
+  const field = $('#moles');
+  const say = (txt, cls) => {
+    field.querySelectorAll('.msg').forEach(m => m.remove());
+    const m = document.createElement('div'); m.className = 'msg ' + cls; m.textContent = txt; field.appendChild(m);
+    setTimeout(() => m.remove(), 1500);
+  };
+  const nextQ = () => {
+    MO.q = pickQ(MO.dans, MO.last); MO.last = qkey(MO.q.a, MO.q.b); MO.wrong = false;
+    $('#mq').textContent = `${MO.q.a}×${MO.q.b}＝？`;
+  };
+  const show = (i, v) => {
+    const h = holes[i]; h.querySelector('.mole').innerHTML = moleSVG(v);
+    MO.slots[i] = { v, hide: Date.now() + 2600 + rnd(900) };
+    requestAnimationFrame(() => h.classList.add('up'));
+    setTimeout(() => h.classList.add('up'), 30);
+  };
+  const hide = i => { holes[i].classList.remove('up'); MO.slots[i] = { v: null, hide: 0 }; };
+  const spawn = v => {
+    const free = MO.slots.map((s, i) => s.v === null ? i : -1).filter(i => i >= 0);
+    if (!free.length) return false;
+    show(pick(free), v); return true;
+  };
+  const tick = () => {
+    if (MO.over) return;
+    MO.t -= .1; $('#mtb').style.width = Math.max(0, MO.t / 60 * 100) + '%';
+    if (MO.t <= 0) { end(); return; }
+    const now = Date.now(), ans = MO.q.a * MO.q.b;
+    MO.slots.forEach((s, i) => { if (s.v !== null && now > s.hide) hide(i); });
+    const active = MO.slots.filter(s => s.v !== null).length;
+    if (!MO.slots.some(s => s.v === ans)) {
+      if (active >= 4) { const w = MO.slots.findIndex(s => s.v !== null && s.v !== ans); if (w >= 0) hide(w); }
+      spawn(ans); MO.last_spawn = now;
+    } else if (active < 3 && now - MO.last_spawn > 600) {
+      const { a, b } = MO.q;
+      spawn(Math.random() < .7 ? pick(choices(a, b).filter(v => v !== ans)) : (1 + rnd(9)) * (1 + rnd(9)));
+      MO.last_spawn = now;
     }
-  } else {
-    g.lock = true; Snd.play('ng');
-    [cx, cy].forEach(c => { if (c.type === 'q' && !g.wrong.has(c.id)) { g.wrong.add(c.id); record(c.q.a, c.q.b, false); } });
-    $('#mgmsg').textContent = 'おしい！ もういちど みてみよう';
-    setTimeout(() => {
-      if (g.dead) return;
-      [x, y].forEach(k => { const b = btn(k); if (b) { b.textContent = '✨'; b.classList.remove('sky', 'lemon'); } });
-      g.open = []; g.lock = false;
-    }, 1000);
-  }
+  };
+  const end = () => {
+    MO.over = true; clearInterval(MO.iv);
+    say('じかんだよ！ よくがんばったね', 'ok');
+    setTimeout(() => { if (cur === 'mole') finishSession({ title: 'もぐらたたき', ok: MO.ok, total: MO.ok, coins: MO.ok, unit: 'もん', retry: () => go('mole') }); }, 1400);
+  };
+  field.addEventListener('pointerdown', e => {
+    if (MO.over) return;
+    if (e.pointerType === 'touch' && (e.width > 100 || e.height > 100)) return;
+    const h = e.target.closest('.hole'); if (!h) return;
+    const i = +h.dataset.i, s = MO.slots[i]; if (s.v === null) return;
+    const { a, b } = MO.q, ans = a * b;
+    if (s.v === ans) {
+      hide(i); burst(e.clientX, e.clientY); Snd.play('pop'); Snd.play('ok');
+      if (!MO.wrong) record(a, b, true);
+      MO.ok++; say(`${pick(OK_MSG)} ${kukuReading[a][b]}`, 'ok'); nextQ();
+    } else {
+      h.classList.remove('wob'); void h.offsetWidth; h.classList.add('wob'); setTimeout(() => h.classList.remove('wob'), 520);
+      if (!MO.wrong) { MO.wrong = true; record(a, b, false); }
+      Snd.play('ng'); say(pick(NG_MSG), 'ng');
+    }
+  });
+  cleanup = () => { MO.over = true; clearInterval(MO.iv); };
+  nextQ(); MO.iv = setInterval(tick, 100);
 };
 
 /* =============== ためしてみよう =============== */

@@ -259,3 +259,14 @@ body.no-voice .voice-btn { display: none !important; }
   .krow .eq { flex: 1; min-width: 0; }
   .krow .yomi { flex: 1 1 100%; order: 3; font-size: 20px; }
 }
+
+/* もぐらたたき */
+.moles { position: relative; flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: clamp(8px, 2vmin, 20px); padding: 12px; background: linear-gradient(#c8f2b8, #9fe08e); border-radius: 30px; box-shadow: inset 0 0 0 4px #fff, 0 5px 0 #f2d3de; }
+.hole { position: relative; overflow: hidden; min-height: 0; cursor: pointer; border-radius: 20px; }
+.hole::before { content: ""; position: absolute; left: 4%; right: 4%; bottom: 6%; height: 30%; background: #5b3a26; border-radius: 50%; }
+.dirt { position: absolute; left: 0; right: 0; bottom: 0; height: 22%; background: #8a5a3c; border-radius: 50% 50% 28px 28px / 70% 70% 28px 28px; z-index: 2; }
+.mole { position: absolute; left: 50%; bottom: 19%; width: min(66%, 170px); transform: translate(-50%, 115%); transition: transform .18s ease-out; z-index: 1; pointer-events: none; }
+.hole.up .mole { transform: translate(-50%, 0); }
+.hole.wob .mole { animation: wob .5s ease; }
+.moleimg { display: block; width: 100%; }
+@media (orientation: portrait) { .moles { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); } }
