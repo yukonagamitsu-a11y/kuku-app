@@ -22,7 +22,7 @@ const defaultState = () => ({
   mastery: {}, mistakes: {}, attempts: {}, correct: {},
   masteredDans: [], stamps: [],
   today: { date: null, seconds: 0 },
-  settings: { sound: true, voice: true, dailyLimitMinutes: 20, lang: null },
+  settings: { sound: true, voice: true, dailyLimitMinutes: 0, lang: null },
   seenHello: false,
   name: '',
 });
@@ -38,6 +38,7 @@ function loadState() {
       s.settings = Object.assign(defaultState().settings, raw.settings || {});
       s.today = Object.assign(defaultState().today, raw.today || {});
       const existing = (raw.coins > 0) || (raw.streak && raw.streak.lastPlayed) || (raw.items && raw.items.length > 4);
+      if (!s.settings.limitOff) { s.settings.dailyLimitMinutes = 0; s.settings.limitOff = true; } // 初期の20分制限をやめる
       if (!s.name) s.name = existing ? 'Non' : '';
       if (!s.settings.lang) s.settings.lang = existing ? 'en' : defaultLang();
       return s;
