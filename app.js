@@ -318,7 +318,7 @@ screens.dan = ({ n }) => {
     body: `<div class="cols learn">
       <div class="panel kuku-list" id="klist">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(b => `
         <div class="krow ${b === 1 ? 'sel' : ''}" data-act="row" data-b="${b}" id="kr${b}">
-          <span class="eq">${n}×${b}＝${n * b}</span><span class="yomi" lang="ja">${kukuReading[n][b]}</span>
+          <span class="eq">${n}×${b}＝${n * b}</span><span class="yomi" lang="ja" translate="no">${kukuReading[n][b]}</span>
           <button class="speak voice-btn" data-act="speak" data-b="${b}" aria-label="Listen">🔊</button>
         </div>`).join('')}</div>
       <div class="array-col"><div class="panel array-panel" id="arr"></div>
@@ -691,7 +691,7 @@ function renderTest() {
   let lower;
   if (T.phase === 'ask') lower = `<div class="keypad">${keys}</div>`;
   else if (T.fb) lower = `<div class="fb ok">⭕ Correct! ${pick(OK_MSG)}</div><div class="row-btns"><button class="btn pink" data-act="test-next">Next ▶</button></div>`;
-  else lower = `<div class="fb ng">💡 The answer is ${q.a * q.b}<small lang="ja">${kukuReading[q.a][q.b]}</small><small>${pick(NG_MSG)}</small></div><div class="row-btns"><button class="btn pink" data-act="test-next">Next ▶</button></div>`;
+  else lower = `<div class="fb ng">💡 The answer is ${q.a * q.b}<small lang="ja" translate="no">${kukuReading[q.a][q.b]}</small><small>${pick(NG_MSG)}</small></div><div class="row-btns"><button class="btn pink" data-act="test-next">Next ▶</button></div>`;
   app.innerHTML = frame({
     title: `Test ${T.i + 1}/${T.qs.length}`, back: 'testsel', mainCls: 'fl',
     body: `<div class="qbanner" style="margin:6px 0">${q.a}×${q.b}＝<span class="ans-box" id="ansbox">${T.phase === 'ask' ? (T.input || '　') : (T.fb ? q.a * q.b : T.input)}</span></div>${lower}`,
