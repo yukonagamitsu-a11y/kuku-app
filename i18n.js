@@ -65,6 +65,7 @@ const JA_EXACT = {
   Next: 'つぎへ', 'Are you sure?': 'ほんとうに けしますか？', 'This cannot be undone.': 'もとには もどせません。',
   Erase: 'けす', 'Progress erased': 'きろくを けしました',
   'Tip: bigger times tables earn more coins!': 'ヒント：おおきい だんほど コインが たくさん もらえるよ！', '💡 Tip: bigger times tables earn more coins!': '💡 ヒント：おおきい だんほど コインが たくさん もらえるよ！',
+  '🌱 You practiced these a lot today, so coins are lower. Try other times tables!': '🌱 きょうは おなじ もんだいを たくさん やったから、コインが すこし へったよ。ほかの だんも やってみよう！',
   'Daily play limit': '1にちの あそぶ めやす', 'Player name': 'なまえ', Edit: 'へんしゅう', Language: 'ことば', Save: 'ほぞん',
   "What's your name?": 'なまえを おしえてね', 'Type your name': 'なまえを いれてね', 'Name saved!': 'なまえを ほぞんしたよ',
   // ほめことば・はげまし

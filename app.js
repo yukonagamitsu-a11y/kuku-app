@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-09-30.9';
+const APP_VERSION = '2026-09-30.10';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -26,6 +26,7 @@ const defaultState = () => ({
   settings: { sound: true, voice: true, dailyLimitMinutes: 0, lang: null },
   seenHello: false,
   name: '',
+  daily: { date: null, counts: {} },
 });
 function defaultLang() { return /^ja/i.test(navigator.language || '') ? 'ja' : 'en'; }
 function loadState() {
@@ -205,11 +206,20 @@ function baseCoin(a, b) {
   return p <= 12 ? 1 : p <= 30 ? 2 : p <= 54 ? 3 : 4;
 }
 function danCoinAvg(d) { let t = 0; for (let b = 1; b <= 9; b++) t += baseCoin(d, b); return t / 9; }
-const SC = { sum: 0, base: 0, n: 0 };
-function resetCoins() { SC.sum = 0; SC.base = 0; SC.n = 0; }
+const SC = { sum: 0, base: 0, n: 0, tired: 0 };
+function resetCoins() { SC.sum = 0; SC.base = 0; SC.n = 0; SC.tired = 0; }
+// おなじ もんだいを その日に なんども やると コインが へる（1〜5かい:そのまま／6〜10かい:半分／11かい〜:4分の1）
+function todayCounts() {
+  const t = dateStr();
+  if (!S.daily || S.daily.date !== t) S.daily = { date: t, counts: {} };
+  return S.daily.counts;
+}
 function earn(a, b) {
-  const base = baseCoin(a, b), mastered = (S.mastery[qkey(a, b)] || 0) >= 3;
-  SC.sum += mastered ? base / 2 : base; SC.base += base; SC.n++;
+  const k = qkey(a, b), base = baseCoin(a, b), mastered = (S.mastery[k] || 0) >= 3;
+  const c = todayCounts(), n = (c[k] || 0) + 1; c[k] = n;
+  const rep = n <= 5 ? 1 : n <= 10 ? .5 : .25;
+  if (rep < 1) SC.tired++;
+  SC.sum += base * rep * (mastered ? .5 : 1); SC.base += base; SC.n++;
 }
 function sessionCoins(ok) { return ok > 0 ? Math.max(1, Math.round(SC.sum)) : 0; }
 function record(a, b, ok) {
@@ -790,8 +800,8 @@ function finishSession(r) {
   const gained = (r.gained || []).slice();
   masters.forEach(m => m.item && gained.push(m.item));
   touchStreak(); save();
-  const easy = SC.n >= 5 && SC.base / SC.n < 1;
-  lastRes = Object.assign({}, r, { masters, gained, easy });
+  const easy = SC.n >= 5 && SC.base / SC.n < 1, tired = SC.tired >= 3;
+  lastRes = Object.assign({}, r, { masters, gained, easy, tired });
   go('result');
 }
 screens.result = () => {
@@ -814,6 +824,7 @@ screens.result = () => {
         ${r.total ? `<div class="coin-line">Correct: ${r.ok}${r.unit === 'q' ? '' : ` / ${r.total}`}</div>` : ''}
         <div class="coin-line">🪙 Coins +${r.coins}</div>
         ${r.note ? `<div class="coin-line" style="margin-top:6px">${r.note}</div>` : ''}
+        ${r.tired ? '<div class="tip">🌱 You practiced these a lot today, so coins are lower. Try other times tables!</div>' : ''}
         ${r.easy ? '<div class="tip">💡 Tip: bigger times tables earn more coins!</div>' : ''}
         ${r.masters.length ? `<div class="coin-line">🎉 ${r.masters.map(m => m.dan + 'のだん').join(', ')} mastered!</div>` : ''}
         ${gainHTML ? `<div class="gain">${gainHTML}</div>` : ''}
