@@ -2,6 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
+const APP_VERSION = '2026-09-30.8';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -873,8 +874,8 @@ actions.buy = async el => {
   if (S.coins < price) { toast('Not enough coins. Play to earn more!'); return; }
   const yes = await confirmDialog(it.name, `<div class="thumbbox">${thumb(it)}</div><p>Buy for 🪙 ${price}?</p>`, 'Buy!', 'Cancel');
   if (!yes || S.coins < price) return;
-  S.coins -= price; grantItem(it.id); save(); Snd.play('coin'); confetti();
-  toast('Got it! Try it on in Dress Up'); go('closet');
+  S.coins -= price; grantItem(it.id); S.avatar[it.cat] = it.id; save(); Snd.play('coin'); confetti();
+  toast('Got it! You are wearing it now'); go('closet');
 };
 actions.gacha = () => {
   if (C.rolling) return;
@@ -886,7 +887,7 @@ actions.gacha = () => {
     const r = Math.random() * 100, rar = r < 55 ? 1 : r < 88 ? 2 : 3;
     const it = pick(ITEMS.filter(i => !i.lim && !i.sp && i.rar === rar));
     const dup = isOwned(it.id);
-    if (dup) S.coins += GACHA_REFUND; else grantItem(it.id);
+    if (dup) S.coins += GACHA_REFUND; else { grantItem(it.id); S.avatar[it.cat] = it.id; }
     save(); Snd.play('reveal'); confetti();
     modal({
       title: dup ? 'You got it again!' : '✨ New friend!',
@@ -921,7 +922,8 @@ screens.parent = () => {
       <div class="set-row">Daily play limit (today: ${mins} min)<button class="btn small" data-act="set-limit">${lim ? lim + ' min' : 'None'}</button></div>
       <h2>🗑️ Data</h2>
       <div class="set-row">Erase all progress<button class="btn small danger" data-act="reset">Reset</button></div>
-      <p style="color:var(--ink-soft);font-size:17px">Progress is saved only on this device and is never sent anywhere.</p></div>`,
+      <p style="color:var(--ink-soft);font-size:17px">Progress is saved only on this device and is never sent anywhere.</p>
+      <p style="color:var(--ink-soft);font-size:15px">v${APP_VERSION} · shop prices ${PRICE[1]}/${PRICE[2]}/${PRICE[3]} · capsule ${GACHA_COST}</p></div>`,
   });
 };
 actions['edit-name'] = () => askName(false).then(ok => { if (ok) { toast('Name saved!'); go('parent'); } });

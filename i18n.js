@@ -51,7 +51,7 @@ const JA_EXACT = {
   Owned: 'もってる', 'Score 100 on a test': 'テスト 100てんで', 'Shop or Capsules': 'ショップ・ガチャ',
   'What will come out? More ★ means rarer!': 'なにが でるかな？ ★が おおいほど レア！',
   'Not enough coins. Play to earn more!': 'コインが たりないよ。あそんで ためよう！',
-  'Buy!': 'かう！', 'Got it! Try it on in Dress Up': 'てにいれたよ！ きせかえで つけてみよう',
+  'Buy!': 'かう！', 'Got it! You are wearing it now': 'てにいれたよ！ さっそく つけたよ',
   'You got it again!': 'また でたよ！', '✨ New friend!': '✨ あたらしい なかま！',
   'Try it on in the Dress-Up Room!': 'きせかえルームで つけてみよう！',
   // ほごしゃ
