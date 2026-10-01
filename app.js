@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-09-30.10';
+const APP_VERSION = '2026-09-30.11';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -208,7 +208,8 @@ function baseCoin(a, b) {
 function danCoinAvg(d) { let t = 0; for (let b = 1; b <= 9; b++) t += baseCoin(d, b); return t / 9; }
 const SC = { sum: 0, base: 0, n: 0, tired: 0 };
 function resetCoins() { SC.sum = 0; SC.base = 0; SC.n = 0; SC.tired = 0; }
-// おなじ もんだいを その日に なんども やると コインが へる（1〜5かい:そのまま／6〜10かい:半分／11かい〜:4分の1）
+// おなじ もんだいを その日に DAILY_FULL かいより おおく やると、それいこうは 1コインしか もらえない
+const DAILY_FULL = 5;
 function todayCounts() {
   const t = dateStr();
   if (!S.daily || S.daily.date !== t) S.daily = { date: t, counts: {} };
@@ -217,9 +218,9 @@ function todayCounts() {
 function earn(a, b) {
   const k = qkey(a, b), base = baseCoin(a, b), mastered = (S.mastery[k] || 0) >= 3;
   const c = todayCounts(), n = (c[k] || 0) + 1; c[k] = n;
-  const rep = n <= 5 ? 1 : n <= 10 ? .5 : .25;
-  if (rep < 1) SC.tired++;
-  SC.sum += base * rep * (mastered ? .5 : 1); SC.base += base; SC.n++;
+  let v = base * (mastered ? .5 : 1);
+  if (n > DAILY_FULL) { v = Math.min(v, 1); SC.tired++; } // 一定回数をこえたら 1コインまで
+  SC.sum += v; SC.base += base; SC.n++;
 }
 function sessionCoins(ok) { return ok > 0 ? Math.max(1, Math.round(SC.sum)) : 0; }
 function record(a, b, ok) {
