@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-09-30.8';
+const APP_VERSION = '2026-09-30.9';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -198,6 +198,20 @@ function touchStreak() {
 }
 function curStreak() { const l = S.streak.lastPlayed; return l === dateStr() || l === yesterdayStr() ? S.streak.days : 0; }
 
+// むずかしい もんだいほど コインが おおい（1のだんだけで かせげない）
+function baseCoin(a, b) {
+  if (a === 1 || b === 1) return .25;
+  const p = a * b;
+  return p <= 12 ? 1 : p <= 30 ? 2 : p <= 54 ? 3 : 4;
+}
+function danCoinAvg(d) { let t = 0; for (let b = 1; b <= 9; b++) t += baseCoin(d, b); return t / 9; }
+const SC = { sum: 0, base: 0, n: 0 };
+function resetCoins() { SC.sum = 0; SC.base = 0; SC.n = 0; }
+function earn(a, b) {
+  const base = baseCoin(a, b), mastered = (S.mastery[qkey(a, b)] || 0) >= 3;
+  SC.sum += mastered ? base / 2 : base; SC.base += base; SC.n++;
+}
+function sessionCoins(ok) { return ok > 0 ? Math.max(1, Math.round(SC.sum)) : 0; }
 function record(a, b, ok) {
   const k = qkey(a, b), m = S.mastery[k] || 0;
   S.attempts[k] = (S.attempts[k] || 0) + 1;
@@ -284,7 +298,7 @@ let selDans = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 function danPickerHTML() {
   const all = selDans.size === 9;
   return `<button class="dan-chip ${all ? 'on' : ''}" data-act="dan-all" lang="ja" translate="no">ぜんぶ</button>` +
-    [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button class="dan-chip ${!all && selDans.has(n) ? 'on' : ''}" data-act="dan-tog" data-n="${n}" lang="ja" translate="no">${n}のだん</button>`).join('');
+    [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button class="dan-chip ${!all && selDans.has(n) ? 'on' : ''}" data-act="dan-tog" data-n="${n}" lang="ja" translate="no">${n}のだん<small>🪙 ${danCoinAvg(n).toFixed(1)}</small></button>`).join('');
 }
 actions['dan-all'] = () => { selDans = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]); $('#picker').innerHTML = danPickerHTML(); };
 actions['dan-tog'] = el => {
@@ -399,6 +413,7 @@ actions.readall = () => {
 let DQ = null;
 actions['dq-start'] = () => {
   const n = L.n;
+  resetCoins();
   DQ = { n, list: shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]).map(b => ({ b, blank: Math.random() < .6 ? 'ans' : 'b' })), i: 0, ok: 0, wrong: false };
   cleanup = () => { DQ.dead = true; };
   renderDQ();
@@ -423,7 +438,7 @@ actions['dq-ans'] = el => {
   const v = +el.dataset.v, q = DQ.list[DQ.i];
   if (v === DQ.ans) {
     DQ.locked = true;
-    if (!DQ.wrong) { record(DQ.n, q.b, true); DQ.ok++; }
+    if (!DQ.wrong) { earn(DQ.n, q.b); record(DQ.n, q.b, true); DQ.ok++; }
     $('#qbox').textContent = v; el.classList.add('right'); burstEl(el); Snd.play('ok');
     $('#qsub').textContent = `${pick(OK_MSG)}　${kukuReading[DQ.n][q.b]}`;
     setTimeout(() => {
@@ -442,7 +457,7 @@ function finishDQ() {
   if (DQ.ok >= 8) { if (!S.stamps.includes(DQ.n)) S.stamps.push(DQ.n); note = `⭐ ${DQ.n}のだん stamp earned!`; }
   else note = 'Practice a little more and try again!';
   const n = DQ.n;
-  finishSession({ title: `${n}のだん Quiz`, ok: DQ.ok, total: 9, coins: DQ.ok, note, retry: () => go('dan', { n }), retryLabel: 'Back to learning' });
+  finishSession({ title: `${n}のだん Quiz`, ok: DQ.ok, total: 9, coins: sessionCoins(DQ.ok), note, retry: () => go('dan', { n }), retryLabel: 'Back to learning' });
 }
 
 /* =============== あそぼう =============== */
@@ -471,7 +486,7 @@ screens.balloon = () => {
     body: `<div class="qbanner" id="bq"></div><div class="timebar"><i id="tb"></i></div>
       <div class="field" id="field"><div class="mascot l" id="mL"></div><div class="mascot r" id="mR"></div></div>`,
   });
-  setWake(true);
+  setWake(true); resetCoins();
   G = { dans, t: 60, ok: 0, total: 0, q: null, last: null, bal: [], over: false, wrong: false, lastSpawn: 0, mist: new Set(), fr: shuffle(FRIENDS).slice(0, 2), raf: 0 };
   const field = $('#field'); let W = 0, H = 0;
   const measure = () => { const r = field.getBoundingClientRect(); W = r.width; H = r.height; };
@@ -534,7 +549,7 @@ screens.balloon = () => {
     say("Time's up! Great effort!", 'ok'); faces('cheer');
     setTimeout(() => {
       if (cur !== 'balloon') return;
-      finishSession({ title: 'Balloon Pop', ok: G.ok, total: G.ok, coins: G.ok, unit: 'q', retry: () => go('balloon') });
+      finishSession({ title: 'Balloon Pop', ok: G.ok, total: G.ok, coins: sessionCoins(G.ok), unit: 'q', retry: () => go('balloon') });
     }, 1400);
   };
   field.addEventListener('pointerdown', e => {
@@ -546,6 +561,7 @@ screens.balloon = () => {
     if (b.v === ans) {
       b.popped = true; el.classList.add('pop'); setTimeout(() => removeB(b), 300);
       burst(e.clientX, e.clientY); Snd.play('pop'); Snd.play('ok');
+      earn(a, bb);
       if (!G.wrong) record(a, bb, true);
       G.ok++; G.total++;
       say(`${pick(OK_MSG)} ${kukuReading[a][bb]}`, 'ok'); cheerUp('cheer');
@@ -563,13 +579,14 @@ screens.balloon = () => {
 /* ---- かわいいおみせやさん ---- */
 let SG = null;
 screens.shopgame = () => {
+  resetCoins();
   SG = { dans: [...selDans], n: 0, total: 8, ok: 0, last: null };
   setWake(true);
   nextCustomer();
 };
 function nextCustomer() {
   const g = SG;
-  if (g.n >= g.total) { finishSession({ title: 'Sweet Shop', ok: g.ok, total: g.total, coins: g.ok, retry: () => go('shopgame') }); return; }
+  if (g.n >= g.total) { finishSession({ title: 'Sweet Shop', ok: g.ok, total: g.total, coins: sessionCoins(g.ok), retry: () => go('shopgame') }); return; }
   g.q = pickQ(g.dans, g.last); g.last = qkey(g.q.a, g.q.b);
   g.wrong = false; g.locked = false; g.cust = pick(FRIENDS); g.good = pick(SHOP_GOODS);
   const { a, b } = g.q, opts = choices(a, b);
@@ -592,6 +609,7 @@ actions['shop-ans'] = el => {
   const cust = $('#cust'), bub = $('#sbub');
   if (v === ans) {
     g.locked = true; g.ok++; g.n++;
+    earn(a, b);
     if (!g.wrong) record(a, b, true);
     el.classList.add('right'); Snd.play('ok'); Snd.play('coin'); burstEl(el);
     $('#counter').innerHTML = Array.from({ length: b }, (_, i) =>
@@ -625,7 +643,7 @@ screens.mole = () => {
     body: `<div class="qbanner" id="mq"></div><div class="timebar"><i id="mtb"></i></div>
       <div class="moles" id="moles">${Array.from({ length: 6 }, (_, i) => `<div class="hole" data-i="${i}"><div class="mole"></div><div class="dirt"></div></div>`).join('')}</div>`,
   });
-  setWake(true);
+  setWake(true); resetCoins();
   const holes = [...document.querySelectorAll('.hole')];
   MO = { dans: [...selDans], t: 60, ok: 0, q: null, last: null, wrong: false, over: false, last_spawn: 0, slots: holes.map(() => ({ v: null, hide: 0 })) };
   const field = $('#moles');
@@ -669,7 +687,7 @@ screens.mole = () => {
   const end = () => {
     MO.over = true; clearInterval(MO.iv);
     say("Time's up! Great effort!", 'ok');
-    setTimeout(() => { if (cur === 'mole') finishSession({ title: 'Whack-a-Mole', ok: MO.ok, total: MO.ok, coins: MO.ok, unit: 'q', retry: () => go('mole') }); }, 1400);
+    setTimeout(() => { if (cur === 'mole') finishSession({ title: 'Whack-a-Mole', ok: MO.ok, total: MO.ok, coins: sessionCoins(MO.ok), unit: 'q', retry: () => go('mole') }); }, 1400);
   };
   field.addEventListener('pointerdown', e => {
     if (MO.over) return;
@@ -679,6 +697,7 @@ screens.mole = () => {
     const { a, b } = MO.q, ans = a * b;
     if (s.v === ans) {
       hide(i); burst(e.clientX, e.clientY); Snd.play('pop'); Snd.play('ok');
+      earn(a, b);
       if (!MO.wrong) record(a, b, true);
       MO.ok++; say(`${pick(OK_MSG)} ${kukuReading[a][b]}`, 'ok'); nextQ();
     } else {
@@ -713,6 +732,7 @@ function startTest(dans, list) {
         used.add(qkey(q.a, q.b)); last = qkey(q.a, q.b); qs.push(q);
       }
     }
+    resetCoins();
     T = { qs, dans, i: 0, input: '', ok: 0, mist: [], phase: 'ask', isRetry: !!list };
     go('test');
   });
@@ -738,6 +758,7 @@ actions.key = el => {
   else if (k === 'ok') {
     if (!T.input) return;
     const q = T.qs[T.i], ok = +T.input === q.a * q.b;
+    if (ok) earn(q.a, q.b);
     record(q.a, q.b, ok); T.phase = 'fb'; T.fb = ok;
     if (ok) { T.ok++; Snd.play('ok'); } else { T.mist.push(q); Snd.play('ng'); }
     renderTest(); if (ok) burstEl($('#ansbox'));
@@ -755,7 +776,7 @@ function finishTest() {
   if (perfect && grantItem('sp_gold')) gained.push('sp_gold');
   const mist = T.mist.slice(), dans = T.dans;
   finishSession({
-    title: 'Test', ok, total, coins: ok, score: Math.round(ok / total * 100), gained, mist,
+    title: 'Test', ok, total, coins: sessionCoins(ok), score: Math.round(ok / total * 100), gained, mist,
     note: perfect ? '🌟 100 points! A special prize!' : '',
     retry: mist.length ? () => startTest(dans, mist) : () => startTest(dans),
     retryLabel: mist.length ? 'Retry the ones I missed' : 'Try again',
@@ -769,7 +790,8 @@ function finishSession(r) {
   const gained = (r.gained || []).slice();
   masters.forEach(m => m.item && gained.push(m.item));
   touchStreak(); save();
-  lastRes = Object.assign({}, r, { masters, gained });
+  const easy = SC.n >= 5 && SC.base / SC.n < 1;
+  lastRes = Object.assign({}, r, { masters, gained, easy });
   go('result');
 }
 screens.result = () => {
@@ -792,6 +814,7 @@ screens.result = () => {
         ${r.total ? `<div class="coin-line">Correct: ${r.ok}${r.unit === 'q' ? '' : ` / ${r.total}`}</div>` : ''}
         <div class="coin-line">🪙 Coins +${r.coins}</div>
         ${r.note ? `<div class="coin-line" style="margin-top:6px">${r.note}</div>` : ''}
+        ${r.easy ? '<div class="tip">💡 Tip: bigger times tables earn more coins!</div>' : ''}
         ${r.masters.length ? `<div class="coin-line">🎉 ${r.masters.map(m => m.dan + 'のだん').join(', ')} mastered!</div>` : ''}
         ${gainHTML ? `<div class="gain">${gainHTML}</div>` : ''}
         ${r.mist && r.mist.length ? `<div class="section-title">Check these answers</div><div class="mist-list">${r.mist.map(q => `<span class="mist">${q.a}×${q.b}＝${q.a * q.b}</span>`).join('')}</div>` : ''}
