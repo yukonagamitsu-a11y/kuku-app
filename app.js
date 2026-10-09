@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-09.30';
+const APP_VERSION = '2026-10-09.31';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -23,7 +23,7 @@ const defaultState = () => ({
   mastery: {}, mistakes: {}, attempts: {}, correct: {},
   masteredDans: [], stamps: [],
   today: { date: null, seconds: 0 },
-  settings: { sound: true, voice: true, dailyLimitMinutes: 0, lang: null, voiceName: null, voiceRate: .85, voicePitch: 1.15, cocoChange: '3days' },
+  settings: { sound: true, voice: true, dailyLimitMinutes: 0, lang: null, cocoChange: '3days' },
   seenHello: false,
   name: '',
   daily: { date: null, counts: {} },
@@ -112,9 +112,8 @@ const Voice = {
     try {
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
-      u.lang = 'ja-JP'; u.rate = S.settings.voiceRate || .85; u.pitch = S.settings.voicePitch || 1.15;
-      const all = speechSynthesis.getVoices();
-      const v = (S.settings.voiceName && all.find(x => x.name === S.settings.voiceName)) || all.find(x => /^ja/i.test(x.lang)); if (v) u.voice = v;
+      u.lang = 'ja-JP'; u.rate = .85; u.pitch = 1.15;
+      const v = speechSynthesis.getVoices().find(x => /^ja/i.test(x.lang)); if (v) u.voice = v;
       let fired = false;
       const fin = () => { if (fired || my !== this.token) return; fired = true; clearTimeout(this.timer); if (done) done(); };
       u.onend = fin; u.onerror = fin;
@@ -1075,7 +1074,6 @@ screens.parent = () => {
       <div class="set-row"><span>Player name</span><span class="nm"><b>${esc(S.name || '')}</b><button class="btn small" data-act="edit-name">Edit</button></span></div>
       <div class="set-row"><span>Language</span><button class="btn small" data-act="set-lang">${S.settings.lang === 'ja' ? '日本語' : 'English'}</button></div>
       <div class="set-row">Sound effects<button class="btn small toggle ${S.settings.sound ? 'on' : ''}" data-act="set-sound">${S.settings.sound ? 'ON' : 'OFF'}</button></div>
-      <div class="set-row"><span>Voice settings</span><button class="btn small" data-act="set-voicecfg">${S.settings.voiceName ? esc(S.settings.voiceName) : 'Auto'}</button></div>
       <div class="set-row">Voice reading<button class="btn small toggle ${S.settings.voice ? 'on' : ''}" data-act="set-voice">${S.settings.voice ? 'ON' : 'OFF'}</button></div>
       <div class="set-row">Daily play limit (today: ${mins} min)<button class="btn small" data-act="set-limit">${lim ? lim + ' min' : 'None'}</button></div>
       <h2>🗑️ Data</h2>
@@ -1086,32 +1084,6 @@ screens.parent = () => {
 };
 actions['edit-name'] = () => askName(false).then(ok => { if (ok) { toast('Name saved!'); go('parent'); } });
 actions['set-lang'] = () => { S.settings.lang = S.settings.lang === 'ja' ? 'en' : 'ja'; save(); I18N.refreshMeta(); go('parent'); };
-function openVoiceSettings() {
-  const o = document.createElement('div'); o.className = 'overlay';
-  const opt = (label, on, attr) => `<button class="btn small ${on ? 'mint' : ''}" ${attr}>${label}</button>`;
-  const render = () => {
-    const voices = ('speechSynthesis' in window ? speechSynthesis.getVoices() : []).filter(v => /^ja/i.test(v.lang));
-    const cur = S.settings.voiceName || '', rate = S.settings.voiceRate || .85, pitch = S.settings.voicePitch || 1.15;
-    o.innerHTML = `<div class="modal vmodal"><h2>Voice settings</h2><p style="font-size:18px">Tap a voice to hear it</p>
-      <div class="vlist">${opt('Auto (recommended)', !cur, 'data-v=""')}${voices.map(v => opt(esc(v.name) + (v.localService ? '' : ' ☁'), cur === v.name, `data-v="${esc(v.name)}"`)).join('')}</div>
-      ${voices.length ? '' : '<p style="font-size:17px">No Japanese voices found on this device. You can add one in Android Settings → Text-to-speech output.</p>'}
-      <p>Speed</p><div class="row-btns" style="margin-top:0">${[['Slow', .7], ['Normal', .85], ['Fast', 1]].map(([l, v]) => opt(l, Math.abs(rate - v) < .01, `data-r="${v}"`)).join('')}</div>
-      <p>Pitch</p><div class="row-btns" style="margin-top:0">${[['Low', 1], ['Normal', 1.15], ['High', 1.35]].map(([l, v]) => opt(l, Math.abs(pitch - v) < .01, `data-p="${v}"`)).join('')}</div>
-      <div class="row-btns"><button class="btn pink" data-close="1">Close</button></div></div>`;
-  };
-  const preview = () => { Voice.refresh(); Voice.speak('さん し じゅうに'); };
-  o.addEventListener('click', e => {
-    const b = e.target.closest('button'); if (!b) return;
-    if (b.dataset.close) { Voice.cancel(); o.remove(); go('parent'); return; }
-    if (b.dataset.v !== undefined) S.settings.voiceName = b.dataset.v || null;
-    if (b.dataset.r) S.settings.voiceRate = +b.dataset.r;
-    if (b.dataset.p) S.settings.voicePitch = +b.dataset.p;
-    save(); render(); preview();
-  });
-  render(); document.body.appendChild(o);
-  setTimeout(render, 600); // 声の一覧が あとから ふえる たんまつ向け
-}
-actions['set-voicecfg'] = () => openVoiceSettings();
 actions['set-sound'] = () => { S.settings.sound = !S.settings.sound; save(); Snd.init(); Snd.play('ok'); go('parent'); };
 actions['set-voice'] = () => { S.settings.voice = !S.settings.voice; save(); go('parent'); };
 actions['set-limit'] = async () => {
