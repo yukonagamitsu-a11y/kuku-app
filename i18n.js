@@ -122,6 +122,8 @@ const JA_PATTERNS = [
   [/^(\d+×\d+＝\d+)\(missed (\d+)x\)$/, m => `${m[1]}（まちがい ${m[2]}かい）`],
   [/^Daily play limit \(today: (\d+) min\)$/, m => `1にちの あそぶ めやす（きょう ${m[1]}ふん）`],
   [/^(\d+) min$/, m => `${m[1]}ふん`],
+  [/^This round 🪙 (\d+)$/, m => `いまの ゲーム 🪙 ${m[1]}`],
+  [/^🎁 Daily bonus \+(\d+) \(included\)$/, m => `🎁 きょうの さいしょの ボーナス +${m[1]}（ふくむ）`],
 ];
 
 const I18N = {

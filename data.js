@@ -119,9 +119,9 @@ const CATS = [
   { id: 'room', name: 'Room', icon: '🏠' },
 ];
 const REQUIRED_CATS = ['hair', 'hairColor', 'outfit', 'shoes'];
-const PRICE = { 1: 10, 2: 30, 3: 60 };
-const GACHA_COST = 20;
-const GACHA_REFUND = 5;
+const PRICE = { 1: 8, 2: 22, 3: 45 };
+const GACHA_COST = 15;
+const GACHA_REFUND = 4;
 
 // ---- ナビ・友だちキャラ ----
 const NPC = {

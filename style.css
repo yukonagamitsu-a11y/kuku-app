@@ -285,3 +285,5 @@ body.no-voice .voice-btn { display: none !important; }
 .dan-chip { line-height: 1.15; padding-top: 4px; padding-bottom: 4px; }
 .dan-chip small { display: block; font-size: 15px; font-weight: 700; opacity: .75; }
 .tip { margin: 8px auto; max-width: 520px; background: #fff8d6; border-radius: 22px; padding: 8px 16px; font-weight: 800; font-size: 20px; }
+
+.fx.earn { font-weight: 900; font-size: 34px; color: #b9770e; text-shadow: 0 2px 0 #fff, 0 0 8px #fff; white-space: nowrap; }

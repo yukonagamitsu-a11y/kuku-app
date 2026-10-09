@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-09-30.11';
+const APP_VERSION = '2026-10-08.12';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -27,6 +27,7 @@ const defaultState = () => ({
   seenHello: false,
   name: '',
   daily: { date: null, counts: {} },
+  bonusDate: null,
 });
 function defaultLang() { return /^ja/i.test(navigator.language || '') ? 'ja' : 'en'; }
 function loadState() {
@@ -201,26 +202,43 @@ function curStreak() { const l = S.streak.lastPlayed; return l === dateStr() || 
 
 // むずかしい もんだいほど コインが おおい（1のだんだけで かせげない）
 function baseCoin(a, b) {
-  if (a === 1 || b === 1) return .25;
+  if (a === 1 || b === 1) return .5;
   const p = a * b;
   return p <= 12 ? 1 : p <= 30 ? 2 : p <= 54 ? 3 : 4;
 }
 function danCoinAvg(d) { let t = 0; for (let b = 1; b <= 9; b++) t += baseCoin(d, b); return t / 9; }
-const SC = { sum: 0, base: 0, n: 0, tired: 0 };
+const SC = { sum: 0, base: 0, n: 0, tired: 0, live: false };
 function resetCoins() { SC.sum = 0; SC.base = 0; SC.n = 0; SC.tired = 0; }
 // おなじ もんだいを その日に DAILY_FULL かいより おおく やると、それいこうは 1コインしか もらえない
-const DAILY_FULL = 5;
+const DAILY_FULL = 10;
 function todayCounts() {
   const t = dateStr();
   if (!S.daily || S.daily.date !== t) S.daily = { date: t, counts: {} };
   return S.daily.counts;
 }
 function earn(a, b) {
-  const k = qkey(a, b), base = baseCoin(a, b), mastered = (S.mastery[k] || 0) >= 3;
+  const k = qkey(a, b), base = baseCoin(a, b);
   const c = todayCounts(), n = (c[k] || 0) + 1; c[k] = n;
-  let v = base * (mastered ? .5 : 1);
+  let v = base;
   if (n > DAILY_FULL) { v = Math.min(v, 1); SC.tired++; } // 一定回数をこえたら 1コインまで
   SC.sum += v; SC.base += base; SC.n++;
+  showEarn(v);
+}
+// 正解のたびに「+2🪙」を見せる（いま どれくらい ためたか わかる）
+const lastPt = { x: innerWidth / 2, y: innerHeight / 2 };
+document.addEventListener('pointerdown', e => { lastPt.x = e.clientX; lastPt.y = e.clientY; }, true);
+function showEarn(v) {
+  const t = v >= 1 ? Math.round(v) : v;
+  const fx = document.getElementById('fx');
+  if (fx && !reduced) {
+    const d = document.createElement('div'); d.className = 'fx earn';
+    d.textContent = `+${t}🪙`; d.style.left = (lastPt.x - 24) + 'px'; d.style.top = (lastPt.y - 30) + 'px';
+    d.style.setProperty('--dx', '0px'); d.style.setProperty('--dy', '-70px'); d.style.setProperty('--rot', '0deg');
+    fx.appendChild(d); setTimeout(() => d.remove(), 950);
+  }
+  let rc = document.getElementById('roundChip');
+  if (!rc) { const st = document.querySelector('.stats'); if (!st) return; rc = document.createElement('span'); rc.className = 'chip'; rc.id = 'roundChip'; st.prepend(rc); }
+  rc.textContent = `This round 🪙 ${Math.round(SC.sum)}`;
 }
 function sessionCoins(ok) { return ok > 0 ? Math.max(1, Math.round(SC.sum)) : 0; }
 function record(a, b, ok) {
@@ -286,7 +304,7 @@ const screens = {};
 const actions = {};
 
 function statsHTML() {
-  return `<span class="chip">🔥 Streak <b>${curStreak()}</b> ${curStreak() === 1 ? 'day' : 'days'}</span><span class="chip" id="coinChip">🪙 Coins <b>${S.coins}</b></span>`;
+  return `${SC.live && SC.n ? `<span class="chip" id="roundChip">This round 🪙 ${Math.round(SC.sum)}</span>` : ''}<span class="chip">🔥 Streak <b>${curStreak()}</b> ${curStreak() === 1 ? 'day' : 'days'}</span><span class="chip" id="coinChip">🪙 Coins <b>${S.coins}</b></span>`;
 }
 function updateCoin() { const c = $('#coinChip b'); if (c) c.textContent = S.coins; }
 function frame({ title, back, body, home, mainCls = '' }) {
@@ -299,6 +317,8 @@ function frame({ title, back, body, home, mainCls = '' }) {
 function go(name, params) {
   if (cleanup) { try { cleanup(); } catch (e) { /* 無視 */ } cleanup = null; }
   Voice.cancel(); setWake(false);
+  if (['balloon', 'shopgame', 'mole'].includes(name)) resetCoins();
+  SC.live = ['balloon', 'shopgame', 'mole', 'test'].includes(name);
   cur = name;
   screens[name](params || {});
   Voice.refresh();
@@ -424,7 +444,7 @@ actions.readall = () => {
 let DQ = null;
 actions['dq-start'] = () => {
   const n = L.n;
-  resetCoins();
+  resetCoins(); SC.live = true;
   DQ = { n, list: shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]).map(b => ({ b, blank: Math.random() < .6 ? 'ans' : 'b' })), i: 0, ok: 0, wrong: false };
   cleanup = () => { DQ.dead = true; };
   renderDQ();
@@ -796,6 +816,10 @@ function finishTest() {
 
 /* =============== けっか =============== */
 function finishSession(r) {
+  const today = dateStr();
+  if (r.coins > 0 && S.bonusDate !== today) { // 1日の さいしょの あそびに ボーナス
+    S.bonusDate = today; r.bonus = 10 + 2 * Math.min(5, Math.max(0, curStreak() - 1)); r.coins += r.bonus;
+  }
   S.coins += r.coins;
   const masters = checkMasters();
   const gained = (r.gained || []).slice();
@@ -824,6 +848,7 @@ screens.result = () => {
         ${r.score != null ? `<div class="big" style="color:var(--pink-d)">${r.score} points</div>` : ''}
         ${r.total ? `<div class="coin-line">Correct: ${r.ok}${r.unit === 'q' ? '' : ` / ${r.total}`}</div>` : ''}
         <div class="coin-line">🪙 Coins +${r.coins}</div>
+        ${r.bonus ? `<div class="coin-line">🎁 Daily bonus +${r.bonus} (included)</div>` : ''}
         ${r.note ? `<div class="coin-line" style="margin-top:6px">${r.note}</div>` : ''}
         ${r.tired ? '<div class="tip">🌱 You practiced these a lot today, so coins are lower. Try other times tables!</div>' : ''}
         ${r.easy ? '<div class="tip">💡 Tip: bigger times tables earn more coins!</div>' : ''}
