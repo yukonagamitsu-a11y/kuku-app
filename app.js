@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-11.60';
+const APP_VERSION = '2026-10-12.62';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -40,7 +40,8 @@ const defaultState = () => ({
   cocoDays: { date: null, count: 0 },
   myroom: { has: false, items: [], placed: {}, seen: false },
 });
-function defaultLang() { return /^ja/i.test(navigator.language || '') ? 'ja' : 'en'; }
+function defaultLang() { const l = navigator.language || ''; return /^ja/i.test(l) ? 'ja' : /^ko/i.test(l) ? 'ko' : 'en'; }
+const LANG_NAMES = { en: 'English', ja: '日本語', ko: '한국어' };
 function loadState() {
   const d = defaultState();
   try {
@@ -186,12 +187,12 @@ const confirmDialog = (title, html, yes = 'OK', no = 'Cancel') => modal({ title,
 
 function askName(first) {
   return new Promise(res => {
-    const ph = I18N.lang() === 'ja' ? (I18N.tr('Type your name') || 'Type your name') : 'Type your name';
+    const ph = I18N.lang() !== 'en' ? (I18N.tr('Type your name') || 'Type your name') : 'Type your name';
     const o = document.createElement('div'); o.className = 'overlay';
     o.innerHTML = `<div class="modal"><h2>What's your name?</h2>
       <input id="nameIn" class="name-in" maxlength="12" autocomplete="off" placeholder="${ph}" value="${esc(S.name || '')}">
       ${first ? `<p class="mini">Times table chant</p><div class="row-btns" style="margin-top:0"><button class="btn small ${chantLang() === 'ja' ? 'mint' : ''}" data-c="ja">日本語</button><button class="btn small ${chantLang() === 'ko' ? 'mint' : ''}" data-c="ko">한국어</button></div>` : ''}
-      <div class="row-btns">${first ? `<button class="btn small ${S.settings.lang === 'en' ? 'mint' : ''}" data-l="en">English</button><button class="btn small ${S.settings.lang === 'ja' ? 'mint' : ''}" data-l="ja">日本語</button>` : '<button class="btn lemon" data-i="0">Cancel</button>'}<button class="btn pink" data-i="1">Save</button></div></div>`;
+      <div class="row-btns">${first ? ['en', 'ja', 'ko'].map(k => `<button class="btn small ${S.settings.lang === k ? 'mint' : ''}" data-l="${k}">${LANG_NAMES[k]}</button>`).join('') : '<button class="btn lemon" data-i="0">Cancel</button>'}<button class="btn pink" data-i="1">Save</button></div></div>`;
     const save1 = () => {
       const v = $('#nameIn', o).value.trim();
       if (!v) { $('#nameIn', o).focus(); return; }
@@ -353,7 +354,7 @@ function go(name, params) {
 let selDans = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 function danPickerHTML() {
   const all = selDans.size === 9;
-  return `<button class="dan-chip ${all ? 'on' : ''}" data-act="dan-all" lang="ja" translate="no">ぜんぶ</button>` +
+  return `<button class="dan-chip ${all ? 'on' : ''}" data-act="dan-all" lang="${chantLang()}" translate="no">${chantLang() === 'ko' ? '전부' : 'ぜんぶ'}</button>` +
     [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button class="dan-chip ${!all && selDans.has(n) ? 'on' : ''}" data-act="dan-tog" data-n="${n}" lang="${chantLang()}" translate="no">${danLabel(n)}<small>🪙×${Math.max(1, Math.round(danCoinAvg(n)))}</small></button>`).join('');
 }
 actions['dan-all'] = () => { selDans = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]); $('#picker').innerHTML = danPickerHTML(); };
@@ -1244,7 +1245,7 @@ screens.parent = () => {
       <h2>⚙️ Settings</h2>
       <div class="set-row"><span>Player name</span><span class="nm"><b>${esc(S.name || '')}</b><button class="btn small" data-act="edit-name">Edit</button></span></div>
       <div class="set-row"><span>Chant language</span><button class="btn small" data-act="set-chant" lang="${chantLang()}">${chantLang() === 'ko' ? '한국어' : '日本語'}</button></div>
-      <div class="set-row"><span>Language</span><button class="btn small" data-act="set-lang">${S.settings.lang === 'ja' ? '日本語' : 'English'}</button></div>
+      <div class="set-row"><span>Language</span><button class="btn small" data-act="set-lang">${LANG_NAMES[S.settings.lang] || 'English'}</button></div>
       <div class="set-row">Sound effects<button class="btn small toggle ${S.settings.sound ? 'on' : ''}" data-act="set-sound">${S.settings.sound ? 'ON' : 'OFF'}</button></div>
       <div class="set-row">Voice reading<button class="btn small toggle ${S.settings.voice ? 'on' : ''}" data-act="set-voice">${S.settings.voice ? 'ON' : 'OFF'}</button></div>
       <div class="set-row">Daily play limit (today: ${mins} min)<button class="btn small" data-act="set-limit">${lim ? lim + ' min' : 'None'}</button></div>
@@ -1255,7 +1256,11 @@ screens.parent = () => {
   });
 };
 actions['edit-name'] = () => askName(false).then(ok => { if (ok) { toast('Name saved!'); go('parent'); } });
-actions['set-lang'] = () => { S.settings.lang = S.settings.lang === 'ja' ? 'en' : 'ja'; save(); I18N.refreshMeta(); go('parent'); };
+actions['set-lang'] = async () => {
+  const keys = ['en', 'ja', 'ko'];
+  const k = await modal({ title: 'Language', buttons: keys.map(x => ({ label: LANG_NAMES[x], cls: x === S.settings.lang ? 'mint' : '' })) });
+  S.settings.lang = keys[k]; save(); I18N.refreshMeta(); go('parent');
+};
 actions['set-chant'] = async () => {
   const k = await modal({ title: 'Chant language', buttons: [{ label: '日本語', cls: chantLang() === 'ja' ? 'mint' : '' }, { label: '한국어', cls: chantLang() === 'ko' ? 'mint' : '' }] });
   S.settings.chant = k === 1 ? 'ko' : 'ja'; save(); Voice.refresh(); go('parent');

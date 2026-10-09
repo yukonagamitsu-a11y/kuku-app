@@ -1,7 +1,7 @@
 /* オフラインで動くための Service Worker（キャッシュ優先） */
-const CACHE = 'kuku-app-v60';
+const CACHE = 'kuku-app-v62';
 const FILES = [
-  './', './index.html', './style.css', './data.js', './avatar.js', './myroom.js', './app.js', './i18n.js', './manifest.json', './fonts/Fredoka-400.ttf', './fonts/Fredoka-700.ttf',
+  './', './index.html', './style.css', './data.js', './avatar.js', './myroom.js', './app.js', './i18n.js', './i18n-ko.js', './manifest.json', './fonts/Fredoka-400.ttf', './fonts/Fredoka-700.ttf',
   './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png',
 ];
 self.addEventListener('install', e => {

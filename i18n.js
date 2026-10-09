@@ -163,10 +163,11 @@ const JA_PATTERNS = [
 
 const I18N = {
   lang() { return (typeof S !== 'undefined' && S.settings && S.settings.lang) || 'en'; },
+  dict() { return this.lang() === 'ko' ? { exact: koTr, patterns: KO_PATTERNS } : { exact: jaTr, patterns: JA_PATTERNS }; },
   tr(s) {
-    const t = jaTr(s);
+    const D = this.dict(), t = D.exact(s);
     if (t !== null) return t;
-    for (const [re, fn] of JA_PATTERNS) { const m = s.match(re); if (m) { const r = fn(m); if (r !== null) return r; } }
+    for (const [re, fn] of D.patterns) { const m = s.match(re); if (m) { const r = fn(m); if (r !== null) return r; } }
     const e = s.match(/^([^A-Za-z0-9\s]+)\s+(.+)$/); // 先頭が絵文字のとき
     if (e) { const r = this.tr(e[2]); if (r !== null) return e[1] + ' ' + r; }
     return null;
@@ -179,7 +180,7 @@ const I18N = {
     if (out !== null && out !== t) n.nodeValue = v.replace(t, out);
   },
   apply(root) {
-    if (this.lang() !== 'ja' || !root) return;
+    if (this.lang() === 'en' || !root) return;
     if (root.nodeType === 3) { this.node(root); return; }
     if (root.nodeType !== 1) return;
     const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
@@ -192,7 +193,7 @@ const I18N = {
   },
   start() {
     new MutationObserver(ms => {
-      if (this.lang() !== 'ja') return;
+      if (this.lang() === 'en') return;
       for (const m of ms) {
         if (m.type === 'characterData') this.apply(m.target);
         else m.addedNodes.forEach(n => this.apply(n));
@@ -201,8 +202,8 @@ const I18N = {
     this.refreshMeta();
   },
   refreshMeta() {
-    const ja = this.lang() === 'ja';
-    document.title = ja ? 'くくの ひみつのまち' : 'Times Table Town';
-    document.documentElement.lang = ja ? 'ja' : 'en';
+    const l = this.lang();
+    document.title = l === 'ja' ? 'くくの ひみつのまち' : l === 'ko' ? '구구단 마을' : 'Times Table Town';
+    document.documentElement.lang = l === 'ja' || l === 'ko' ? l : 'en';
   },
 };

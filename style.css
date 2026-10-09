@@ -432,3 +432,12 @@ html[lang="ja"] .menu .btn { word-break: keep-all; overflow-wrap: break-word; li
 }
 
 .modal .mini { font-size: 18px; margin: 10px 0 2px; font-weight: 800; }
+
+/* 한국어도 일본어와 같이 단어 중간에서 줄바꿈하지 않음 */
+html[lang="ko"] .bubble, html[lang="ko"] .msg, html[lang="ko"] .fb, html[lang="ko"] .tip,
+html[lang="ko"] .section-title, html[lang="ko"] .result .big, html[lang="ko"] .coin-line,
+html[lang="ko"] .modal p, html[lang="ko"] .modal h2, html[lang="ko"] .toast, html[lang="ko"] .menu .btn small {
+  word-break: keep-all; overflow-wrap: break-word; text-wrap: balance;
+}
+html[lang="ko"] .menu .btn { word-break: keep-all; overflow-wrap: break-word; text-wrap: balance; line-height: 1.2; }
+@media (max-width: 560px) { html[lang="ko"] .menu .btn { font-size: clamp(15px, 5vw, 22px); white-space: normal; padding-left: 4px; padding-right: 4px; } }
