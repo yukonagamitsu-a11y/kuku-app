@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-09.29';
+const APP_VERSION = '2026-10-09.30';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -237,9 +237,9 @@ function earn(a, b) {
 const lastPt = { x: innerWidth / 2, y: innerHeight / 2 };
 document.addEventListener('pointerdown', e => { lastPt.x = e.clientX; lastPt.y = e.clientY; }, true);
 function showEarn(v) {
-  const t = v >= 1 ? Math.round(v) : v;
+  const t = Math.round(SC.sum) - Math.round(SC.sum - v); // 合計が 1コイン ふえたときだけ「+1🪙」と見せる（小数は出さない）
   const fx = document.getElementById('fx');
-  if (fx && !reduced) {
+  if (t > 0 && fx && !reduced) {
     const d = document.createElement('div'); d.className = 'fx earn';
     d.textContent = `+${t}🪙`; d.style.left = (lastPt.x - 24) + 'px'; d.style.top = (lastPt.y - 30) + 'px';
     d.style.setProperty('--dx', '0px'); d.style.setProperty('--dy', '-70px'); d.style.setProperty('--rot', '0deg');
@@ -338,7 +338,7 @@ let selDans = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 function danPickerHTML() {
   const all = selDans.size === 9;
   return `<button class="dan-chip ${all ? 'on' : ''}" data-act="dan-all" lang="ja" translate="no">ぜんぶ</button>` +
-    [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button class="dan-chip ${!all && selDans.has(n) ? 'on' : ''}" data-act="dan-tog" data-n="${n}" lang="ja" translate="no">${n}のだん<small>🪙 ${danCoinAvg(n).toFixed(1)}</small></button>`).join('');
+    [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button class="dan-chip ${!all && selDans.has(n) ? 'on' : ''}" data-act="dan-tog" data-n="${n}" lang="ja" translate="no">${n}のだん<small>🪙×${Math.max(1, Math.round(danCoinAvg(n)))}</small></button>`).join('');
 }
 actions['dan-all'] = () => { selDans = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]); $('#picker').innerHTML = danPickerHTML(); };
 actions['dan-tog'] = el => {
