@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-09.23';
+const APP_VERSION = '2026-10-09.24';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -29,6 +29,7 @@ const defaultState = () => ({
   daily: { date: null, counts: {} },
   bonusDate: null,
   cocoSeen: null,
+  cocoDays: { date: null, count: 0 },
   myroom: { has: false, items: [], placed: {}, seen: false },
 });
 function defaultLang() { return /^ja/i.test(navigator.language || '') ? 'ja' : 'en'; }
@@ -360,11 +361,17 @@ const COCO_LOOKS = [ // かみの いろ・ツインテール・かおは いつ
   { outfit: 'o_princess', hat: 't_crown', shoes: 's_pink' },
 ];
 const COCO_FREQ = [['day', 'Every day', 1], ['3days', 'Every 3 days', 3], ['week', 'Every week', 7], ['off', 'Never', 0]];
+// アプリを ひらいた「ひ」を かぞえる（ひらかなかった ひは かぞえない）
+function touchCocoDay() {
+  const t = dateStr();
+  if (!S.cocoDays || typeof S.cocoDays.count !== 'number') S.cocoDays = { date: null, count: 0 };
+  if (S.cocoDays.date !== t) { S.cocoDays.date = t; S.cocoDays.count += 1; save(); }
+}
 function cocoLookIndex() {
   const f = COCO_FREQ.find(x => x[0] === (S.settings.cocoChange || '3days')) || COCO_FREQ[1], n = f[2];
   if (!n) return 0;
-  const d = new Date(), day = Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5);
-  return (Math.floor(day / n) * 4) % COCO_LOOKS.length; // 4とびで ぐるぐる（となりあう ふくが にない）
+  touchCocoDay();
+  return (Math.floor((S.cocoDays.count - 1) / n) * 4) % COCO_LOOKS.length; // 4とびで ぐるぐる（となりあう ふくが にない）
 }
 function cocoCfg() { return Object.assign({}, NPC.coco, COCO_LOOKS[cocoLookIndex()]); }
 
