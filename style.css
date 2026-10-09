@@ -336,3 +336,9 @@ html[lang="ja"] .modal p, html[lang="ja"] .modal h2, html[lang="ja"] .toast, htm
 @keyframes hopArc { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-70%) scale(1.1, .95); } }
 
 .lp.start span { display: none; }
+
+/* まんなかの おおきな ほめことば */
+.bigpraise { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; pointer-events: none; z-index: 8; font-weight: 900; font-size: clamp(44px, 10vmin, 92px); line-height: 1.1; color: #fff; padding: 0 12px;
+  -webkit-text-stroke: 10px #ff7fae; paint-order: stroke fill; text-shadow: 0 6px 0 rgba(224,112,156,.55); animation: bigpraise 1.15s ease-out both; }
+@keyframes bigpraise { 0% { opacity: 0; transform: scale(.55); } 18% { opacity: 1; transform: scale(1.12); } 40% { opacity: .95; transform: scale(1); } 100% { opacity: 0; transform: scale(1.04) translateY(-18px); } }
+@media (prefers-reduced-motion: reduce) { .bigpraise { animation: none !important; opacity: .9; } }

@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-09.33';
+const APP_VERSION = '2026-10-09.34';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -231,6 +231,12 @@ function earn(a, b) {
   if (n > DAILY_FULL) { v = Math.min(v, 1); SC.tired++; } // 一定回数をこえたら 1コインまで
   SC.sum += v; SC.base += base; SC.n++;
   showEarn(v);
+}
+// まんなかに おおきく ほめことば（すぐ はんとうめいに なって きえる）
+function bigPraise(box, text) {
+  box.querySelectorAll('.bigpraise').forEach(e => e.remove());
+  const d = document.createElement('div'); d.className = 'bigpraise'; d.textContent = text; box.appendChild(d);
+  setTimeout(() => d.remove(), 1200);
 }
 // 正解のたびに「+2🪙」を見せる（いま どれくらい ためたか わかる）
 const lastPt = { x: innerWidth / 2, y: innerHeight / 2 };
@@ -508,7 +514,7 @@ actions['dq-ans'] = el => {
     DQ.locked = true;
     if (!DQ.wrong) { earn(DQ.n, q.b); record(DQ.n, q.b, true); DQ.ok++; }
     $('#qbox').textContent = v; el.classList.add('right'); burstEl(el); Snd.play('ok');
-    $('#qsub').textContent = `${pick(OK_MSG)}　${kukuReading[DQ.n][q.b]}`;
+    $('#qsub').textContent = pick(OK_MSG);
     setTimeout(() => {
       if (DQ.dead) return;
       DQ.i++;
@@ -634,7 +640,7 @@ screens.balloon = () => {
       earn(a, bb);
       if (!G.wrong) record(a, bb, true);
       G.ok++; G.total++;
-      say(`${pick(OK_MSG)} ${kukuReading[a][bb]}`, 'ok'); cheerUp('cheer');
+      say(pick(OK_MSG), 'ok'); cheerUp('cheer');
       nextQ();
     } else {
       el.classList.remove('wob'); void el.offsetWidth; el.classList.add('wob'); setTimeout(() => el.classList.remove('wob'), 520);
@@ -769,7 +775,7 @@ screens.mole = () => {
       hide(i); burst(e.clientX, e.clientY); Snd.play('pop'); Snd.play('ok');
       earn(a, b);
       if (!MO.wrong) record(a, b, true);
-      MO.ok++; say(`${pick(OK_MSG)} ${kukuReading[a][b]}`, 'ok'); nextQ();
+      MO.ok++; bigPraise(field, pick(OK_MSG)); nextQ();
     } else {
       h.classList.remove('wob'); void h.offsetWidth; h.classList.add('wob'); setTimeout(() => h.classList.remove('wob'), 520);
       if (!MO.wrong) { MO.wrong = true; record(a, b, false); }
@@ -846,7 +852,8 @@ screens.frog = () => {
       Snd.play('pop'); Snd.play('ok'); faceNow('happy'); frog.classList.remove('hop'); void frog.offsetWidth; frog.classList.add('hop');
       place(frog, el._cx, el._cy - padSize() * .12, frogSize(), frogSize() * .9);
       FG.fx = el._cx; FG.fy = el._cy;
-      later(() => { burst(e.clientX, e.clientY); say(`${pick(OK_MSG)} ${kukuReading[a][b]}`, 'ok'); }, 450);
+      later(() => { burst(e.clientX, e.clientY); }, 450);
+      bigPraise(pond, pick(OK_MSG));
       if (FG.n >= FG.total) {
         later(() => { say('You made it across! 🏰', 'ok'); }, 700);
         later(() => finishSession({ title: 'Froggy Hop', ok: FG.ok, total: FG.total, coins: sessionCoins(FG.ok), retry: () => go('frog') }), 2000);
