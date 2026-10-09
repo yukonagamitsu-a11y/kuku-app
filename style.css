@@ -342,3 +342,6 @@ html[lang="ja"] .modal p, html[lang="ja"] .modal h2, html[lang="ja"] .toast, htm
   -webkit-text-stroke: 10px #ff7fae; paint-order: stroke fill; text-shadow: 0 6px 0 rgba(224,112,156,.55); animation: bigpraise 1.15s ease-out both; }
 @keyframes bigpraise { 0% { opacity: 0; transform: scale(.55); } 18% { opacity: 1; transform: scale(1.12); } 40% { opacity: .95; transform: scale(1); } 100% { opacity: 0; transform: scale(1.04) translateY(-18px); } }
 @media (prefers-reduced-motion: reduce) { .bigpraise { animation: none !important; opacity: .9; } }
+
+/* まちがえたときの やさしい メッセージ（まんなかに ちいさめ・ゆっくり きえる） */
+.bigpraise.soft { font-size: clamp(26px, 5.6vmin, 50px); -webkit-text-stroke: 9px #f0b44c; text-shadow: 0 5px 0 rgba(200,140,40,.45); padding: 0 6%; text-wrap: balance; word-break: keep-all; overflow-wrap: break-word; animation-duration: 1.65s; }

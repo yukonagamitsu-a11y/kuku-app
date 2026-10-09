@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-09.36';
+const APP_VERSION = '2026-10-09.37';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -233,10 +233,10 @@ function earn(a, b) {
   showEarn(v);
 }
 // まんなかに おおきく ほめことば（すぐ はんとうめいに なって きえる）
-function bigPraise(box, text) {
+function bigPraise(box, text, kind) {
   box.querySelectorAll('.bigpraise').forEach(e => e.remove());
-  const d = document.createElement('div'); d.className = 'bigpraise'; d.textContent = text; box.appendChild(d);
-  setTimeout(() => d.remove(), 1200);
+  const d = document.createElement('div'); d.className = 'bigpraise' + (kind ? ' ' + kind : ''); d.textContent = text; box.appendChild(d);
+  setTimeout(() => d.remove(), kind === 'soft' ? 1700 : 1200);
 }
 // 正解のたびに「+2🪙」を見せる（いま どれくらい ためたか わかる）
 const lastPt = { x: innerWidth / 2, y: innerHeight / 2 };
@@ -779,7 +779,7 @@ screens.mole = () => {
     } else {
       h.classList.remove('wob'); void h.offsetWidth; h.classList.add('wob'); setTimeout(() => h.classList.remove('wob'), 520);
       if (!MO.wrong) { MO.wrong = true; record(a, b, false); }
-      Snd.play('ng'); say(pick(NG_MSG), 'ng');
+      Snd.play('ng'); bigPraise(field, pick(NG_MSG), 'soft');
     }
   });
   cleanup = () => { MO.over = true; clearInterval(MO.iv); };
@@ -862,7 +862,7 @@ screens.frog = () => {
       later(() => { pan(); FG.pads.filter(p => p !== el).forEach(p => p.style.opacity = '0'); }, 800);
       later(() => { FG.pads.forEach(p => { if (p !== el) p.remove(); }); FG.pads = [el]; el.classList.add('start'); faceNow('normal'); nextQ(); }, 1350);
     } else {
-      el.classList.add('sink'); Snd.play('ng'); say(pick(NG_MSG), 'ng'); faceNow('sad'); later(() => faceNow('normal'), 900);
+      el.classList.add('sink'); Snd.play('ng'); bigPraise(pond, pick(NG_MSG), 'soft'); faceNow('sad'); later(() => faceNow('normal'), 900);
       if (!FG.wrong) { FG.wrong = true; record(a, b, false); }
     }
   });
