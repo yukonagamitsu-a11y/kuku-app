@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-09.51';
+const APP_VERSION = '2026-10-09.52';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -724,7 +724,15 @@ const moleArt = (v, vb) => `<svg class="moleimg" viewBox="${vb}" aria-hidden="tr
   <ellipse cx="34" cy="24" rx="9" ry="5" fill="#fff" opacity=".55" transform="rotate(-25 34 24)"/><circle cx="50" cy="30" r="5" fill="#fff6c2" stroke="#f0b400" stroke-width="2"/>
   ${v === null || v === undefined ? '' : `<rect x="18" y="94" width="64" height="40" rx="10" fill="#fff" stroke="#ff8fb8" stroke-width="5"/><text x="50" y="126" text-anchor="middle" font-size="34" font-weight="900" fill="#5A3E48" font-family="inherit">${v}</text>`}
 </svg>`;
-const moleSVG = v => moleArt(v, '0 0 100 140');
+const moleSVG = v => `<svg class="moleimg" viewBox="0 0 100 120" aria-hidden="true">
+  <rect x="14" y="30" width="72" height="80" rx="26" fill="#a9734a"/>
+  <rect x="26" y="62" width="48" height="36" rx="16" fill="#e8c7a4"/>
+  <rect x="26" y="40" width="10" height="14" rx="5" fill="#4a3340"/><rect x="64" y="40" width="10" height="14" rx="5" fill="#4a3340"/>
+  <circle cx="29" cy="44" r="2.6" fill="#fff"/><circle cx="67" cy="44" r="2.6" fill="#fff"/>
+  <rect x="40" y="52" width="20" height="13" rx="6" fill="#ff8fb8"/>
+  <circle cx="20" cy="58" r="6" fill="#ff9bb5" opacity=".6"/><circle cx="80" cy="58" r="6" fill="#ff9bb5" opacity=".6"/>
+  <rect x="18" y="72" width="64" height="44" rx="10" fill="#fff" stroke="#ff8fb8" stroke-width="5"/>
+  <text x="50" y="106" text-anchor="middle" font-size="34" font-weight="900" fill="#5A3E48" font-family="inherit">${v}</text></svg>`;
 const moleIcon = () => moleArt(null, '0 0 100 126');
 screens.mole = () => {
   app.innerHTML = frame({

@@ -365,7 +365,3 @@ html[lang="ja"] .modal p, html[lang="ja"] .modal h2, html[lang="ja"] .toast, htm
 
 /* 日本語のメニュー：ことばの とちゅうで 折り返さない（スペースの ところだけ） */
 html[lang="ja"] .menu .btn { word-break: keep-all; overflow-wrap: break-word; line-break: strict; text-wrap: balance; line-height: 1.2; }
-
-/* モグラ：ヘルメットまで ぜんぶ みえるように、あなの たかさに あわせる */
-.mole { width: auto !important; height: 80%; aspect-ratio: 100 / 140; max-width: 90%; bottom: 17%; }
-.moleimg { width: 100%; height: 100%; display: block; }
