@@ -31,6 +31,7 @@ const JA_EXACT = {
   'Back to learning': 'もういちど よむ',
   // あそぼう
   'Which times tables to play?': 'どの だんを あそぶ？', 'Pick a game!': 'ゲームを えらんでね！',
+  'Froggy Hop': 'ぴょんぴょんカエル', 'Hop to the right leaf': 'こたえの はっぱに ジャンプ', 'You made it across! 🏰': 'むこうぎしに ついたよ！ 🏰',
   'Balloon Pop': 'ふうせんわり', 'Tap the right balloon': 'こたえの ふうせんを タップ',
   'Sweet Shop': 'かわいいおみせやさん', 'Fill the orders': 'ちゅうもんを うけよう',
   'Whack-a-Mole': 'もぐらたたき', 'Tap the right mole': 'こたえの もぐらを タップ',
@@ -152,6 +153,7 @@ const JA_PATTERNS = [
   [/^(\d+×\d+＝\d+)\(missed (\d+)x\)$/, m => `${m[1]}（誤答 ${m[2]}回）`],
   [/^Daily play limit \(today: (\d+) min\)$/, m => `1日の利用時間の目安（今日: ${m[1]}分）`],
   [/^(\d+) min$/, m => `${m[1]}分`],
+  [/^([A-Za-z' ]+[!?]) (\S.*[ぁ-ん].*)$/, m => (jaTr(m[1]) !== null ? `${jaTr(m[1])} ${m[2]}` : null)],
   [/^(\d+) \/ (\d+) items collected$/, m => `${m[1]} / ${m[2]} こ あつまったよ`],
   [/^🔒 Buy (\d+) more room items$/, m => `🔒 あと ${m[1]}こ かざりを かうと ひらくよ`],
   [/^This round 🪙 (\d+)$/, m => `いまの ゲーム 🪙 ${m[1]}`],
@@ -163,7 +165,7 @@ const I18N = {
   tr(s) {
     const t = jaTr(s);
     if (t !== null) return t;
-    for (const [re, fn] of JA_PATTERNS) { const m = s.match(re); if (m) return fn(m); }
+    for (const [re, fn] of JA_PATTERNS) { const m = s.match(re); if (m) { const r = fn(m); if (r !== null) return r; } }
     const e = s.match(/^([^A-Za-z0-9\s]+)\s+(.+)$/); // 先頭が絵文字のとき
     if (e) { const r = this.tr(e[2]); if (r !== null) return e[1] + ' ' + r; }
     return null;

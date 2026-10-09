@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-09.31';
+const APP_VERSION = '2026-10-09.33';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -325,8 +325,8 @@ function frame({ title, back, body, home, mainCls = '' }) {
 function go(name, params) {
   if (cleanup) { try { cleanup(); } catch (e) { /* 無視 */ } cleanup = null; }
   Voice.cancel(); setWake(false);
-  if (['balloon', 'shopgame', 'mole'].includes(name)) resetCoins();
-  SC.live = ['balloon', 'shopgame', 'mole', 'test'].includes(name);
+  if (['balloon', 'shopgame', 'mole', 'frog'].includes(name)) resetCoins();
+  SC.live = ['balloon', 'shopgame', 'mole', 'frog', 'test'].includes(name);
   cur = name;
   screens[name](params || {});
   Voice.refresh();
@@ -538,12 +538,14 @@ screens.play = () => {
         <button class="btn pink" data-act="g-balloon"><span class="ico">🎈</span>Balloon Pop<small>Tap the right balloon</small></button>
         <button class="btn mint" data-act="g-shop"><span class="ico">🍪</span>Sweet Shop<small>Fill the orders</small></button>
         <button class="btn lav" data-act="g-mole"><span class="ico">🔨</span>Whack-a-Mole<small>Tap the right mole</small></button>
+        <button class="btn sky" data-act="g-frog"><span class="ico">🐸</span>Froggy Hop<small>Hop to the right leaf</small></button>
       </div>`,
   });
 };
 actions['g-balloon'] = () => guardPlay(() => go('balloon'));
 actions['g-shop'] = () => guardPlay(() => go('shopgame'));
 actions['g-mole'] = () => guardPlay(() => go('mole'));
+actions['g-frog'] = () => guardPlay(() => go('frog'));
 
 /* ---- ふうせんわり ---- */
 let G = null;
@@ -776,6 +778,89 @@ screens.mole = () => {
   });
   cleanup = () => { MO.over = true; clearInterval(MO.iv); };
   nextQ(); MO.iv = setInterval(tick, 100);
+};
+
+/* ---- ぴょんぴょんカエル ---- */
+let FG = null;
+const frogSVG = face => {
+  const eyes = face === 'sad'
+    ? '<circle cx="34" cy="26" r="11" fill="#fff"/><circle cx="66" cy="26" r="11" fill="#fff"/><circle cx="35" cy="29" r="5.5" fill="#4a3340"/><circle cx="65" cy="29" r="5.5" fill="#4a3340"/><path d="M24 14 L42 20 M76 14 L58 20" stroke="#4a3340" stroke-width="3" stroke-linecap="round"/>'
+    : '<circle cx="34" cy="26" r="12" fill="#fff"/><circle cx="66" cy="26" r="12" fill="#fff"/><circle cx="35" cy="27" r="6" fill="#4a3340"/><circle cx="65" cy="27" r="6" fill="#4a3340"/><circle cx="37" cy="24.5" r="2" fill="#fff"/><circle cx="67" cy="24.5" r="2" fill="#fff"/>';
+  const mouth = face === 'happy' ? '<path d="M36 56 Q50 72 64 56 Z" fill="#c0506b" stroke="#c0506b" stroke-width="3" stroke-linejoin="round"/>'
+    : face === 'sad' ? '<path d="M38 64 Q50 55 62 64" fill="none" stroke="#4a3340" stroke-width="3.5" stroke-linecap="round"/>'
+    : '<path d="M38 58 Q50 68 62 58" fill="none" stroke="#4a3340" stroke-width="3.5" stroke-linecap="round"/>';
+  return `<svg viewBox="0 0 100 90" aria-hidden="true"><ellipse cx="22" cy="80" rx="15" ry="8" fill="#5cbf6f"/><ellipse cx="78" cy="80" rx="15" ry="8" fill="#5cbf6f"/><rect x="14" y="22" width="72" height="58" rx="26" fill="#7fe08f"/><ellipse cx="50" cy="66" rx="24" ry="14" fill="#d9fbd9"/>${eyes}<circle cx="24" cy="50" r="6" fill="#ff9bb5" opacity=".65"/><circle cx="76" cy="50" r="6" fill="#ff9bb5" opacity=".65"/>${mouth}</svg>`;
+};
+const padSVG = '<svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="60" rx="46" ry="34" fill="#4faa63"/><ellipse cx="50" cy="52" rx="46" ry="34" fill="#8be29a"/><path d="M50 52 L97 30 L97 56 Z" fill="#9bd8ff"/><ellipse cx="50" cy="52" rx="34" ry="24" fill="none" stroke="#a9eeb5" stroke-width="3" opacity=".8"/></svg>';
+screens.frog = () => {
+  app.innerHTML = frame({
+    title: 'Froggy Hop', back: 'play', mainCls: 'fl',
+    body: `<div class="qbanner" id="fq"></div>
+      <div class="trail" id="trail">${Array.from({ length: 10 }, () => '<i></i>').join('')}<span class="goal">🏰</span></div>
+      <div class="pond" id="pond"><div class="world" id="world"></div></div>`,
+  });
+  setWake(true);
+  const pond = $('#pond'), world = $('#world');
+  FG = { n: 0, total: 10, ok: 0, q: null, last: null, wrong: false, locked: false, dead: false, W: 0, H: 0, fx: 0, fy: 0, pads: [], timers: [] };
+  const later = (fn, ms) => { const t = setTimeout(() => { if (!FG.dead && cur === 'frog') fn(); }, ms); FG.timers.push(t); };
+  const measure = () => { const r = pond.getBoundingClientRect(); FG.W = r.width; FG.H = r.height; };
+  measure();
+  const padSize = () => Math.max(70, Math.min(FG.H * .27, FG.W * .2, 140));
+  const frogSize = () => Math.max(60, Math.min(FG.H * .26, FG.W * .17, 120));
+  const frog = document.createElement('div'); frog.className = 'frog'; frog.style.setProperty('--fs', frogSize() + 'px'); frog.innerHTML = frogSVG('normal');
+  const place = (el, cx, cy, size, h) => { el.style.left = (cx - size / 2) + 'px'; el.style.top = (cy - (h || size) / 2) + 'px'; };
+  const pan = () => { world.style.transform = `translateX(${-(FG.fx - FG.W * .14)}px)`; };
+  const faceNow = f => { frog.innerHTML = frogSVG(f); };
+  // はじまりの はっぱ と カエル
+  FG.fx = FG.W * .14; FG.fy = FG.H * .5;
+  const start = document.createElement('div'); start.className = 'lp start'; start.style.setProperty('--s', padSize() + 'px'); start.innerHTML = padSVG; place(start, FG.fx, FG.fy, padSize()); world.appendChild(start); FG.pads.push(start);
+  world.appendChild(frog); place(frog, FG.fx, FG.fy - padSize() * .12, frogSize(), frogSize() * .9);
+  const dots = [...document.querySelectorAll('#trail i')];
+  const say = (txt, cls) => {
+    pond.querySelectorAll('.msg').forEach(m => m.remove());
+    const m = document.createElement('div'); m.className = 'msg ' + cls; m.textContent = txt; pond.appendChild(m);
+    setTimeout(() => m.remove(), 1500);
+  };
+  const nextQ = () => {
+    FG.q = pickQ(selDans.size ? [...selDans] : [1, 2, 3, 4, 5, 6, 7, 8, 9], FG.last); FG.last = qkey(FG.q.a, FG.q.b); FG.wrong = false;
+    const { a, b } = FG.q, ans = a * b;
+    $('#fq').textContent = `${a}×${b}＝？`;
+    const opts = shuffle([ans, ...choices(a, b).filter(v => v !== ans).slice(0, 2)]);
+    const lanes = shuffle([.2, .5, .8]), size = padSize(), px = FG.fx + FG.W * .42;
+    opts.forEach((v, i) => {
+      const el = document.createElement('div'); el.className = 'lp'; el.dataset.v = v; el.style.setProperty('--s', size + 'px'); el.style.animationDelay = (i * 90) + 'ms';
+      el.innerHTML = padSVG + `<span>${v}</span>`; place(el, px, FG.H * lanes[i], size); world.appendChild(el); FG.pads.push(el);
+      el._cx = px; el._cy = FG.H * lanes[i];
+    });
+    FG.locked = false;
+  };
+  pond.addEventListener('pointerdown', e => {
+    if (FG.dead || FG.locked) return;
+    if (e.pointerType === 'touch' && (e.width > 100 || e.height > 100)) return;
+    const el = e.target.closest('.lp'); if (!el || el.classList.contains('start') || el.classList.contains('sink')) return;
+    const { a, b } = FG.q, ans = a * b, v = +el.dataset.v;
+    if (v === ans) {
+      FG.locked = true; earn(a, b);
+      if (!FG.wrong) record(a, b, true);
+      FG.ok++; FG.n++; dots[FG.n - 1] && dots[FG.n - 1].classList.add('on');
+      Snd.play('pop'); Snd.play('ok'); faceNow('happy'); frog.classList.remove('hop'); void frog.offsetWidth; frog.classList.add('hop');
+      place(frog, el._cx, el._cy - padSize() * .12, frogSize(), frogSize() * .9);
+      FG.fx = el._cx; FG.fy = el._cy;
+      later(() => { burst(e.clientX, e.clientY); say(`${pick(OK_MSG)} ${kukuReading[a][b]}`, 'ok'); }, 450);
+      if (FG.n >= FG.total) {
+        later(() => { say('You made it across! 🏰', 'ok'); }, 700);
+        later(() => finishSession({ title: 'Froggy Hop', ok: FG.ok, total: FG.total, coins: sessionCoins(FG.ok), retry: () => go('frog') }), 2000);
+        return;
+      }
+      later(() => { pan(); FG.pads.filter(p => p !== el).forEach(p => p.style.opacity = '0'); }, 800);
+      later(() => { FG.pads.forEach(p => { if (p !== el) p.remove(); }); FG.pads = [el]; el.classList.add('start'); faceNow('normal'); nextQ(); }, 1350);
+    } else {
+      el.classList.add('sink'); Snd.play('ng'); say(pick(NG_MSG), 'ng'); faceNow('sad'); later(() => faceNow('normal'), 900);
+      if (!FG.wrong) { FG.wrong = true; record(a, b, false); }
+    }
+  });
+  cleanup = () => { FG.dead = true; FG.timers.forEach(clearTimeout); };
+  nextQ();
 };
 
 /* =============== ためしてみよう =============== */

@@ -315,3 +315,24 @@ html[lang="ja"] .modal p, html[lang="ja"] .modal h2, html[lang="ja"] .toast, htm
 /* ふきだし：おおきさ ぴったり ふへんに（もじが ながいと もじが ちいさくなる） */
 .bubble { width: min(94%, 540px); height: clamp(78px, 13vmin, 112px); display: flex; align-items: center; justify-content: center; padding: 6px 18px; line-height: 1.25; flex: none; }
 .shop-wrap .bubble { width: 100%; height: clamp(96px, 17vmin, 150px); }
+
+/* ぴょんぴょんカエル */
+.trail { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 2px 0 4px; flex: none; }
+.trail i { width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: inset 0 2px 0 #f2d3de; transition: background .3s, transform .3s; }
+.trail i.on { background: var(--mint); transform: scale(1.15); box-shadow: 0 2px 0 var(--mint-d); }
+.trail .goal { font-size: 28px; margin-left: 4px; }
+.pond { position: relative; flex: 1; min-height: 0; overflow: hidden; border-radius: 30px; background: radial-gradient(circle at 20% 80%, rgba(255,255,255,.5) 0 6px, transparent 7px), radial-gradient(circle at 70% 25%, rgba(255,255,255,.45) 0 5px, transparent 6px), radial-gradient(circle at 45% 55%, rgba(255,255,255,.35) 0 4px, transparent 5px), linear-gradient(#cdefff, #8fd0ff); box-shadow: inset 0 0 0 4px #fff, 0 5px 0 #f2d3de; touch-action: manipulation; }
+.world { position: absolute; left: 0; top: 0; width: 0; height: 0; transition: transform .5s ease-in-out; }
+.lp { position: absolute; width: var(--s); height: var(--s); display: grid; place-items: center; cursor: pointer; transition: opacity .35s, transform .25s; animation: padin .35s both; z-index: 1; }
+.lp svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.lp span { position: relative; font-weight: 900; font-size: calc(var(--s) * .36); color: #2c5a37; text-shadow: 0 2px 0 rgba(255,255,255,.7); margin-top: -4%; }
+.lp:not(.start):active { transform: scale(.93); }
+.lp.sink { opacity: .35; transform: scale(.82); pointer-events: none; }
+.lp.start { cursor: default; animation: none; }
+.frog { position: absolute; width: var(--fs); height: calc(var(--fs) * .9); transition: left .5s ease-in-out, top .5s ease-in-out; z-index: 3; pointer-events: none; }
+.frog svg { width: 100%; height: 100%; display: block; }
+.frog.hop svg { animation: hopArc .5s ease-in-out; }
+@keyframes padin { from { transform: scale(.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes hopArc { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-70%) scale(1.1, .95); } }
+
+.lp.start span { display: none; }
