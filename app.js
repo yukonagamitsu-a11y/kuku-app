@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-09.22';
+const APP_VERSION = '2026-10-09.23';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -348,16 +348,16 @@ actions['dan-tog'] = el => {
 };
 
 /* =============== ここちゃんの おきがえ（かってに ときどき かわる）=============== */
-const COCO_LOOKS = [ // かみがた・かみの いろ・かお・リボンは いつも おなじ。ふくと くつだけ かわる
-  {}, // いつもの ピンクの ワンピース
-  { outfit: 'o_sailor', shoes: 's_white' },
-  { outfit: 'o_overall', shoes: 's_red' },
-  { outfit: 'o_lav', shoes: 's_pink' },
-  { outfit: 'o_mint', shoes: 's_white' },
-  { outfit: 'o_lemon', shoes: 's_pink' },
-  { outfit: 'o_rainbow', shoes: 's_red' },
-  { outfit: 'o_berry', shoes: 's_boots' },
-  { outfit: 'o_princess', shoes: 's_pink' },
+const COCO_LOOKS = [ // かみの いろ・ツインテール・かおは いつも おなじ。ふく・くつ・アクセサリー（ぼうしなど）だけ かわる
+  {}, // いつもの ピンクの ワンピース＋リボン
+  { outfit: 'o_sailor', hat: 't_ribbon', shoes: 's_white' },
+  { outfit: 'o_overall', hat: 't_cap', shoes: 's_red' },
+  { outfit: 'o_lav', hat: 't_flower', shoes: 's_pink' },
+  { outfit: 'o_mint', hat: 't_cat', shoes: 's_white' },
+  { outfit: 'o_lemon', hat: 't_ribbon', shoes: 's_pink' },
+  { outfit: 'o_rainbow', hat: 't_beret', shoes: 's_red' },
+  { outfit: 'o_berry', hat: 't_flower', shoes: 's_boots' },
+  { outfit: 'o_princess', hat: 't_crown', shoes: 's_pink' },
 ];
 const COCO_FREQ = [['day', 'Every day', 1], ['3days', 'Every 3 days', 3], ['week', 'Every week', 7], ['off', 'Never', 0]];
 function cocoLookIndex() {
