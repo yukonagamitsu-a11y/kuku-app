@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-09.47';
+const APP_VERSION = '2026-10-09.48';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -382,6 +382,9 @@ function cocoCfg() { return Object.assign({}, NPC.coco, COCO_LOOKS[cocoLookIndex
 
 /* =============== ゲームの アイコン（アプリの なかで かいた かわいい え）=============== */
 const balloonIcon = () => `<svg viewBox="0 0 100 110" aria-hidden="true"><path d="M50 82 C44 92 56 98 50 108" fill="none" stroke="#c9a8b6" stroke-width="3" stroke-linecap="round"/><ellipse cx="50" cy="42" rx="33" ry="38" fill="#ffd84a" stroke="#fff" stroke-width="4"/><path d="M42 80 L58 80 L50 70Z" fill="#f0a800"/><ellipse cx="36" cy="24" rx="8" ry="13" fill="#fff" opacity=".6" transform="rotate(22 36 24)"/><circle cx="40" cy="46" r="3.6" fill="#5a3e48"/><circle cx="60" cy="46" r="3.6" fill="#5a3e48"/><circle cx="31" cy="54" r="5.5" fill="#ff8a65" opacity=".6"/><circle cx="69" cy="54" r="5.5" fill="#ff8a65" opacity=".6"/><path d="M42 55 Q50 63 58 55" fill="none" stroke="#5a3e48" stroke-width="3" stroke-linecap="round"/></svg>`;
+const bookIcon = () => `<svg viewBox="0 0 100 100" aria-hidden="true"><rect x="16" y="12" width="68" height="78" rx="10" fill="#3a86d6"/><rect x="26" y="12" width="58" height="78" rx="9" fill="#6fbfff"/><rect x="30" y="86" width="50" height="7" rx="3.5" fill="#fff"/><path d="M68 12 v26 l7 -6 l7 6 v-26z" fill="#ff8fb8"/><ellipse cx="38" cy="26" rx="5" ry="9" fill="#fff" opacity=".4"/><circle cx="46" cy="50" r="4.2" fill="#5a3e48"/><circle cx="66" cy="50" r="4.2" fill="#5a3e48"/><circle cx="40" cy="60" r="5.5" fill="#ff8fa8" opacity=".6"/><circle cx="72" cy="60" r="5.5" fill="#ff8fa8" opacity=".6"/><path d="M50 60 Q56 67 62 60" fill="none" stroke="#5a3e48" stroke-width="3.2" stroke-linecap="round"/></svg>`;
+const pencilIcon = () => `<svg viewBox="0 0 100 100" aria-hidden="true"><g transform="rotate(16 50 50)"><rect x="33" y="14" width="34" height="62" rx="5" fill="#ff7fae"/><rect x="33" y="14" width="34" height="62" rx="5" fill="none" stroke="#fff" stroke-width="3"/><rect x="33" y="22" width="34" height="8" fill="#d9d9e8"/><rect x="33" y="6" width="34" height="16" rx="7" fill="#ffc2d8"/><polygon points="33,76 67,76 50,97" fill="#ffe0b3"/><polygon points="43,89 57,89 50,97" fill="#5a3e48"/><ellipse cx="40" cy="46" rx="3" ry="11" fill="#fff" opacity=".45"/><circle cx="44" cy="48" r="3.6" fill="#5a3e48"/><circle cx="57" cy="48" r="3.6" fill="#5a3e48"/><circle cx="39" cy="56" r="4.6" fill="#ff5d8f" opacity=".5"/><circle cx="62" cy="56" r="4.6" fill="#ff5d8f" opacity=".5"/><path d="M45 56 Q50.5 62 56 56" fill="none" stroke="#5a3e48" stroke-width="3" stroke-linecap="round"/></g></svg>`;
+const dressIcon = () => `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M38 12 L43 32 M62 12 L57 32" stroke="#ff5d9b" stroke-width="5" stroke-linecap="round" fill="none"/><path d="M35 30 Q50 38 65 30 L69 52 L90 92 Q50 102 10 92 L31 52 Z" fill="#ff8fb8" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><rect x="31" y="50" width="38" height="7" fill="#fff"/><path d="M50 53 L40 46 L40 60 Z M50 53 L60 46 L60 60 Z" fill="#ffd84a"/><circle cx="50" cy="53" r="4" fill="#ffb300"/><circle cx="26" cy="78" r="4" fill="#fff" opacity=".85"/><circle cx="44" cy="84" r="4" fill="#fff" opacity=".85"/><circle cx="62" cy="76" r="4" fill="#fff" opacity=".85"/><circle cx="76" cy="85" r="4" fill="#fff" opacity=".85"/><path transform="translate(50 36) scale(.55)" d="M0 10 C-12 0 -12 -10 -5 -11 C-2 -11.5 0 -9 0 -7 C0 -9 2 -11.5 5 -11 C12 -10 12 0 0 10Z" fill="#fff"/></svg>`;
 const cupcakeIcon = () => `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M22 50 L78 50 L70 92 Q50 98 30 92 Z" fill="#f5b87a"/><path d="M34 52 L38 94 M50 52 L50 96 M66 52 L62 94" stroke="#e39a55" stroke-width="3" stroke-linecap="round"/><path d="M16 54 Q12 34 32 33 Q34 16 52 18 Q70 16 72 33 Q90 34 84 54 Z" fill="#ff9fc4"/><ellipse cx="38" cy="30" rx="7" ry="4" fill="#fff" opacity=".55"/><circle cx="52" cy="13" r="8" fill="#ff4d6d"/><path d="M52 6 q4 -6 9 -5" fill="none" stroke="#5cc27a" stroke-width="3" stroke-linecap="round"/><circle cx="40" cy="42" r="3.4" fill="#5a3e48"/><circle cx="62" cy="42" r="3.4" fill="#5a3e48"/><path d="M45 47 Q51 53 57 47" fill="none" stroke="#5a3e48" stroke-width="3" stroke-linecap="round"/></svg>`;
 
 /* =============== ホーム =============== */
@@ -406,10 +409,10 @@ screens.home = () => {
         </div>
       </div>
       <nav class="menu">
-        <button class="btn pink" data-act="go" data-to="learn"><span class="ico">📖</span>Learn<small>Chant and remember</small></button>
+        <button class="btn pink" data-act="go" data-to="learn"><span class="ico ico-svg">${bookIcon()}</span>Learn<small>Chant and remember</small></button>
         <button class="btn mint" data-act="go" data-to="play"><span class="ico ico-svg">${balloonIcon()}</span>Play<small>Practice with games</small></button>
-        <button class="btn lemon" data-act="go" data-to="testsel"><span class="ico">✏️</span>Test<small>10-question challenge</small></button>
-        <button class="btn lav" data-act="go" data-to="closet"><span class="ico">👗</span>Dress-Up Room<small>Rewards and outfits</small></button>
+        <button class="btn lemon" data-act="go" data-to="testsel"><span class="ico ico-svg">${pencilIcon()}</span>Test<small>10-question challenge</small></button>
+        <button class="btn lav" data-act="go" data-to="closet"><span class="ico ico-svg">${dressIcon()}</span>Dress-Up Room<small>Rewards and outfits</small></button>
       </nav></div>`,
   });
   S.seenHello = true; save();
