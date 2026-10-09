@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-08.16';
+const APP_VERSION = '2026-10-09.17';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -627,7 +627,7 @@ function nextCustomer() {
     title: `Sweet Shop ${g.n + 1}/${g.total}`, back: 'play',
     body: `<div class="cols shop-wrap">
       <div class="side"><div class="bubble" id="sbub">"I'd like ${a} ${g.good.name} in each bag. ${b} bags, please!"</div>
-        <div class="char" id="cust" style="width:min(220px,60%)">${avatarSVG(NPC[g.cust], { face: 'normal' })}</div></div>
+        <div class="char" id="cust" style="width:min(220px,70%)">${avatarSVG(NPC[g.cust], { face: 'normal' })}</div></div>
       <div class="panel" style="display:flex;flex-direction:column;gap:12px">
         <div class="counter" id="counter"><span style="align-self:center;color:var(--ink-soft);font-weight:700">${g.good.e} will go here</span></div>
         <div class="section-title">${a} in each bag × ${b} bags → How many in all?</div>
@@ -908,6 +908,10 @@ function gachaHTML() {
 }
 screens.closet = p => {
   if (p && p.tab) C.tab = p.tab;
+  let justGranted = false; // 6わり そろったら、シンプルな おへやを むりょうで プレゼント
+  if (roomProgress().ok && !S.myroom.has) {
+    S.myroom.has = true; S.myroom.items = MR_DEFAULT.slice(); S.myroom.placed = { wall: 'w_cream', floor: 'f_wood' }; save(); justGranted = true;
+  }
   const tabs = [['wear', '👗 Dress Up'], ['shop', '🛍️ Shop'], ['gacha', '🎁 Capsules'], ['zukan', '📚 Collection'], ['myroom', '🏡 My Room']];
   let content;
   if (C.tab === 'gacha') content = gachaHTML();
@@ -925,9 +929,9 @@ screens.closet = p => {
   });
   if (prev) { const np = $('#cpanel'); if (np) np.scrollTop = top; }
   const nc = $('.cats'); if (nc) { nc.scrollLeft = catsLeft; const on = nc.querySelector('.cat.on'); if (on) { const l = on.offsetLeft, r = l + on.offsetWidth; if (l < nc.scrollLeft) nc.scrollLeft = l - 8; else if (r > nc.scrollLeft + nc.clientWidth) nc.scrollLeft = r - nc.clientWidth + 8; } }
-  if (roomProgress().ok && !S.myroom.seen) { // はじめて 8わり そろったとき
-    S.myroom.seen = true; save();
-    setTimeout(() => modal({ title: '🏡 My Room is unlocked!', html: '<p>You collected 60% of the items!<br>Open the My Room tab to get your own room.</p>', buttons: [{ label: 'Go!', cls: 'pink' }] }).then(() => { C.tab = 'myroom'; go('closet'); }), 300);
+  if (justGranted) {
+    Snd.play('fan'); confetti();
+    setTimeout(() => modal({ title: '🏡 Your own room is ready!', html: "<p>You collected 70% of the items!<br>Here is your very own room. It's free!</p>", buttons: [{ label: 'Go!', cls: 'pink' }] }).then(() => { C.tab = 'myroom'; go('closet'); }), 300);
   }
 };
 
@@ -940,8 +944,7 @@ function roomProgress() {
 const mrBought = () => S.myroom.items.filter(id => !MR_DEFAULT.includes(id)).length;
 function myRoomHTML() {
   const u = roomProgress();
-  if (!u.ok) return `<div class="mr-lock"><div class="mr-ico">🔒🏡</div><h2>My Room</h2><p>Collect 60% of the items to unlock My Room!</p><div class="bar big"><i style="width:${Math.min(100, u.owned / u.need * 100)}%"></i></div><p><b>${u.owned} / ${u.need} items collected</b></p></div>`;
-  if (!S.myroom.has) return `<div class="mr-lock"><div class="mr-ico">🏡✨</div><h2>My Room is open!</h2><p>Buy your very own room and decorate it.</p><button class="btn pink" style="min-height:84px;font-size:30px" data-act="mr-room-buy">Buy a room 🪙 ${ROOM_PRICE}</button></div>`;
+  if (!S.myroom.has) return `<div class="mr-lock"><div class="mr-ico">🔒🏡</div><h2>My Room</h2><p>Collect 70% of the items to get your own room!</p><div class="bar big"><i style="width:${Math.min(100, u.owned / u.need * 100)}%"></i></div><p><b>${u.owned} / ${u.need} items collected</b></p></div>`;
   const cat = MRC.cat, cdef = MR_CATS.find(c => c.id === cat), placed = S.myroom.placed, bought = mrBought();
   let cells = '';
   if (cdef.optional) cells += `<button class="cell ${!placed[cat] ? 'eq' : ''}" data-act="mr-none" data-c="${cat}"><div class="tb" style="font-size:40px">🚫</div>None</button>`;
@@ -966,13 +969,6 @@ actions['mr-buy'] = async el => {
   if (!yes || S.coins < it.price) return;
   S.coins -= it.price; S.myroom.items.push(it.id); S.myroom.placed[it.slot] = it.id; save();
   Snd.play('coin'); confetti(); toast('Placed in your room!'); go('closet');
-};
-actions['mr-room-buy'] = async () => {
-  if (S.coins < ROOM_PRICE) { toast('Not enough coins. Play to earn more!'); return; }
-  const yes = await confirmDialog('Buy a room', `<p>Buy your room for 🪙 ${ROOM_PRICE}?</p>`, 'Buy!', 'Cancel');
-  if (!yes || S.coins < ROOM_PRICE) return;
-  S.coins -= ROOM_PRICE; S.myroom.has = true; S.myroom.items = MR_DEFAULT.slice(); S.myroom.placed = { wall: 'w_cream', floor: 'f_wood' };
-  save(); Snd.play('fan'); confetti(); toast('You bought a room!'); go('closet');
 };
 actions.tab = el => { C.tab = el.dataset.t; go('closet'); };
 actions.cat = el => { C.cat = el.dataset.c; go('closet'); };
@@ -1017,7 +1013,7 @@ screens.parent = () => {
   for (let d = 1; d <= 9; d++) {
     let m = 0, at = 0, co = 0;
     for (let b = 1; b <= 9; b++) { const k = qkey(d, b); m += S.mastery[k] || 0; at += S.attempts[k] || 0; co += S.correct[k] || 0; }
-    rows.push(`<div class="bar-row"><span class="lbl">${d}のだん</span><div class="bar"><i style="width:${m / 27 * 100}%"></i></div><span class="val">${at ? `${Math.round(co / at * 100)}% correct (${at} tries)` : 'Not yet'}</span></div>`);
+    rows.push(`<div class="bar-row"><span class="lbl">${d}の段</span><div class="bar"><i style="width:${m / 27 * 100}%"></i></div><span class="val">${at ? `${Math.round(co / at * 100)}% correct (${at} tries)` : 'Not yet'}</span></div>`);
   }
   const mins = S.today.date === dateStr() ? Math.floor(S.today.seconds / 60) : 0;
   const lim = S.settings.dailyLimitMinutes;

@@ -67,8 +67,8 @@ const JA_EXACT = {
   'Tip: bigger times tables earn more coins!': 'ヒント：おおきい だんほど コインが たくさん もらえるよ！', '💡 Tip: bigger times tables earn more coins!': '💡 ヒント：おおきい だんほど コインが たくさん もらえるよ！',
   '🌱 You practiced these a lot today, so coins are lower. Try other times tables!': '🌱 きょうは おなじ もんだいを たくさん やったから、コインが すこし へったよ。ほかの だんも やってみよう！',
   'My Room': 'マイルーム', 'My Room is open!': 'マイルームが ひらいたよ！', 'Buy your very own room and decorate it.': 'じぶんだけの おへやを かって、かざりつけよう！',
-  'Collect 60% of the items to unlock My Room!': 'アイテムを 6わり あつめると マイルームが ひらくよ！',
-  'My Room is unlocked!': 'マイルームが ひらいたよ！', 'You collected 60% of the items!': 'アイテムを 6わり あつめたね！', 'Open the My Room tab to get your own room.': 'マイルームの タブで じぶんの おへやを かおう！', 'Go!': 'いってみる！',
+  'Collect 70% of the items to get your own room!': 'アイテムを 7わり あつめると じぶんの おへやが もらえるよ！',
+  'My Room is unlocked!': 'マイルームが ひらいたよ！', 'You collected 70% of the items!': 'アイテムを 7わり あつめたね！', 'Open the My Room tab to get your own room.': 'マイルームの タブで じぶんの おへやを かおう！', 'Go!': 'いってみる！',
   'Buy a room': 'おへやを かう', 'Placed in your room!': 'おへやに かざったよ！', 'You bought a room!': 'おへやを てにいれたよ！',
   Wallpaper: 'かべがみ', Floor: 'ゆか', Bed: 'ベッド', Desk: 'つくえ', Shelf: 'たな', Window: 'まど', Poster: 'ポスター', Rug: 'ラグ', Ceiling: 'てんじょう', Corner: 'すみっこ',
   'Cream Wall': 'クリームの かべ', 'Pink Stripes': 'ピンクの しましま', 'Mint Dots': 'ミントの みずたま', 'Cloudy Sky': 'くものある そら', 'Starry Lavender': 'ほしの ラベンダー', 'Night Sky': 'よぞら',
@@ -98,6 +98,22 @@ const JA_EXACT = {
   'Window & Curtains': 'まどとカーテン', 'Star Garland': 'ほしのガーランド', 'Flower Pot': 'おはなのうえき', 'Rainbow Poster': 'にじのポスター', 'Starry Night Room': 'ほしぞらのおへや',
   Hairstyle: 'かみがた', 'Hair Color': 'かみのいろ', Outfit: 'ふく', Shoes: 'くつ', Hats: 'ぼうし', Extras: 'アクセ', Pets: 'ペット', Room: 'おへや',
 };
+// 保護者メニューは大人向け（漢字まじり）
+Object.assign(JA_EXACT, {
+  'For Parents': '保護者メニュー',
+  '📊 Progress by times table (bar = how well remembered)': '📊 段ごとの様子（バー＝定着度）',
+  '💪 Top 5 tricky problems': '💪 苦手な九九 トップ5', 'None yet': 'まだありません', 'Not yet': 'まだ',
+  '⚙️ Settings': '⚙️ 設定', 'Player name': '名前', Edit: '変更', Language: '言語',
+  'Sound effects': '効果音', 'Voice reading': '読み上げ（音声）', 'Daily play limit': '1日の利用時間の目安',
+  '🗑️ Data': '🗑️ データ', 'Erase all progress': 'すべての記録を消去', Reset: 'リセット',
+  'Progress is saved only on this device and is never sent anywhere.': '記録はこの端末の中だけに保存され、外部には送信されません。',
+  'Erase progress?': '記録を消去しますか？', 'Coins and items will be deleted too.': 'コインやアイテムもすべて消えます。',
+  Next: '次へ', 'Are you sure?': '本当に消去しますか？', 'This cannot be undone.': '元に戻せません。',
+  Erase: '消去', 'Progress erased': '記録を消去しました', 'Name saved!': '名前を保存しました',
+  'Grown-ups: press and hold to open': '保護者の方は、長押しで開きます',
+  'Your own room is ready!': 'じぶんだけの おへやが できたよ！',
+  "Here is your very own room. It's free!": 'おへやを プレゼント！ おかねは いらないよ。',
+});
 const JA_GOODS = { cookies: 'クッキー', candies: 'あめ', strawberries: 'いちご', cupcakes: 'ケーキ', apples: 'りんご', tangerines: 'みかん', cherries: 'さくらんぼ', donuts: 'ドーナツ' };
 
 function jaTr(s) {
@@ -129,13 +145,11 @@ const JA_PATTERNS = [
   [/^Got a duplicate\? You get 🪙 (\d+) back!$/, m => `かぶっても だいじょうぶ！ 🪙 ${m[1]}こ もどるよ`],
   [/^Buy for 🪙 (\d+)\?$/, m => `🪙 ${m[1]}こで かう？`],
   [/^Duplicate! 🪙 (\d+) back to you$/, m => `かぶったから 🪙 ${m[1]}こ もどるよ`],
-  [/^(\d+)% correct \((\d+) tries\)$/, m => `せいかい ${m[1]}%（${m[2]}かい）`],
-  [/^(\d+×\d+＝\d+)\(missed (\d+)x\)$/, m => `${m[1]}（まちがい ${m[2]}かい）`],
-  [/^Daily play limit \(today: (\d+) min\)$/, m => `1にちの あそぶ めやす（きょう ${m[1]}ふん）`],
-  [/^(\d+) min$/, m => `${m[1]}ふん`],
+  [/^(\d+)% correct \((\d+) tries\)$/, m => `正答率 ${m[1]}%（${m[2]}回）`],
+  [/^(\d+×\d+＝\d+)\(missed (\d+)x\)$/, m => `${m[1]}（誤答 ${m[2]}回）`],
+  [/^Daily play limit \(today: (\d+) min\)$/, m => `1日の利用時間の目安（今日: ${m[1]}分）`],
+  [/^(\d+) min$/, m => `${m[1]}分`],
   [/^(\d+) \/ (\d+) items collected$/, m => `${m[1]} / ${m[2]} こ あつまったよ`],
-  [/^Buy a room 🪙 (\d+)$/, m => `おへやを かう 🪙 ${m[1]}`],
-  [/^Buy your room for 🪙 (\d+)\?$/, m => `🪙 ${m[1]}こで おへやを かう？`],
   [/^🔒 Buy (\d+) more room items$/, m => `🔒 あと ${m[1]}こ かざりを かうと ひらくよ`],
   [/^This round 🪙 (\d+)$/, m => `いまの ゲーム 🪙 ${m[1]}`],
   [/^🎁 Daily bonus \+(\d+) \(included\)$/, m => `🎁 きょうの さいしょの ボーナス +${m[1]}（ふくむ）`],
