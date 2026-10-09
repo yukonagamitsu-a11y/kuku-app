@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-08.14';
+const APP_VERSION = '2026-10-08.15';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -915,6 +915,7 @@ screens.closet = p => {
   else if (C.tab === 'myroom') content = myRoomHTML();
   else content = `<div class="cats">${CATS.map(c => `<button class="cat ${C.cat === c.id ? 'on' : ''}" data-act="cat" data-c="${c.id}">${c.icon} ${c.name}</button>`).join('')}</div>${closetGrid()}`;
   const prev = $('#cpanel'), top = prev ? prev.scrollTop : 0;
+  const prevCats = $('.cats'), catsLeft = prevCats ? prevCats.scrollLeft : 0; // カテゴリの よこスクロールの いち
   app.innerHTML = frame({
     title: 'Dress-Up Room', back: 'home',
     body: `<div class="cols ${S.myroom.has ? 'roomy' : ''}"><div class="side">${S.myroom.has ? myRoomSVG(S.avatar, S.myroom, 'happy') : sceneSVG(S.avatar, { face: 'happy' })}</div>
@@ -923,6 +924,7 @@ screens.closet = p => {
         <div class="panel" id="cpanel" style="flex:1">${content}</div></div></div>`,
   });
   if (prev) { const np = $('#cpanel'); if (np) np.scrollTop = top; }
+  const nc = $('.cats'); if (nc) { nc.scrollLeft = catsLeft; const on = nc.querySelector('.cat.on'); if (on) { const l = on.offsetLeft, r = l + on.offsetWidth; if (l < nc.scrollLeft) nc.scrollLeft = l - 8; else if (r > nc.scrollLeft + nc.clientWidth) nc.scrollLeft = r - nc.clientWidth + 8; } }
   if (roomProgress().ok && !S.myroom.seen) { // はじめて 8わり そろったとき
     S.myroom.seen = true; save();
     setTimeout(() => modal({ title: '🏡 My Room is unlocked!', html: '<p>You collected 60% of the items!<br>Open the My Room tab to get your own room.</p>', buttons: [{ label: 'Go!', cls: 'pink' }] }).then(() => { C.tab = 'myroom'; go('closet'); }), 300);
