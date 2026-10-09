@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-09.44';
+const APP_VERSION = '2026-10-09.47';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -380,6 +380,10 @@ function cocoLookIndex() {
 }
 function cocoCfg() { return Object.assign({}, NPC.coco, COCO_LOOKS[cocoLookIndex()]); }
 
+/* =============== ゲームの アイコン（アプリの なかで かいた かわいい え）=============== */
+const balloonIcon = () => `<svg viewBox="0 0 100 110" aria-hidden="true"><path d="M50 82 C44 92 56 98 50 108" fill="none" stroke="#c9a8b6" stroke-width="3" stroke-linecap="round"/><ellipse cx="50" cy="42" rx="33" ry="38" fill="#ffd84a" stroke="#fff" stroke-width="4"/><path d="M42 80 L58 80 L50 70Z" fill="#f0a800"/><ellipse cx="36" cy="24" rx="8" ry="13" fill="#fff" opacity=".6" transform="rotate(22 36 24)"/><circle cx="40" cy="46" r="3.6" fill="#5a3e48"/><circle cx="60" cy="46" r="3.6" fill="#5a3e48"/><circle cx="31" cy="54" r="5.5" fill="#ff8a65" opacity=".6"/><circle cx="69" cy="54" r="5.5" fill="#ff8a65" opacity=".6"/><path d="M42 55 Q50 63 58 55" fill="none" stroke="#5a3e48" stroke-width="3" stroke-linecap="round"/></svg>`;
+const cupcakeIcon = () => `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M22 50 L78 50 L70 92 Q50 98 30 92 Z" fill="#f5b87a"/><path d="M34 52 L38 94 M50 52 L50 96 M66 52 L62 94" stroke="#e39a55" stroke-width="3" stroke-linecap="round"/><path d="M16 54 Q12 34 32 33 Q34 16 52 18 Q70 16 72 33 Q90 34 84 54 Z" fill="#ff9fc4"/><ellipse cx="38" cy="30" rx="7" ry="4" fill="#fff" opacity=".55"/><circle cx="52" cy="13" r="8" fill="#ff4d6d"/><path d="M52 6 q4 -6 9 -5" fill="none" stroke="#5cc27a" stroke-width="3" stroke-linecap="round"/><circle cx="40" cy="42" r="3.4" fill="#5a3e48"/><circle cx="62" cy="42" r="3.4" fill="#5a3e48"/><path d="M45 47 Q51 53 57 47" fill="none" stroke="#5a3e48" stroke-width="3" stroke-linecap="round"/></svg>`;
+
 /* =============== ホーム =============== */
 screens.home = () => {
   let hello;
@@ -403,7 +407,7 @@ screens.home = () => {
       </div>
       <nav class="menu">
         <button class="btn pink" data-act="go" data-to="learn"><span class="ico">📖</span>Learn<small>Chant and remember</small></button>
-        <button class="btn mint" data-act="go" data-to="play"><span class="ico">🎈</span>Play<small>Practice with games</small></button>
+        <button class="btn mint" data-act="go" data-to="play"><span class="ico ico-svg">${balloonIcon()}</span>Play<small>Practice with games</small></button>
         <button class="btn lemon" data-act="go" data-to="testsel"><span class="ico">✏️</span>Test<small>10-question challenge</small></button>
         <button class="btn lav" data-act="go" data-to="closet"><span class="ico">👗</span>Dress-Up Room<small>Rewards and outfits</small></button>
       </nav></div>`,
@@ -541,9 +545,9 @@ screens.play = () => {
     body: `<p class="section-title">Which times tables to play?</p><div class="dan-picker" id="picker">${danPickerHTML()}</div>
       <p class="section-title">Pick a game!</p>
       <div class="menu" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:8px">
-        <button class="btn pink" data-act="g-balloon"><span class="ico">🎈</span>Balloon Pop<small>Tap the right balloon</small></button>
-        <button class="btn mint" data-act="g-shop"><span class="ico">🍪</span>Sweet Shop<small>Fill the orders</small></button>
-        <button class="btn lav" data-act="g-mole"><span class="ico">🔨</span>Whack-a-Mole<small>Tap the right mole</small></button>
+        <button class="btn pink" data-act="g-balloon"><span class="ico ico-svg">${balloonIcon()}</span>Balloon Pop<small>Tap the right balloon</small></button>
+        <button class="btn mint" data-act="g-shop"><span class="ico ico-svg">${cupcakeIcon()}</span>Sweet Shop<small>Fill the orders</small></button>
+        <button class="btn lav" data-act="g-mole"><span class="ico ico-svg">${moleSVG('?')}</span>Whack-a-Mole<small>Tap the right mole</small></button>
         <button class="btn sky" data-act="g-frog"><span class="ico ico-svg">${frogSVG('happy')}</span>Froggy Hop<small>Hop to the right leaf</small></button>
       </div>`,
   });
