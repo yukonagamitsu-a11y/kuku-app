@@ -2,7 +2,7 @@
 'use strict';
 
 const ROOM_UNLOCK = 0.6;      // 集めた割合（ショップ・ガチャで手に入るアイテム）
-const ROOM_PRICE = 150;
+const ROOM_PRICE = 100;
 const MR_TIER_NEED = { 1: 0, 2: 6, 3: 14 }; // その段階の家具を買うために必要な「買った家具の数」
 const MR_DEFAULT = ['w_cream', 'f_wood'];
 const MR_CATS = [
