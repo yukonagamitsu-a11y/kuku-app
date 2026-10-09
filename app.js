@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-09.37';
+const APP_VERSION = '2026-10-09.43';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -236,7 +236,7 @@ function earn(a, b) {
 function bigPraise(box, text, kind) {
   box.querySelectorAll('.bigpraise').forEach(e => e.remove());
   const d = document.createElement('div'); d.className = 'bigpraise' + (kind ? ' ' + kind : ''); d.textContent = text; box.appendChild(d);
-  setTimeout(() => d.remove(), kind === 'soft' ? 1700 : 1200);
+  setTimeout(() => d.remove(), kind === 'goal' ? 3100 : kind === 'soft' ? 1700 : 1200);
 }
 // 正解のたびに「+2🪙」を見せる（いま どれくらい ためたか わかる）
 const lastPt = { x: innerWidth / 2, y: innerHeight / 2 };
@@ -802,7 +802,7 @@ screens.frog = () => {
   app.innerHTML = frame({
     title: 'Froggy Hop', back: 'play', mainCls: 'fl',
     body: `<div class="qbanner" id="fq"></div>
-      <div class="trail" id="trail">${Array.from({ length: 10 }, () => '<i></i>').join('')}<span class="goal">🏰</span></div>
+      <div class="trail" id="trail">${Array.from({ length: 10 }, () => '<i></i>').join('')}<span class="goal">🏝️</span></div>
       <div class="pond" id="pond"><div class="world" id="world"></div></div>`,
   });
   setWake(true);
@@ -817,10 +817,15 @@ screens.frog = () => {
   const place = (el, cx, cy, size, h) => { el.style.left = (cx - size / 2) + 'px'; el.style.top = (cy - (h || size) / 2) + 'px'; };
   const pan = () => { world.style.transform = `translateX(${-(FG.fx - FG.W * .14)}px)`; };
   const faceNow = f => { frog.innerHTML = frogSVG(f); };
-  // はじまりの はっぱ と カエル
-  FG.fx = FG.W * .14; FG.fy = FG.H * .5;
-  const start = document.createElement('div'); start.className = 'lp start'; start.style.setProperty('--s', padSize() + 'px'); start.innerHTML = padSVG; place(start, FG.fx, FG.fy, padSize()); world.appendChild(start); FG.pads.push(start);
-  world.appendChild(frog); place(frog, FG.fx, FG.fy - padSize() * .12, frogSize(), frogSize() * .9);
+  // はじまりの はっぱ と カエル（ばしょは あとで 測りなおして おきなおす）
+  const start = document.createElement('div'); start.className = 'lp start'; start.innerHTML = padSVG; world.appendChild(start); FG.pads.push(start);
+  world.appendChild(frog);
+  const layoutStart = () => {
+    measure(); FG.fx = FG.W * .14; FG.fy = FG.H * .5;
+    start.style.setProperty('--s', padSize() + 'px'); place(start, FG.fx, FG.fy, padSize());
+    frog.style.setProperty('--fs', frogSize() + 'px'); place(frog, FG.fx, FG.fy - padSize() * .12, frogSize(), frogSize() * .9);
+  };
+  layoutStart();
   const dots = [...document.querySelectorAll('#trail i')];
   const say = (txt, cls) => {
     pond.querySelectorAll('.msg').forEach(m => m.remove());
@@ -828,6 +833,7 @@ screens.frog = () => {
     setTimeout(() => m.remove(), 1500);
   };
   const nextQ = () => {
+    measure();
     FG.q = pickQ(selDans.size ? [...selDans] : [1, 2, 3, 4, 5, 6, 7, 8, 9], FG.last); FG.last = qkey(FG.q.a, FG.q.b); FG.wrong = false;
     const { a, b } = FG.q, ans = a * b;
     $('#fq').textContent = `${a}×${b}＝？`;
@@ -855,11 +861,27 @@ screens.frog = () => {
       later(() => { burst(e.clientX, e.clientY); }, 450);
       bigPraise(pond, pick(OK_MSG));
       if (FG.n >= FG.total) {
-        later(() => { say('You made it across! 🏰', 'ok'); }, 700);
-        later(() => finishSession({ title: 'Froggy Hop', ok: FG.ok, total: FG.total, coins: sessionCoins(FG.ok), retry: () => go('frog') }), 2000);
+        // むこうぎしに つく：ここちゃんが まっている
+        later(() => {
+          measure(); pan(); FG.pads.forEach(p => { p.style.animation = 'none'; p.style.opacity = '0'; });
+          const sw = Math.min(FG.W * .5, 420), sh = Math.min(FG.H * .6, sw * .95), sl = FG.fx + FG.W * .5 - sw / 2, st = FG.H * .97 - sh;
+          const shore = document.createElement('div'); shore.className = 'shore';
+          shore.style.cssText = `left:${sl}px;top:${st}px;width:${sw}px;height:${sh}px`;
+          shore.innerHTML = `<div class="sand"></div><span class="palm">🌴</span><div class="coco">${avatarSVG(cocoCfg(), { face: 'cheer', cls: 'jump' })}</div>`;
+          world.appendChild(shore);
+          Snd.play('fan'); confetti();
+          bigPraise(pond, 'You made it to the other shore!', 'goal');
+          // カエルも ここちゃんの いる しまに ジャンプして となりに ならぶ
+          later(() => {
+            frog.classList.remove('hop'); void frog.offsetWidth; frog.classList.add('hop'); Snd.play('pop');
+            faceNow('happy'); place(frog, sl + sw * .22, st + sh * .8 - frogSize() * .2, frogSize(), frogSize() * .9);
+            FG.fx = sl + sw * .22;
+          }, 700);
+        }, 1000);
+        later(() => finishSession({ title: 'Froggy Hop', ok: FG.ok, total: FG.total, coins: sessionCoins(FG.ok), retry: () => go('frog') }), 5000);
         return;
       }
-      later(() => { pan(); FG.pads.filter(p => p !== el).forEach(p => p.style.opacity = '0'); }, 800);
+      later(() => { pan(); FG.pads.filter(p => p !== el).forEach(p => { p.style.animation = 'none'; p.style.opacity = '0'; }); }, 800);
       later(() => { FG.pads.forEach(p => { if (p !== el) p.remove(); }); FG.pads = [el]; el.classList.add('start'); faceNow('normal'); nextQ(); }, 1350);
     } else {
       el.classList.add('sink'); Snd.play('ng'); bigPraise(pond, pick(NG_MSG), 'soft'); faceNow('sad'); later(() => faceNow('normal'), 900);
@@ -867,7 +889,7 @@ screens.frog = () => {
     }
   });
   cleanup = () => { FG.dead = true; FG.timers.forEach(clearTimeout); };
-  nextQ();
+  later(() => { layoutStart(); nextQ(); }, 120);
 };
 
 /* =============== ためしてみよう =============== */

@@ -31,7 +31,7 @@ const JA_EXACT = {
   'Back to learning': 'もういちど よむ',
   // あそぼう
   'Which times tables to play?': 'どの だんを あそぶ？', 'Pick a game!': 'ゲームを えらんでね！',
-  'Froggy Hop': 'ぴょんぴょんカエル', 'Hop to the right leaf': 'こたえの はっぱに ジャンプ', 'You made it across! 🏰': 'むこうぎしに ついたよ！ 🏰',
+  'Froggy Hop': 'ぴょんぴょんカエル', 'Hop to the right leaf': 'こたえの はっぱに ジャンプ', 'You made it to the other shore!': 'むこうぎしに ついたよ！',
   'Balloon Pop': 'ふうせんわり', 'Tap the right balloon': 'こたえの ふうせんを タップ',
   'Sweet Shop': 'かわいいおみせやさん', 'Fill the orders': 'ちゅうもんを うけよう',
   'Whack-a-Mole': 'もぐらたたき', 'Tap the right mole': 'こたえの もぐらを タップ',
