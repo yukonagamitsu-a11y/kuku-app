@@ -17,13 +17,13 @@ const kukuReading = {};
 for (const d in KUKU_TEXT) kukuReading[d] = [null, ...KUKU_TEXT[d].split('／')];
 
 // 段ごとのおかし・くだもの（ドット絵の代わり）
-const DAN_EMOJI = ['', '🍓', '🍎', '🍊', '🍋', '🍒', '🍇', '🍑', '🍬', '🍪'];
+const DAN_EMOJI = ['', '🍓', '🍎', '🍊', '🍋', '🍫', '🍩', '🍑', '🍬', '🍪']; // ふさや ペアに なる ものは さける（かぞえやすい ひとつぶ）
 
 // おかしやさんの商品
 const SHOP_GOODS = [
   { name: 'cookies', e: '🍪' }, { name: 'candies', e: '🍬' }, { name: 'strawberries', e: '🍓' },
   { name: 'cupcakes', e: '🧁' }, { name: 'apples', e: '🍎' }, { name: 'tangerines', e: '🍊' },
-  { name: 'cherries', e: '🍒' }, { name: 'donuts', e: '🍩' },
+  { name: 'chocolates', e: '🍫' }, { name: 'donuts', e: '🍩' },
 ];
 
 const OK_MSG = ['Great job!', 'You did it!', 'Genius!', 'Perfect!', 'Nice!', 'Sparkly!', 'Awesome!', 'Super!'];

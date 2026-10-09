@@ -118,7 +118,7 @@ Object.assign(JA_EXACT, {
   'Your own room is ready!': 'じぶんだけの おへやが できたよ！',
   "Here is your very own room. It's free!": 'おへやを プレゼント！ おかねは いらないよ。',
 });
-const JA_GOODS = { cookies: 'クッキー', candies: 'あめ', strawberries: 'いちご', cupcakes: 'ケーキ', apples: 'りんご', tangerines: 'みかん', cherries: 'さくらんぼ', donuts: 'ドーナツ' };
+const JA_GOODS = { cookies: 'クッキー', candies: 'あめ', strawberries: 'いちご', cupcakes: 'ケーキ', apples: 'りんご', tangerines: 'みかん', chocolates: 'チョコ', donuts: 'ドーナツ' };
 
 function jaTr(s) {
   if (Object.prototype.hasOwnProperty.call(JA_EXACT, s)) return JA_EXACT[s];

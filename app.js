@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-09.52';
+const APP_VERSION = '2026-10-10.56';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -443,7 +443,7 @@ let L = null;
 screens.dan = ({ n }) => {
   L = { n, sel: 1, playing: false };
   app.innerHTML = frame({
-    title: `<span lang="ja" translate="no">${n}のだん</span>`, back: 'learn',
+    title: `<span lang="ja" translate="no">${n}のだん</span>`, back: 'learn', mainCls: 'fl',
     body: `<div class="cols learn">
       <div class="panel kuku-list" id="klist">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(b => `
         <div class="krow ${b === 1 ? 'sel' : ''}" data-act="row" data-b="${b}" id="kr${b}">
@@ -466,6 +466,17 @@ function showArray(b) {
   $('#arr').innerHTML = `<div class="array-title">${n} × ${b} ＝ ${n * b}</div>
     <div class="array-sub">${b} ${b === 1 ? "group" : "groups"} of ${n} → ${n * b} in all</div>
     <div class="groups">${Array.from({ length: b }, (_, i) => `<div class="grp g${n <= 2 ? n : n === 4 ? 4 : 3}" style="animation-delay:${i * 50}ms">${Array.from({ length: n }, () => `<span>${e}</span>`).join('')}</div>`).join('')}</div>`;
+  fitArray(n, b);
+  const row = document.getElementById('kr' + b); if (row) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+// 図は 枠の なかに ぜんぶ おさまる いちばん 大きい サイズに（枠から はみださない）
+function fitArray(n, b) {
+  const g = $('.groups'); if (!g) return;
+  const inside = () => {
+    const H = g.clientHeight + 1, W = g.clientWidth + 1;
+    return [...g.children].every(c => c.offsetLeft >= -1 && c.offsetLeft + c.offsetWidth <= W && c.offsetTop >= -1 && c.offsetTop + c.offsetHeight <= H);
+  };
+  for (let size = 30; size >= 9; size--) { g.style.setProperty('--as', size + 'px'); if (inside()) break; }
 }
 actions.row = el => {
   if (L.playing) stopReadAll();
@@ -508,7 +519,7 @@ function renderDQ() {
   const eq = q.blank === 'ans' ? `${n}×${b}＝<span class="ans-box" id="qbox">？</span>` : `${n}×<span class="ans-box" id="qbox">？</span>＝${n * b}`;
   app.innerHTML = frame({
     title: `Quiz ${i + 1}/9`, back: 'dan-back', mainCls: 'fl',
-    body: `<div class="panel" style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px">
+    body: `<div class="panel q-panel">
       <div class="qbanner">${eq}<span class="sub" id="qsub">Pick the answer</span></div>
       <div class="choices">${opts.map(v => `<button class="btn" data-act="dq-ans" data-v="${v}">${v}</button>`).join('')}</div></div>`,
   });
@@ -674,17 +685,30 @@ function nextCustomer() {
   g.wrong = false; g.locked = false; g.cust = pick(FRIENDS); g.good = pick(SHOP_GOODS);
   const { a, b } = g.q, opts = choices(a, b);
   app.innerHTML = frame({
-    title: `Sweet Shop ${g.n + 1}/${g.total}`, back: 'play',
+    title: `Sweet Shop ${g.n + 1}/${g.total}`, back: 'play', mainCls: 'fl',
     body: `<div class="cols shop-wrap">
       <div class="side"><div class="bubble" id="sbub">"I'd like ${a} ${g.good.name} in each bag. ${b} bags, please!"</div>
-        <div class="char" id="cust" style="width:min(220px,70%)">${avatarSVG(NPC[g.cust], { face: 'normal' })}</div></div>
-      <div class="panel" style="display:flex;flex-direction:column;gap:12px">
-        <div class="counter" id="counter"><span style="align-self:center;color:var(--ink-soft);font-weight:700">${g.good.e} will go here</span></div>
+        <div class="char" id="cust">${avatarSVG(NPC[g.cust], { face: 'normal' })}</div></div>
+      <div class="panel shop-panel">
+        <div class="counter" id="counter"><span class="hint">${g.good.e} will go here</span></div>
         <div class="section-title">${a} in each bag × ${b} bags → How many in all?</div>
         <div class="choices">${opts.map(v => `<button class="btn" data-act="shop-ans" data-v="${v}">${v}</button>`).join('')}</div>
       </div></div>`,
   });
   cleanup = () => { SG.dead = true; };
+}
+function fitCounter(a, b) {
+  const c = $('#counter'); if (!c) return;
+  c.style.gap = '8px';
+  // 実際に ならべてみて、ぜんぶ 枠の なかに おさまる いちばん大きい サイズを えらぶ
+  // （出てくるときの ふくらむ アニメーションに えいきょうされないよう、offset〜 で はかる）
+  const inside = () => {
+    const cs = getComputedStyle(c);
+    const L = parseFloat(cs.paddingLeft) - 1, R = c.clientWidth - parseFloat(cs.paddingRight) + 1;
+    const T = parseFloat(cs.paddingTop) - 7, B = c.clientHeight - parseFloat(cs.paddingBottom) + 1;
+    return [...c.querySelectorAll('.bag')].every(g => g.offsetLeft >= L && g.offsetLeft + g.offsetWidth <= R && g.offsetTop >= T && g.offsetTop + g.offsetHeight <= B);
+  };
+  for (let size = 34; size >= 8; size--) { c.style.setProperty('--bs', size + 'px'); if (inside()) break; }
 }
 actions['shop-ans'] = el => {
   const g = SG; if (g.locked) return;
@@ -697,6 +721,7 @@ actions['shop-ans'] = el => {
     el.classList.add('right'); Snd.play('ok'); Snd.play('coin'); burstEl(el);
     $('#counter').innerHTML = Array.from({ length: b }, (_, i) =>
       `<div class="bag" style="animation-delay:${i * 130}ms;grid-template-columns:repeat(${Math.min(a, 3)},auto)">${Array.from({ length: a }, () => `<span>${g.good.e}</span>`).join('')}</div>`).join('');
+    fitCounter(a, b);
     cust.innerHTML = avatarSVG(NPC[g.cust], { face: 'cheer', cls: 'jump' });
     bub.textContent = `Thank you! ${ans} in all!`;
     setTimeout(() => { if (cur === 'shopgame' && !g.dead) nextCustomer(); }, 1700 + b * 130);
