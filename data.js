@@ -118,6 +118,10 @@ const CATS = [
   { id: 'pet', name: 'Pets', icon: '🐾' },
   { id: 'room', name: 'Room', icon: '🏠' },
 ];
+// 「おへや」カテゴリ（かべがみ・ガーランドなど）は マイルームを もらってから：ショップ・ガチャ・ずかんには ださない
+const UI_CATS = CATS.filter(c => c.id !== 'room');
+// むかしの「おへやの かざり」は、マイルームを もらったら マイルームの かざりとして ひきつぐ
+const ROOM_GIFTS = { r_window: 'm_window', r_garland: 'c_garland', r_plant: 'x_plant', r_rainbow: 'p_rainbow', lim6: 'w_night' };
 const REQUIRED_CATS = ['hair', 'hairColor', 'outfit', 'shoes'];
 const PRICE = { 1: 8, 2: 22, 3: 45 };
 const GACHA_COST = 15;

@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-09.28';
+const APP_VERSION = '2026-10-09.29';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -44,6 +44,7 @@ function loadState() {
       s.settings = Object.assign(defaultState().settings, raw.settings || {});
       s.today = Object.assign(defaultState().today, raw.today || {});
       s.myroom = Object.assign(defaultState().myroom, raw.myroom || {});
+      syncRoomGifts(s);
       if (s.myroom.has && !s.myroom.items.includes('m_plain')) { // すでに おへやが ある人にも、ふつうの まどを プレゼント
         s.myroom.items.push('m_plain'); if (!s.myroom.placed.window) s.myroom.placed.window = 'm_plain';
       }
@@ -861,7 +862,7 @@ function finishSession(r) {
   const masters = checkMasters();
   const gained = (r.gained || []).slice();
   masters.forEach(m => m.item && gained.push(m.item));
-  touchStreak(); save();
+  touchStreak(); syncRoomGifts(); save();
   const easy = SC.n >= 5 && SC.base / SC.n < 1, tired = SC.tired >= 3;
   lastRes = Object.assign({}, r, { masters, gained, easy, tired });
   go('result');
@@ -925,8 +926,8 @@ function closetGrid() {
     : `<button class="cell" data-act="buy" data-id="${i.id}"><div class="tb">${thumb(i)}</div>${i.name}<span class="stars">${starsOf(i.rar)}</span><span class="price">🪙 ${PRICE[i.rar]}</span></button>`).join('')}</div>`;
 }
 function zukanHTML() {
-  const total = ITEMS.length, have = ITEMS.filter(i => isOwned(i.id)).length;
-  return `<p class="section-title" style="margin-top:0">Collected ${have} / ${total}</p>` + CATS.map(c => {
+  const total = ITEMS.filter(i => i.cat !== 'room').length, have = ITEMS.filter(i => i.cat !== 'room' && isOwned(i.id)).length;
+  return `<p class="section-title" style="margin-top:0">Collected ${have} / ${total}</p>` + UI_CATS.map(c => {
     const list = ITEMS.filter(i => i.cat === c.id);
     return `<div class="sect">${c.icon} ${c.name}</div><div class="grid">${list.map(i => {
       const own = isOwned(i.id);
@@ -945,14 +946,14 @@ screens.closet = p => {
   if (p && p.tab) C.tab = p.tab;
   let justGranted = false; // 6わり そろったら、シンプルな おへやを むりょうで プレゼント
   if (roomProgress().ok && !S.myroom.has) {
-    S.myroom.has = true; S.myroom.items = MR_DEFAULT.slice(); S.myroom.placed = { wall: 'w_cream', floor: 'f_wood', window: 'm_plain' }; save(); justGranted = true;
+    S.myroom.has = true; S.myroom.items = MR_DEFAULT.slice(); S.myroom.placed = { wall: 'w_cream', floor: 'f_wood', window: 'm_plain' }; syncRoomGifts(); save(); justGranted = true;
   }
   const tabs = [['wear', '👗 Dress Up'], ['shop', '🛍️ Shop'], ['gacha', '🎁 Capsules'], ['zukan', '📚 Collection'], ['myroom', '🏡 My Room']];
   let content;
   if (C.tab === 'gacha') content = gachaHTML();
   else if (C.tab === 'zukan') content = zukanHTML();
   else if (C.tab === 'myroom') content = myRoomHTML();
-  else content = `<div class="cats">${CATS.map(c => `<button class="cat ${C.cat === c.id ? 'on' : ''}" data-act="cat" data-c="${c.id}">${c.icon} ${c.name}</button>`).join('')}</div>${closetGrid()}`;
+  else content = `<div class="cats">${UI_CATS.map(c => `<button class="cat ${C.cat === c.id ? 'on' : ''}" data-act="cat" data-c="${c.id}">${c.icon} ${c.name}</button>`).join('')}</div>${closetGrid()}`;
   const prev = $('#cpanel'), top = prev ? prev.scrollTop : 0;
   const prevCats = $('.cats'), catsLeft = prevCats ? prevCats.scrollLeft : 0; // カテゴリの よこスクロールの いち
   app.innerHTML = frame({
@@ -971,9 +972,21 @@ screens.closet = p => {
 };
 
 /* ---- マイルーム ---- */
+function syncRoomGifts(st) {
+  st = st || S;
+  if (!st.myroom.has) return;
+  let changed = false;
+  for (const [old, nu] of Object.entries(ROOM_GIFTS)) {
+    if (st.items.includes(old) && !st.myroom.items.includes(nu)) {
+      st.myroom.items.push(nu); changed = true;
+      const it = MR_BY_ID[nu]; if (it && !st.myroom.placed[it.slot]) st.myroom.placed[it.slot] = nu;
+    }
+  }
+  if (changed && st === S) save();
+}
 const MRC = { cat: 'wall' };
 function roomProgress() {
-  const ob = ITEMS.filter(i => !i.lim && !i.sp), owned = ob.filter(i => S.items.includes(i.id)).length, need = Math.ceil(ob.length * ROOM_UNLOCK);
+  const ob = ITEMS.filter(i => !i.lim && !i.sp && i.cat !== 'room'), owned = ob.filter(i => S.items.includes(i.id)).length, need = Math.ceil(ob.length * ROOM_UNLOCK);
   return { owned, need, ok: owned >= need };
 }
 const mrBought = () => S.myroom.items.filter(id => !MR_DEFAULT.includes(id)).length;
@@ -1029,7 +1042,7 @@ actions.gacha = () => {
   setTimeout(() => {
     C.rolling = false;
     const r = Math.random() * 100, rar = r < 55 ? 1 : r < 88 ? 2 : 3;
-    const it = pick(ITEMS.filter(i => !i.lim && !i.sp && i.rar === rar));
+    const it = pick(ITEMS.filter(i => !i.lim && !i.sp && i.cat !== 'room' && i.rar === rar));
     const dup = isOwned(it.id);
     if (dup) S.coins += GACHA_REFUND; else { grantItem(it.id); S.avatar[it.cat] = it.id; }
     save(); Snd.play('reveal'); confetti();
