@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-09.43';
+const APP_VERSION = '2026-10-09.44';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -544,7 +544,7 @@ screens.play = () => {
         <button class="btn pink" data-act="g-balloon"><span class="ico">🎈</span>Balloon Pop<small>Tap the right balloon</small></button>
         <button class="btn mint" data-act="g-shop"><span class="ico">🍪</span>Sweet Shop<small>Fill the orders</small></button>
         <button class="btn lav" data-act="g-mole"><span class="ico">🔨</span>Whack-a-Mole<small>Tap the right mole</small></button>
-        <button class="btn sky" data-act="g-frog"><span class="ico">🐸</span>Froggy Hop<small>Hop to the right leaf</small></button>
+        <button class="btn sky" data-act="g-frog"><span class="ico ico-svg">${frogSVG('happy')}</span>Froggy Hop<small>Hop to the right leaf</small></button>
       </div>`,
   });
 };
