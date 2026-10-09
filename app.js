@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-08.12';
+const APP_VERSION = '2026-10-08.13';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -28,6 +28,7 @@ const defaultState = () => ({
   name: '',
   daily: { date: null, counts: {} },
   bonusDate: null,
+  myroom: { has: false, items: [], placed: {}, seen: false },
 });
 function defaultLang() { return /^ja/i.test(navigator.language || '') ? 'ja' : 'en'; }
 function loadState() {
@@ -40,6 +41,7 @@ function loadState() {
       s.streak = Object.assign(defaultState().streak, raw.streak || {});
       s.settings = Object.assign(defaultState().settings, raw.settings || {});
       s.today = Object.assign(defaultState().today, raw.today || {});
+      s.myroom = Object.assign(defaultState().myroom, raw.myroom || {});
       const existing = (raw.coins > 0) || (raw.streak && raw.streak.lastPlayed) || (raw.items && raw.items.length > 4);
       if (!s.settings.limitOff) { s.settings.dailyLimitMinutes = 0; s.settings.limitOff = true; } // 初期の20分制限をやめる
       if (!s.name) s.name = existing ? 'Non' : '';
@@ -906,20 +908,69 @@ function gachaHTML() {
 }
 screens.closet = p => {
   if (p && p.tab) C.tab = p.tab;
-  const tabs = [['wear', '👗 Dress Up'], ['shop', '🛍️ Shop'], ['gacha', '🎁 Capsules'], ['zukan', '📚 Collection']];
+  const tabs = [['wear', '👗 Dress Up'], ['shop', '🛍️ Shop'], ['gacha', '🎁 Capsules'], ['zukan', '📚 Collection'], ['myroom', '🏡 My Room']];
   let content;
   if (C.tab === 'gacha') content = gachaHTML();
   else if (C.tab === 'zukan') content = zukanHTML();
+  else if (C.tab === 'myroom') content = myRoomHTML();
   else content = `<div class="cats">${CATS.map(c => `<button class="cat ${C.cat === c.id ? 'on' : ''}" data-act="cat" data-c="${c.id}">${c.icon} ${c.name}</button>`).join('')}</div>${closetGrid()}`;
   const prev = $('#cpanel'), top = prev ? prev.scrollTop : 0;
   app.innerHTML = frame({
     title: 'Dress-Up Room', back: 'home',
-    body: `<div class="cols"><div class="side">${sceneSVG(S.avatar, { face: 'happy' })}</div>
+    body: `<div class="cols ${S.myroom.has ? 'roomy' : ''}"><div class="side">${S.myroom.has ? myRoomSVG(S.avatar, S.myroom, 'happy') : sceneSVG(S.avatar, { face: 'happy' })}</div>
       <div style="display:flex;flex-direction:column;min-height:0">
         <div class="tabs">${tabs.map(t => `<button class="btn tab small ${C.tab === t[0] ? 'on' : ''}" data-act="tab" data-t="${t[0]}">${t[1]}</button>`).join('')}</div>
         <div class="panel" id="cpanel" style="flex:1">${content}</div></div></div>`,
   });
   if (prev) { const np = $('#cpanel'); if (np) np.scrollTop = top; }
+  if (roomProgress().ok && !S.myroom.seen) { // はじめて 8わり そろったとき
+    S.myroom.seen = true; save();
+    setTimeout(() => modal({ title: '🏡 My Room is unlocked!', html: '<p>You collected 80% of the items!<br>Open the My Room tab to get your own room.</p>', buttons: [{ label: 'Go!', cls: 'pink' }] }).then(() => { C.tab = 'myroom'; go('closet'); }), 300);
+  }
+};
+
+/* ---- マイルーム ---- */
+const MRC = { cat: 'wall' };
+function roomProgress() {
+  const ob = ITEMS.filter(i => !i.lim && !i.sp), owned = ob.filter(i => S.items.includes(i.id)).length, need = Math.ceil(ob.length * ROOM_UNLOCK);
+  return { owned, need, ok: owned >= need };
+}
+const mrBought = () => S.myroom.items.filter(id => !MR_DEFAULT.includes(id)).length;
+function myRoomHTML() {
+  const u = roomProgress();
+  if (!u.ok) return `<div class="mr-lock"><div class="mr-ico">🔒🏡</div><h2>My Room</h2><p>Collect 80% of the items to unlock My Room!</p><div class="bar big"><i style="width:${Math.min(100, u.owned / u.need * 100)}%"></i></div><p><b>${u.owned} / ${u.need} items collected</b></p></div>`;
+  if (!S.myroom.has) return `<div class="mr-lock"><div class="mr-ico">🏡✨</div><h2>My Room is open!</h2><p>Buy your very own room and decorate it.</p><button class="btn pink" style="min-height:84px;font-size:30px" data-act="mr-room-buy">Buy a room 🪙 ${ROOM_PRICE}</button></div>`;
+  const cat = MRC.cat, cdef = MR_CATS.find(c => c.id === cat), placed = S.myroom.placed, bought = mrBought();
+  let cells = '';
+  if (cdef.optional) cells += `<button class="cell ${!placed[cat] ? 'eq' : ''}" data-act="mr-none" data-c="${cat}"><div class="tb" style="font-size:40px">🚫</div>None</button>`;
+  MR_ITEMS.filter(i => i.slot === cat).forEach(i => {
+    if (S.myroom.items.includes(i.id)) cells += `<button class="cell ${placed[cat] === i.id ? 'eq' : ''}" data-act="mr-place" data-id="${i.id}"><div class="tb">${mrThumb(i)}</div>${i.name}${placed[cat] === i.id ? '<span class="tag">✅</span>' : ''}</button>`;
+    else if (bought >= MR_TIER_NEED[i.tier]) cells += `<button class="cell" data-act="mr-buy" data-id="${i.id}"><div class="tb">${mrThumb(i)}</div>${i.name}<span class="price">🪙 ${i.price}</span></button>`;
+    else cells += `<div class="cell dim"><div class="tb">${mrThumb(i)}</div>${i.name}<span style="font-size:14px">🔒 Buy ${MR_TIER_NEED[i.tier] - bought} more room items</span></div>`;
+  });
+  return `<div class="cats">${MR_CATS.map(c => `<button class="cat ${cat === c.id ? 'on' : ''}" data-act="mr-cat" data-c="${c.id}">${c.icon} ${c.name}</button>`).join('')}</div><div class="grid">${cells}</div>`;
+}
+actions['mr-cat'] = el => { MRC.cat = el.dataset.c; go('closet'); };
+actions['mr-place'] = el => {
+  const it = MR_BY_ID[el.dataset.id], p = S.myroom.placed, opt = MR_CATS.find(c => c.id === it.slot).optional;
+  if (opt && p[it.slot] === it.id) delete p[it.slot]; else p[it.slot] = it.id;
+  save(); Snd.play('tap'); go('closet');
+};
+actions['mr-none'] = el => { delete S.myroom.placed[el.dataset.c]; save(); Snd.play('tap'); go('closet'); };
+actions['mr-buy'] = async el => {
+  const it = MR_BY_ID[el.dataset.id];
+  if (S.coins < it.price) { toast('Not enough coins. Play to earn more!'); return; }
+  const yes = await confirmDialog(it.name, `<div class="thumbbox">${mrThumb(it)}</div><p>Buy for 🪙 ${it.price}?</p>`, 'Buy!', 'Cancel');
+  if (!yes || S.coins < it.price) return;
+  S.coins -= it.price; S.myroom.items.push(it.id); S.myroom.placed[it.slot] = it.id; save();
+  Snd.play('coin'); confetti(); toast('Placed in your room!'); go('closet');
+};
+actions['mr-room-buy'] = async () => {
+  if (S.coins < ROOM_PRICE) { toast('Not enough coins. Play to earn more!'); return; }
+  const yes = await confirmDialog('Buy a room', `<p>Buy your room for 🪙 ${ROOM_PRICE}?</p>`, 'Buy!', 'Cancel');
+  if (!yes || S.coins < ROOM_PRICE) return;
+  S.coins -= ROOM_PRICE; S.myroom.has = true; S.myroom.items = MR_DEFAULT.slice(); S.myroom.placed = { wall: 'w_cream', floor: 'f_wood' };
+  save(); Snd.play('fan'); confetti(); toast('You bought a room!'); go('closet');
 };
 actions.tab = el => { C.tab = el.dataset.t; go('closet'); };
 actions.cat = el => { C.cat = el.dataset.c; go('closet'); };

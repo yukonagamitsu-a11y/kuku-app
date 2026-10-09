@@ -287,3 +287,13 @@ body.no-voice .voice-btn { display: none !important; }
 .tip { margin: 8px auto; max-width: 520px; background: #fff8d6; border-radius: 22px; padding: 8px 16px; font-weight: 800; font-size: 20px; }
 
 .fx.earn { font-weight: 900; font-size: 34px; color: #b9770e; text-shadow: 0 2px 0 #fff, 0 0 8px #fff; white-space: nowrap; }
+
+.mr-lock { text-align: center; padding: 10px 6px; }
+.mr-lock h2 { margin: 4px 0; font-size: clamp(26px, 4vmin, 36px); }
+.mr-lock p { font-size: 20px; font-weight: 700; margin: 6px 0; }
+.mr-ico { font-size: 56px; }
+.bar.big { height: 28px; max-width: 420px; margin: 8px auto; flex: none; }
+.scene.myroom { width: 100%; height: auto; border-radius: 22px; }
+.tabs .tab { flex: 1 1 0; }
+
+@media (orientation: landscape) and (min-width: 721px) { .cols.roomy { grid-template-columns: minmax(280px, 47%) 1fr; } }
