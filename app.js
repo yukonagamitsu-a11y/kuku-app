@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-09.26';
+const APP_VERSION = '2026-10-09.28';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -1142,6 +1142,23 @@ if ('speechSynthesis' in window) {
 if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
   navigator.serviceWorker.register('sw.js').catch(() => { /* オフライン対応なしでも動く */ });
 }
+// ふきだしは おおきさを かえない：セリフが ながいときは もじを ちいさくして ぴったり おさめる
+function fitBubble(el) {
+  el.style.fontSize = '';
+  const cs = getComputedStyle(el);
+  let size = parseFloat(cs.fontSize);
+  const room = el.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom); // しっぽは はかない
+  const textH = () => { const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().height; };
+  while (textH() > room + 1 && size > 12) { size -= 1; el.style.fontSize = size + 'px'; }
+}
+let fitQueued = false;
+function fitBubbles() {
+  if (fitQueued) return; fitQueued = true;
+  requestAnimationFrame(() => { fitQueued = false; document.querySelectorAll('.bubble').forEach(fitBubble); });
+}
+new MutationObserver(fitBubbles).observe(app, { childList: true, subtree: true, characterData: true });
+addEventListener('resize', fitBubbles);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitBubbles);
 tickTime();
 I18N.start();
 go('home');

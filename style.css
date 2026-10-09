@@ -311,3 +311,7 @@ html[lang="ja"] .modal p, html[lang="ja"] .modal h2, html[lang="ja"] .toast, htm
 @media (max-width: 560px) {
   html[lang="ja"] .menu .btn { font-size: clamp(15px, 5vw, 22px); white-space: nowrap; padding-left: 4px; padding-right: 4px; }
 }
+
+/* ふきだし：おおきさ ぴったり ふへんに（もじが ながいと もじが ちいさくなる） */
+.bubble { width: min(94%, 540px); height: clamp(78px, 13vmin, 112px); display: flex; align-items: center; justify-content: center; padding: 6px 18px; line-height: 1.25; flex: none; }
+.shop-wrap .bubble { width: 100%; height: clamp(96px, 17vmin, 150px); }
