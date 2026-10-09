@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-08.13';
+const APP_VERSION = '2026-10-08.14';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -925,7 +925,7 @@ screens.closet = p => {
   if (prev) { const np = $('#cpanel'); if (np) np.scrollTop = top; }
   if (roomProgress().ok && !S.myroom.seen) { // はじめて 8わり そろったとき
     S.myroom.seen = true; save();
-    setTimeout(() => modal({ title: '🏡 My Room is unlocked!', html: '<p>You collected 80% of the items!<br>Open the My Room tab to get your own room.</p>', buttons: [{ label: 'Go!', cls: 'pink' }] }).then(() => { C.tab = 'myroom'; go('closet'); }), 300);
+    setTimeout(() => modal({ title: '🏡 My Room is unlocked!', html: '<p>You collected 60% of the items!<br>Open the My Room tab to get your own room.</p>', buttons: [{ label: 'Go!', cls: 'pink' }] }).then(() => { C.tab = 'myroom'; go('closet'); }), 300);
   }
 };
 
@@ -938,7 +938,7 @@ function roomProgress() {
 const mrBought = () => S.myroom.items.filter(id => !MR_DEFAULT.includes(id)).length;
 function myRoomHTML() {
   const u = roomProgress();
-  if (!u.ok) return `<div class="mr-lock"><div class="mr-ico">🔒🏡</div><h2>My Room</h2><p>Collect 80% of the items to unlock My Room!</p><div class="bar big"><i style="width:${Math.min(100, u.owned / u.need * 100)}%"></i></div><p><b>${u.owned} / ${u.need} items collected</b></p></div>`;
+  if (!u.ok) return `<div class="mr-lock"><div class="mr-ico">🔒🏡</div><h2>My Room</h2><p>Collect 60% of the items to unlock My Room!</p><div class="bar big"><i style="width:${Math.min(100, u.owned / u.need * 100)}%"></i></div><p><b>${u.owned} / ${u.need} items collected</b></p></div>`;
   if (!S.myroom.has) return `<div class="mr-lock"><div class="mr-ico">🏡✨</div><h2>My Room is open!</h2><p>Buy your very own room and decorate it.</p><button class="btn pink" style="min-height:84px;font-size:30px" data-act="mr-room-buy">Buy a room 🪙 ${ROOM_PRICE}</button></div>`;
   const cat = MRC.cat, cdef = MR_CATS.find(c => c.id === cat), placed = S.myroom.placed, bought = mrBought();
   let cells = '';
