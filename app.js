@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-09.17';
+const APP_VERSION = '2026-10-09.18';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -42,6 +42,9 @@ function loadState() {
       s.settings = Object.assign(defaultState().settings, raw.settings || {});
       s.today = Object.assign(defaultState().today, raw.today || {});
       s.myroom = Object.assign(defaultState().myroom, raw.myroom || {});
+      if (s.myroom.has && !s.myroom.items.includes('m_plain')) { // すでに おへやが ある人にも、ふつうの まどを プレゼント
+        s.myroom.items.push('m_plain'); if (!s.myroom.placed.window) s.myroom.placed.window = 'm_plain';
+      }
       const existing = (raw.coins > 0) || (raw.streak && raw.streak.lastPlayed) || (raw.items && raw.items.length > 4);
       if (!s.settings.limitOff) { s.settings.dailyLimitMinutes = 0; s.settings.limitOff = true; } // 初期の20分制限をやめる
       if (!s.name) s.name = existing ? 'Non' : '';
@@ -910,7 +913,7 @@ screens.closet = p => {
   if (p && p.tab) C.tab = p.tab;
   let justGranted = false; // 6わり そろったら、シンプルな おへやを むりょうで プレゼント
   if (roomProgress().ok && !S.myroom.has) {
-    S.myroom.has = true; S.myroom.items = MR_DEFAULT.slice(); S.myroom.placed = { wall: 'w_cream', floor: 'f_wood' }; save(); justGranted = true;
+    S.myroom.has = true; S.myroom.items = MR_DEFAULT.slice(); S.myroom.placed = { wall: 'w_cream', floor: 'f_wood', window: 'm_plain' }; save(); justGranted = true;
   }
   const tabs = [['wear', '👗 Dress Up'], ['shop', '🛍️ Shop'], ['gacha', '🎁 Capsules'], ['zukan', '📚 Collection'], ['myroom', '🏡 My Room']];
   let content;

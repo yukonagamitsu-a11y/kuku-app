@@ -71,6 +71,7 @@ const JA_EXACT = {
   'My Room is unlocked!': 'マイルームが ひらいたよ！', 'You collected 70% of the items!': 'アイテムを 7わり あつめたね！', 'Open the My Room tab to get your own room.': 'マイルームの タブで じぶんの おへやを かおう！', 'Go!': 'いってみる！',
   'Buy a room': 'おへやを かう', 'Placed in your room!': 'おへやに かざったよ！', 'You bought a room!': 'おへやを てにいれたよ！',
   Wallpaper: 'かべがみ', Floor: 'ゆか', Bed: 'ベッド', Desk: 'つくえ', Shelf: 'たな', Window: 'まど', Poster: 'ポスター', Rug: 'ラグ', Ceiling: 'てんじょう', Corner: 'すみっこ',
+  'Plain Window': 'ふつうの まど',
   'Cream Wall': 'クリームの かべ', 'Pink Stripes': 'ピンクの しましま', 'Mint Dots': 'ミントの みずたま', 'Cloudy Sky': 'くものある そら', 'Starry Lavender': 'ほしの ラベンダー', 'Night Sky': 'よぞら',
   'Wood Floor': 'もくめの ゆか', 'Pink Tiles': 'ピンクの タイル', 'Checker Floor': 'チェックの ゆか', 'Grass Floor': 'くさの ゆか', 'Star Floor': 'ほしの ゆか',
   'Cozy Bed': 'ふかふかベッド', 'Princess Bed': 'プリンセスベッド', 'Cloud Bed': 'くものベッド', 'Study Desk': 'べんきょうづくえ', 'Pink Vanity': 'ピンクの ドレッサー', Piano: 'ピアノ',

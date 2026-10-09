@@ -3,7 +3,7 @@
 
 const ROOM_UNLOCK = 0.7;      // 集めた割合（ショップ・ガチャで手に入るアイテム）
 const MR_TIER_NEED = { 1: 0, 2: 6, 3: 14 }; // その段階の家具を買うために必要な「買った家具の数」
-const MR_DEFAULT = ['w_cream', 'f_wood'];
+const MR_DEFAULT = ['w_cream', 'f_wood', 'm_plain'];
 const MR_CATS = [
   { id: 'wall', name: 'Wallpaper', icon: '🖼️', optional: false },
   { id: 'floor', name: 'Floor', icon: '🟫', optional: false },
@@ -43,6 +43,7 @@ const MR_ITEMS = [
   { id: 's_books', slot: 'shelf', name: 'Book Shelf', price: 80, tier: 2 },
   { id: 's_toys', slot: 'shelf', name: 'Toy Shelf', price: 90, tier: 2 },
   { id: 's_trophy', slot: 'shelf', name: 'Trophy Shelf', price: 200, tier: 3 },
+  { id: 'm_plain', slot: 'window', name: 'Plain Window', price: 0, tier: 1 },
   { id: 'm_window', slot: 'window', name: 'Sunny Window', price: 70, tier: 2 },
   { id: 'm_star', slot: 'window', name: 'Starry Window', price: 150, tier: 3 },
   { id: 'p_rainbow', slot: 'poster', name: 'Rainbow Poster', price: 60, tier: 2 },
@@ -92,6 +93,7 @@ function mrDraw(id) {
     case 's_toys': return '<rect x="16" y="64" width="102" height="8" rx="3" fill="#c98f5b"/><rect x="16" y="104" width="102" height="8" rx="3" fill="#c98f5b"/><rect x="26" y="40" width="22" height="22" rx="6" fill="#d9a066"/><rect x="24" y="34" width="8" height="8" rx="3" fill="#d9a066"/><rect x="42" y="34" width="8" height="8" rx="3" fill="#d9a066"/><circle cx="33" cy="48" r="2" fill="#4a3340"/><circle cx="41" cy="48" r="2" fill="#4a3340"/><rect x="64" y="48" width="14" height="14" fill="#ff8fb8"/><rect x="80" y="48" width="14" height="14" fill="#8fd0ff"/><rect x="72" y="34" width="14" height="14" fill="#ffe27a"/><rect x="26" y="84" width="30" height="20" rx="4" fill="#8fe3c8"/><circle cx="34" cy="106" r="5" fill="#4a3340"/><circle cx="50" cy="106" r="5" fill="#4a3340"/><polygon points="88,104 98,82 108,104" fill="#c9b6ff"/>';
     case 's_trophy': return '<rect x="16" y="64" width="102" height="8" rx="3" fill="#c98f5b"/><rect x="16" y="104" width="102" height="8" rx="3" fill="#c98f5b"/>' + [[34, 64], [74, 64], [54, 104]].map(p => `<path d="M${p[0] - 12} ${p[1] - 30} h24 v10 q0 14 -12 16 q-12 -2 -12 -16z" fill="#ffd84a" stroke="#e59a00" stroke-width="2"/><rect x="${p[0] - 3}" y="${p[1] - 8}" width="6" height="8" fill="#e59a00"/><rect x="${p[0] - 9}" y="${p[1] - 2}" width="18" height="4" fill="#e59a00"/>`).join('') + mrStar(94, 92, 10, 4.5, '#ff8fb8');
     // まど
+    case 'm_plain': return '<rect x="132" y="28" width="60" height="78" rx="6" fill="#cdeaff" stroke="#fff" stroke-width="6"/><path d="M162 28 V106 M132 67 H192" stroke="#fff" stroke-width="4"/><ellipse cx="150" cy="48" rx="12" ry="6" fill="#fff"/><ellipse cx="178" cy="88" rx="10" ry="5" fill="#fff"/>';
     case 'm_window': return '<path d="M118 24 H146 V112 Q132 100 118 112Z" fill="#ff9fc4"/><path d="M206 24 H178 V112 Q192 100 206 112Z" fill="#ff9fc4"/><rect x="132" y="28" width="60" height="78" rx="6" fill="#cdeaff" stroke="#fff" stroke-width="6"/><path d="M162 28 V106 M132 67 H192" stroke="#fff" stroke-width="4"/><circle cx="178" cy="46" r="9" fill="#ffe27a"/><ellipse cx="148" cy="84" rx="12" ry="6" fill="#fff"/>';
     case 'm_star': return '<rect x="132" y="28" width="60" height="78" rx="30" fill="#3d3470" stroke="#fff" stroke-width="6"/><path d="M162 28 V106" stroke="#fff" stroke-width="3"/>' + mrStar(150, 56, 6, 2.5, '#ffe27a') + mrStar(176, 74, 5, 2, '#ffe27a') + mrStar(152, 88, 4, 1.8, '#fff') + '<circle cx="176" cy="48" r="9" fill="#fff7d0"/><circle cx="181" cy="45" r="8" fill="#3d3470"/>';
     // ポスター
