@@ -101,6 +101,9 @@ const JA_EXACT = {
 };
 // 保護者メニューは大人向け（漢字まじり）
 Object.assign(JA_EXACT, {
+  'Voice settings': '音声の設定', 'Tap a voice to hear it': '声をタップすると試し聞きできます', 'Auto (recommended)': '自動（おすすめ）', Auto: '自動',
+  Speed: '速さ', Pitch: '高さ', Slow: 'ゆっくり', Normal: 'ふつう', Fast: '速い', Low: '低い', High: '高い', Close: '閉じる',
+  'No Japanese voices found on this device. You can add one in Android Settings → Text-to-speech output.': '日本語の音声が見つかりません。Androidの「設定」→「一般管理」→「言語」→「テキスト読み上げ」から日本語の音声を追加できます。',
   'For Parents': '保護者メニュー',
   '📊 Progress by times table (bar = how well remembered)': '📊 段ごとの様子（バー＝定着度）',
   '💪 Top 5 tricky problems': '💪 苦手な九九 トップ5', 'None yet': 'まだありません', 'Not yet': 'まだ',

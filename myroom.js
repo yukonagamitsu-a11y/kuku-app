@@ -18,7 +18,7 @@ const MR_CATS = [
 ];
 const MR_BOX = {
   wall: [0, 0, 480, 196], floor: [0, 196, 480, 84], bed: [0, 118, 116, 124], desk: [356, 134, 124, 106],
-  shelf: [10, 24, 112, 94], window: [120, 24, 84, 94], poster: [366, 22, 102, 92], rug: [120, 218, 240, 58],
+  shelf: [10, 24, 112, 94], window: [86, 24, 84, 94], poster: [366, 22, 102, 92], rug: [120, 218, 240, 58],
   ceiling: [0, 0, 480, 56], corner: [310, 140, 56, 100],
 };
 // tier: 1=さいしょから / 2=家具を6こ買うと / 3=14こ買うと
@@ -65,7 +65,13 @@ MR_ITEMS.forEach(i => { MR_BY_ID[i.id] = i; });
 const mrStar = (cx, cy, R, r, fill) => `<polygon points="${starPts(cx, cy, R, r)}" fill="${fill}"/>`;
 
 /* ---------- 家具・壁紙・ゆかの絵（お部屋 480x280 の座標） ---------- */
+// まどは 中央よりも 左がわに よせて かざる
+const MR_WINDOW_SHIFT = -34;
 function mrDraw(id) {
+  const raw = mrDrawRaw(id);
+  return MR_BY_ID[id] && MR_BY_ID[id].slot === 'window' ? `<g transform="translate(${MR_WINDOW_SHIFT} 0)">${raw}</g>` : raw;
+}
+function mrDrawRaw(id) {
   switch (id) {
     // かべ
     case 'w_cream': return '<rect width="480" height="196" fill="#fff3e6"/><rect y="150" width="480" height="46" fill="#ffe7cc"/>';
@@ -120,7 +126,7 @@ function myRoomSVG(av, my, face) {
   const p = (my && my.placed) || {};
   let s = '<svg class="scene myroom" viewBox="0 0 480 280" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">';
   s += mrDraw(p.wall || 'w_cream') + mrDraw(p.floor || 'f_wood') + '<rect y="190" width="480" height="8" fill="#fff" opacity=".55"/>';
-  ['rug', 'ceiling', 'shelf', 'window', 'poster', 'bed', 'desk', 'corner'].forEach(k => { if (p[k]) s += mrDraw(p[k]); });
+  ['rug', 'ceiling', 'window', 'shelf', 'poster', 'bed', 'desk', 'corner'].forEach(k => { if (p[k]) s += mrDraw(p[k]); });
   s += '<ellipse cx="240" cy="246" rx="44" ry="7" fill="#000" opacity=".1"/>';
   s += `<g transform="translate(170 50) scale(.875)">${avatarInner(av, face)}</g>`;
   const pet = getDef(av.pet);

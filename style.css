@@ -297,3 +297,7 @@ body.no-voice .voice-btn { display: none !important; }
 .tabs .tab { flex: 1 1 0; }
 
 @media (orientation: landscape) and (min-width: 721px) { .cols.roomy { grid-template-columns: minmax(280px, 47%) 1fr; } }
+
+.vmodal { max-width: min(620px, 94vw); }
+.vmodal p { margin: 8px 0 4px; font-size: 20px; font-weight: 800; }
+.vlist { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-height: 30vh; overflow: auto; padding: 4px 4px 8px; }
