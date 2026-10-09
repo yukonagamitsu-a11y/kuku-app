@@ -301,3 +301,13 @@ body.no-voice .voice-btn { display: none !important; }
 .vmodal { max-width: min(620px, 94vw); }
 .vmodal p { margin: 8px 0 4px; font-size: 20px; font-weight: 800; }
 .vlist { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-height: 30vh; overflow: auto; padding: 4px 4px 8px; }
+
+/* 日本語：ことばの とちゅうで 改行しない（スペースや くぎりで だけ 折り返す） */
+html[lang="ja"] .bubble, html[lang="ja"] .msg, html[lang="ja"] .fb, html[lang="ja"] .tip,
+html[lang="ja"] .section-title, html[lang="ja"] .result .big, html[lang="ja"] .coin-line,
+html[lang="ja"] .modal p, html[lang="ja"] .modal h2, html[lang="ja"] .toast, html[lang="ja"] .menu .btn small {
+  word-break: keep-all; overflow-wrap: break-word; line-break: strict; text-wrap: balance;
+}
+@media (max-width: 560px) {
+  html[lang="ja"] .menu .btn { font-size: clamp(15px, 5vw, 22px); white-space: nowrap; padding-left: 4px; padding-right: 4px; }
+}
