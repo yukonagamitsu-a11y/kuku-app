@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-09.24';
+const APP_VERSION = '2026-10-09.25';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -360,7 +360,7 @@ const COCO_LOOKS = [ // かみの いろ・ツインテール・かおは いつ
   { outfit: 'o_berry', hat: 't_flower', shoes: 's_boots' },
   { outfit: 'o_princess', hat: 't_crown', shoes: 's_pink' },
 ];
-const COCO_FREQ = [['day', 'Every day', 1], ['3days', 'Every 3 days', 3], ['week', 'Every week', 7], ['off', 'Never', 0]];
+const COCO_DAYS = 3; // ひらいた ひで 3にちごとに きがえる
 // アプリを ひらいた「ひ」を かぞえる（ひらかなかった ひは かぞえない）
 function touchCocoDay() {
   const t = dateStr();
@@ -368,8 +368,7 @@ function touchCocoDay() {
   if (S.cocoDays.date !== t) { S.cocoDays.date = t; S.cocoDays.count += 1; save(); }
 }
 function cocoLookIndex() {
-  const f = COCO_FREQ.find(x => x[0] === (S.settings.cocoChange || '3days')) || COCO_FREQ[1], n = f[2];
-  if (!n) return 0;
+  const n = COCO_DAYS;
   touchCocoDay();
   return (Math.floor((S.cocoDays.count - 1) / n) * 4) % COCO_LOOKS.length; // 4とびで ぐるぐる（となりあう ふくが にない）
 }
@@ -384,7 +383,7 @@ screens.home = () => {
   else if (l && l !== dateStr() && l !== yesterdayStr()) hello = 'Welcome back! I missed you!';
   else hello = pick(HELLO_MSG);
   const lookNow = cocoLookIndex();
-  if (S.cocoSeen !== null && S.cocoSeen !== lookNow && (S.settings.cocoChange || '3days') !== 'off') hello = 'Look! I am wearing something new today!';
+  if (S.cocoSeen !== null && S.cocoSeen !== lookNow ) hello = 'Look! I am wearing something new today!';
   S.cocoSeen = lookNow;
   app.innerHTML = frame({
     title: 'Times Table Town', home: true,
@@ -1061,7 +1060,6 @@ screens.parent = () => {
       <div class="mist-list" style="justify-content:flex-start">${weak.length ? weak.map(k => { const [a, b] = k.split('x'); return `<span class="mist">${a}×${b}＝${a * b}(missed ${S.mistakes[k]}x)</span>`; }).join('') : '<span>None yet</span>'}</div>
       <h2>⚙️ Settings</h2>
       <div class="set-row"><span>Player name</span><span class="nm"><b>${esc(S.name || '')}</b><button class="btn small" data-act="edit-name">Edit</button></span></div>
-      <div class="set-row"><span>Coco's outfit changes</span><button class="btn small" data-act="set-coco">${(COCO_FREQ.find(x => x[0] === (S.settings.cocoChange || '3days')) || COCO_FREQ[1])[1]}</button></div>
       <div class="set-row"><span>Language</span><button class="btn small" data-act="set-lang">${S.settings.lang === 'ja' ? '日本語' : 'English'}</button></div>
       <div class="set-row">Sound effects<button class="btn small toggle ${S.settings.sound ? 'on' : ''}" data-act="set-sound">${S.settings.sound ? 'ON' : 'OFF'}</button></div>
       <div class="set-row"><span>Voice settings</span><button class="btn small" data-act="set-voicecfg">${S.settings.voiceName ? esc(S.settings.voiceName) : 'Auto'}</button></div>
@@ -1101,11 +1099,6 @@ function openVoiceSettings() {
   setTimeout(render, 600); // 声の一覧が あとから ふえる たんまつ向け
 }
 actions['set-voicecfg'] = () => openVoiceSettings();
-actions['set-coco'] = async () => {
-  const cur1 = S.settings.cocoChange || '3days';
-  const k = await modal({ title: "Coco's outfit changes", buttons: COCO_FREQ.map(f => ({ label: f[1], cls: f[0] === cur1 ? 'mint' : '' })) });
-  S.settings.cocoChange = COCO_FREQ[k][0]; save(); go('parent');
-};
 actions['set-sound'] = () => { S.settings.sound = !S.settings.sound; save(); Snd.init(); Snd.play('ok'); go('parent'); };
 actions['set-voice'] = () => { S.settings.voice = !S.settings.voice; save(); go('parent'); };
 actions['set-limit'] = async () => {
