@@ -31,9 +31,9 @@ const JA_EXACT = {
   'Back to learning': 'もういちど よむ',
   // あそぼう
   'Which times tables to play?': 'どの だんを あそぶ？', 'Pick a game!': 'ゲームを えらんでね！',
-  'Froggy Hop': 'ぴょんぴょんカエル', 'Hop to the right leaf': 'こたえの はっぱに ジャンプ', 'You made it to the other shore!': 'むこうぎしに ついたよ！',
+  'Froggy Hop': 'ぴょんぴょん カエル', 'Hop to the right leaf': 'こたえの はっぱに ジャンプ', 'You made it to the other shore!': 'むこうぎしに ついたよ！',
   'Balloon Pop': 'ふうせんわり', 'Tap the right balloon': 'こたえの ふうせんを タップ',
-  'Sweet Shop': 'かわいいおみせやさん', 'Fill the orders': 'ちゅうもんを うけよう',
+  'Sweet Shop': 'かわいい おみせやさん', 'Fill the orders': 'ちゅうもんを うけよう',
   'Whack-a-Mole': 'もぐらたたき', 'Tap the right mole': 'こたえの もぐらを タップ',
   "Time's up! Great effort!": 'じかんだよ！ よくがんばったね',
   // ためしてみよう
@@ -126,7 +126,7 @@ function jaTr(s) {
 }
 const JA_PATTERNS = [
   [/^Quiz (\d+)\/9$/, m => `おぼえたかな？ ${m[1]}/9`],
-  [/^Sweet Shop (\d+)\/(\d+)$/, m => `かわいいおみせやさん ${m[1]}/${m[2]}`],
+  [/^Sweet Shop (\d+)\/(\d+)$/, m => `かわいい おみせやさん ${m[1]}/${m[2]}`],
   [/^Test (\d+)\/(\d+)$/, m => `ためしてみよう ${m[1]}/${m[2]}`],
   [/^(\d+)のだん Quiz$/, m => `${m[1]}のだん おぼえたかな？`],
   [/^⭐ (\d+)のだん stamp earned!$/, m => `⭐ ${m[1]}のだん スタンプ ゲット！`],

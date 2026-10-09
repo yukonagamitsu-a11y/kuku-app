@@ -309,7 +309,7 @@ html[lang="ja"] .modal p, html[lang="ja"] .modal h2, html[lang="ja"] .toast, htm
   word-break: keep-all; overflow-wrap: break-word; line-break: strict; text-wrap: balance;
 }
 @media (max-width: 560px) {
-  html[lang="ja"] .menu .btn { font-size: clamp(15px, 5vw, 22px); white-space: nowrap; padding-left: 4px; padding-right: 4px; }
+  html[lang="ja"] .menu .btn { font-size: clamp(15px, 5vw, 22px); white-space: normal; padding-left: 4px; padding-right: 4px; }
 }
 
 /* ふきだし：おおきさ ぴったり ふへんに（もじが ながいと もじが ちいさくなる） */
@@ -362,3 +362,10 @@ html[lang="ja"] .modal p, html[lang="ja"] .modal h2, html[lang="ja"] .toast, htm
 .menu .btn .ico-svg svg { width: 100%; height: 100%; display: block; }
 
 .menu .btn .ico-svg svg { filter: drop-shadow(0 2px 0 rgba(255,255,255,.7)); }
+
+/* 日本語のメニュー：ことばの とちゅうで 折り返さない（スペースの ところだけ） */
+html[lang="ja"] .menu .btn { word-break: keep-all; overflow-wrap: break-word; line-break: strict; text-wrap: balance; line-height: 1.2; }
+
+/* モグラ：ヘルメットまで ぜんぶ みえるように、あなの たかさに あわせる */
+.mole { width: auto !important; height: 80%; aspect-ratio: 100 / 140; max-width: 90%; bottom: 17%; }
+.moleimg { width: 100%; height: 100%; display: block; }

@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-09.49';
+const APP_VERSION = '2026-10-09.51';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -550,7 +550,7 @@ screens.play = () => {
       <div class="menu" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:8px">
         <button class="btn pink" data-act="g-balloon"><span class="ico ico-svg">${balloonIcon()}</span>Balloon Pop<small>Tap the right balloon</small></button>
         <button class="btn mint" data-act="g-shop"><span class="ico ico-svg">${cupcakeIcon()}</span>Sweet Shop<small>Fill the orders</small></button>
-        <button class="btn lav" data-act="g-mole"><span class="ico ico-svg">${moleSVG('?')}</span>Whack-a-Mole<small>Tap the right mole</small></button>
+        <button class="btn lav" data-act="g-mole"><span class="ico ico-svg">${moleIcon()}</span>Whack-a-Mole<small>Tap the right mole</small></button>
         <button class="btn sky" data-act="g-frog"><span class="ico ico-svg">${frogSVG('happy')}</span>Froggy Hop<small>Hop to the right leaf</small></button>
       </div>`,
   });
@@ -711,15 +711,21 @@ actions['shop-ans'] = el => {
 
 /* ---- もぐらたたき ---- */
 let MO = null;
-const moleSVG = v => `<svg class="moleimg" viewBox="0 0 100 120" aria-hidden="true">
-  <rect x="14" y="30" width="72" height="80" rx="26" fill="#a9734a"/>
-  <rect x="26" y="62" width="48" height="36" rx="16" fill="#e8c7a4"/>
-  <rect x="26" y="40" width="10" height="14" rx="5" fill="#4a3340"/><rect x="64" y="40" width="10" height="14" rx="5" fill="#4a3340"/>
-  <circle cx="29" cy="44" r="2.6" fill="#fff"/><circle cx="67" cy="44" r="2.6" fill="#fff"/>
-  <rect x="40" y="52" width="20" height="13" rx="6" fill="#ff8fb8"/>
-  <circle cx="20" cy="58" r="6" fill="#ff9bb5" opacity=".6"/><circle cx="80" cy="58" r="6" fill="#ff9bb5" opacity=".6"/>
-  <rect x="18" y="72" width="64" height="44" rx="10" fill="#fff" stroke="#ff8fb8" stroke-width="5"/>
-  <text x="50" y="106" text-anchor="middle" font-size="34" font-weight="900" fill="#5A3E48" font-family="inherit">${v}</text></svg>`;
+const moleArt = (v, vb) => `<svg class="moleimg" viewBox="${vb}" aria-hidden="true">
+  <circle cx="18" cy="42" r="11" fill="#a9734a"/><circle cx="18" cy="42" r="5.5" fill="#ff9bb5"/>
+  <circle cx="82" cy="42" r="11" fill="#a9734a"/><circle cx="82" cy="42" r="5.5" fill="#ff9bb5"/>
+  <rect x="14" y="26" width="72" height="100" rx="30" fill="#a9734a"/>
+  <rect x="28" y="76" width="44" height="40" rx="16" fill="#e8c7a4"/>
+  <rect x="30" y="56" width="10" height="14" rx="5" fill="#4a3340"/><rect x="60" y="56" width="10" height="14" rx="5" fill="#4a3340"/>
+  <circle cx="33" cy="60" r="2.8" fill="#fff"/><circle cx="63" cy="60" r="2.8" fill="#fff"/>
+  <circle cx="22" cy="76" r="6" fill="#ff9bb5" opacity=".65"/><circle cx="78" cy="76" r="6" fill="#ff9bb5" opacity=".65"/>
+  <rect x="40" y="68" width="20" height="13" rx="6.5" fill="#ff8fb8"/><path d="M44 86 Q50 92 56 86" fill="none" stroke="#4a3340" stroke-width="3" stroke-linecap="round"/>
+  <path d="M20 46 Q20 6 50 6 Q80 6 80 46 Z" fill="#ffd84a"/><rect x="40" y="6" width="20" height="9" rx="3" fill="#f0b400"/><rect x="13" y="42" width="74" height="10" rx="5" fill="#f0b400"/>
+  <ellipse cx="34" cy="24" rx="9" ry="5" fill="#fff" opacity=".55" transform="rotate(-25 34 24)"/><circle cx="50" cy="30" r="5" fill="#fff6c2" stroke="#f0b400" stroke-width="2"/>
+  ${v === null || v === undefined ? '' : `<rect x="18" y="94" width="64" height="40" rx="10" fill="#fff" stroke="#ff8fb8" stroke-width="5"/><text x="50" y="126" text-anchor="middle" font-size="34" font-weight="900" fill="#5A3E48" font-family="inherit">${v}</text>`}
+</svg>`;
+const moleSVG = v => moleArt(v, '0 0 100 140');
+const moleIcon = () => moleArt(null, '0 0 100 126');
 screens.mole = () => {
   app.innerHTML = frame({
     title: 'Whack-a-Mole', back: 'play', mainCls: 'fl',
