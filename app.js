@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-10.58';
+const APP_VERSION = '2026-10-11.60';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -14,6 +14,14 @@ const dateStr = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 
 const yesterdayStr = () => dateStr(new Date(Date.now() - 864e5));
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
+/* =============== 九九の となえ：日本語 または 韓国語（がめんの ことばとは べつに えらべる） =============== */
+const KO_DIGIT = ['', '일', '이', '삼', '사', '오', '육', '칠', '팔', '구'];
+function koNum(x) { if (x < 10) return KO_DIGIT[x]; const t = Math.floor(x / 10), o = x % 10; return (t === 1 ? '십' : KO_DIGIT[t] + '십') + (o ? KO_DIGIT[o] : ''); }
+const koChant = (a, b) => `${KO_DIGIT[a]}${KO_DIGIT[b]}${b === 1 ? '은' : ''} ${koNum(a * b)}`; // 예: 이일은 이, 삼사 십이
+function chantLang() { return (typeof S !== 'undefined' && S.settings && S.settings.chant === 'ko') ? 'ko' : 'ja'; }
+function chant(a, b) { return chantLang() === 'ko' ? koChant(a, b) : kukuReading[a][b]; }
+function danLabel(n) { return chantLang() === 'ko' ? n + '단' : n + 'のだん'; }
+
 /* =============== 保存データ =============== */
 const defaultState = () => ({
   coins: 0,
@@ -23,7 +31,7 @@ const defaultState = () => ({
   mastery: {}, mistakes: {}, attempts: {}, correct: {},
   masteredDans: [], stamps: [],
   today: { date: null, seconds: 0 },
-  settings: { sound: true, voice: true, dailyLimitMinutes: 0, lang: null, cocoChange: '3days' },
+  settings: { sound: true, voice: true, dailyLimitMinutes: 0, lang: null, cocoChange: '3days', chant: 'ja' },
   seenHello: false,
   name: '',
   daily: { date: null, counts: {} },
@@ -102,7 +110,7 @@ const Voice = {
   refresh() {
     let miss = false;
     if (!('speechSynthesis' in window)) miss = true;
-    else { const v = speechSynthesis.getVoices(); if (v.length && !v.some(x => /^ja/i.test(x.lang))) miss = true; }
+    else { const v = speechSynthesis.getVoices(), re = chantLang() === 'ko' ? /^ko/i : /^ja/i; if (v.length && !v.some(x => re.test(x.lang))) miss = true; }
     this.missing = miss;
     document.body.classList.toggle('no-voice', !this.ok());
   },
@@ -112,8 +120,9 @@ const Voice = {
     try {
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
-      u.lang = 'ja-JP'; u.rate = .85; u.pitch = 1.15;
-      const v = speechSynthesis.getVoices().find(x => /^ja/i.test(x.lang)); if (v) u.voice = v;
+      const ko = chantLang() === 'ko';
+      u.lang = ko ? 'ko-KR' : 'ja-JP'; u.rate = .85; u.pitch = 1.15;
+      const v = speechSynthesis.getVoices().find(x => (ko ? /^ko/i : /^ja/i).test(x.lang)); if (v) u.voice = v;
       let fired = false;
       const fin = () => { if (fired || my !== this.token) return; fired = true; clearTimeout(this.timer); if (done) done(); };
       u.onend = fin; u.onerror = fin;
@@ -181,7 +190,8 @@ function askName(first) {
     const o = document.createElement('div'); o.className = 'overlay';
     o.innerHTML = `<div class="modal"><h2>What's your name?</h2>
       <input id="nameIn" class="name-in" maxlength="12" autocomplete="off" placeholder="${ph}" value="${esc(S.name || '')}">
-      <div class="row-btns">${first ? '<button class="btn small" data-l="en">English</button><button class="btn small" data-l="ja">日本語</button>' : '<button class="btn lemon" data-i="0">Cancel</button>'}<button class="btn pink" data-i="1">Save</button></div></div>`;
+      ${first ? `<p class="mini">Times table chant</p><div class="row-btns" style="margin-top:0"><button class="btn small ${chantLang() === 'ja' ? 'mint' : ''}" data-c="ja">日本語</button><button class="btn small ${chantLang() === 'ko' ? 'mint' : ''}" data-c="ko">한국어</button></div>` : ''}
+      <div class="row-btns">${first ? `<button class="btn small ${S.settings.lang === 'en' ? 'mint' : ''}" data-l="en">English</button><button class="btn small ${S.settings.lang === 'ja' ? 'mint' : ''}" data-l="ja">日本語</button>` : '<button class="btn lemon" data-i="0">Cancel</button>'}<button class="btn pink" data-i="1">Save</button></div></div>`;
     const save1 = () => {
       const v = $('#nameIn', o).value.trim();
       if (!v) { $('#nameIn', o).focus(); return; }
@@ -191,6 +201,7 @@ function askName(first) {
       const b = e.target.closest('button'); if (!b) return;
       Snd.play('tap');
       if (b.dataset.l) { S.settings.lang = b.dataset.l; save(); I18N.refreshMeta(); const cur1 = $('#nameIn', o).value; o.remove(); S.name = cur1.trim() || S.name; askName(first).then(res); return; }
+      if (b.dataset.c) { S.settings.chant = b.dataset.c; save(); Voice.refresh(); const cur2 = $('#nameIn', o).value; o.remove(); S.name = cur2.trim() || S.name; askName(first).then(res); return; }
       if (b.dataset.i === '0') { o.remove(); res(false); } else save1();
     });
     o.addEventListener('keydown', e => { if (e.key === 'Enter') save1(); });
@@ -343,7 +354,7 @@ let selDans = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 function danPickerHTML() {
   const all = selDans.size === 9;
   return `<button class="dan-chip ${all ? 'on' : ''}" data-act="dan-all" lang="ja" translate="no">ぜんぶ</button>` +
-    [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button class="dan-chip ${!all && selDans.has(n) ? 'on' : ''}" data-act="dan-tog" data-n="${n}" lang="ja" translate="no">${n}のだん<small>🪙×${Math.max(1, Math.round(danCoinAvg(n)))}</small></button>`).join('');
+    [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button class="dan-chip ${!all && selDans.has(n) ? 'on' : ''}" data-act="dan-tog" data-n="${n}" lang="${chantLang()}" translate="no">${danLabel(n)}<small>🪙×${Math.max(1, Math.round(danCoinAvg(n)))}</small></button>`).join('');
 }
 actions['dan-all'] = () => { selDans = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]); $('#picker').innerHTML = danPickerHTML(); };
 actions['dan-tog'] = el => {
@@ -433,7 +444,7 @@ screens.learn = () => {
     body: `<p class="section-title">Which times table?</p><div class="dan-grid">` +
       [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => {
         const stamp = S.stamps.includes(n), master = S.masteredDans.includes(n);
-        return `<button class="btn ${DAN_COLORS[(n - 1) % 5]} dan-card" data-act="dan" data-n="${n}"><span lang="ja" translate="no">${n}のだん</span><small>${master ? 'Master!' : stamp ? 'Stamp earned' : 'Practice'}</small>${master ? '<span class="stamp">👑</span>' : stamp ? '<span class="stamp">⭐</span>' : ''}</button>`;
+        return `<button class="btn ${DAN_COLORS[(n - 1) % 5]} dan-card" data-act="dan" data-n="${n}"><span lang="${chantLang()}" translate="no">${danLabel(n)}</span><small>${master ? 'Master!' : stamp ? 'Stamp earned' : 'Practice'}</small>${master ? '<span class="stamp">👑</span>' : stamp ? '<span class="stamp">⭐</span>' : ''}</button>`;
       }).join('') + '</div>',
   });
 };
@@ -443,11 +454,11 @@ let L = null;
 screens.dan = ({ n }) => {
   L = { n, sel: 1, playing: false };
   app.innerHTML = frame({
-    title: `<span lang="ja" translate="no">${n}のだん</span>`, back: 'learn', mainCls: 'fl',
+    title: `<span lang="${chantLang()}" translate="no">${danLabel(n)}</span>`, back: 'learn', mainCls: 'fl',
     body: `<div class="cols learn">
       <div class="panel kuku-list" id="klist">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(b => `
         <div class="krow ${b === 1 ? 'sel' : ''}" data-act="row" data-b="${b}" id="kr${b}">
-          <span class="eq">${n}×${b}＝${n * b}</span><span class="yomi" lang="ja" translate="no">${kukuReading[n][b]}</span>
+          <span class="eq">${n}×${b}＝${n * b}</span><span class="yomi" lang="${chantLang()}" translate="no">${chant(n, b)}</span>
           <button class="speak voice-btn" data-act="speak" data-b="${b}" aria-label="Listen">🔊</button>
         </div>`).join('')}</div>
       <div class="array-col"><div class="panel array-panel" id="arr"></div>
@@ -480,7 +491,7 @@ function fitArray(n, b) {
 }
 actions.row = el => {
   if (L.playing) stopReadAll();
-  const b = +el.dataset.b; showArray(b); Voice.speak(kukuReading[L.n][b]);
+  const b = +el.dataset.b; showArray(b); Voice.speak(chant(L.n, b));
 };
 actions.speak = (el, ev) => { ev.stopPropagation(); actions.row(el.closest('.krow')); };
 function stopReadAll() {
@@ -496,7 +507,7 @@ actions.readall = () => {
     if (b > 9) { stopReadAll(); return; }
     document.querySelectorAll('.krow.now').forEach(r => r.classList.remove('now'));
     $('#kr' + b).classList.add('now'); showArray(b);
-    Voice.speak(kukuReading[L.n][b], () => setTimeout(() => step(b + 1), 350));
+    Voice.speak(chant(L.n, b), () => setTimeout(() => step(b + 1), 350));
   };
   step(1);
 };
@@ -546,10 +557,10 @@ actions['dq-ans'] = el => {
 };
 function finishDQ() {
   let note = '';
-  if (DQ.ok >= 8) { if (!S.stamps.includes(DQ.n)) S.stamps.push(DQ.n); note = `⭐ ${DQ.n}のだん stamp earned!`; }
+  if (DQ.ok >= 8) { if (!S.stamps.includes(DQ.n)) S.stamps.push(DQ.n); note = `⭐ ${danLabel(DQ.n)} stamp earned!`; }
   else note = 'Practice a little more and try again!';
   const n = DQ.n;
-  finishSession({ title: `${n}のだん Quiz`, ok: DQ.ok, total: 9, coins: sessionCoins(DQ.ok), note, retry: () => go('dan', { n }), retryLabel: 'Back to learning' });
+  finishSession({ title: `${danLabel(n)} Quiz`, ok: DQ.ok, total: 9, coins: sessionCoins(DQ.ok), note, retry: () => go('dan', { n }), retryLabel: 'Back to learning' });
 }
 
 /* =============== あそぼう =============== */
@@ -973,7 +984,7 @@ function renderTest() {
   let lower;
   if (T.phase === 'ask') lower = `<div class="keypad">${keys}</div>`;
   else if (T.fb) lower = `<div class="fb ok">⭕ Correct! ${pick(OK_MSG)}</div><div class="row-btns"><button class="btn pink" data-act="test-next">Next ▶</button></div>`;
-  else lower = `<div class="fb ng">💡 The answer is ${q.a * q.b}<small lang="ja" translate="no">${kukuReading[q.a][q.b]}</small><small>${pick(NG_MSG)}</small></div><div class="row-btns"><button class="btn pink" data-act="test-next">Next ▶</button></div>`;
+  else lower = `<div class="fb ng">💡 The answer is ${q.a * q.b}<small lang="${chantLang()}" translate="no">${chant(q.a, q.b)}</small><small>${pick(NG_MSG)}</small></div><div class="row-btns"><button class="btn pink" data-act="test-next">Next ▶</button></div>`;
   app.innerHTML = frame({
     title: `Test ${T.i + 1}/${T.qs.length}`, back: 'testsel', mainCls: 'fl',
     body: `<div class="qbanner" style="margin:6px 0">${q.a}×${q.b}＝<span class="ans-box" id="ansbox">${T.phase === 'ask' ? (T.input || '　') : (T.fb ? q.a * q.b : T.input)}</span></div>${lower}`,
@@ -1036,7 +1047,7 @@ screens.result = () => {
   else msg = "Good effort! Let's try again together";
   const gainHTML = r.gained.map(id => {
     const it = ITEM_BY_ID[id], m = r.masters.find(x => x.item === id);
-    return `<div class="gain-card"><div class="thumbbox">${thumb(it)}</div><div>${m ? `${m.dan}のだん Master!<br>` : ''}<b>${it.name}</b><div class="stars-lg" style="font-size:20px">${'★'.repeat(it.rar)}</div></div></div>`;
+    return `<div class="gain-card"><div class="thumbbox">${thumb(it)}</div><div>${m ? `${danLabel(m.dan)} Master!<br>` : ''}<b>${it.name}</b><div class="stars-lg" style="font-size:20px">${'★'.repeat(it.rar)}</div></div></div>`;
   }).join('');
   app.innerHTML = frame({
     title: esc(r.title), back: 'home',
@@ -1049,7 +1060,7 @@ screens.result = () => {
         ${r.note ? `<div class="coin-line" style="margin-top:6px">${r.note}</div>` : ''}
         ${r.tired ? '<div class="tip">🌱 You practiced these a lot today, so coins are lower. Try other times tables!</div>' : ''}
         ${r.easy ? '<div class="tip">💡 Tip: bigger times tables earn more coins!</div>' : ''}
-        ${r.masters.length ? `<div class="coin-line">🎉 ${r.masters.map(m => m.dan + 'のだん').join(', ')} mastered!</div>` : ''}
+        ${r.masters.length ? `<div class="coin-line">🎉 ${r.masters.map(m => danLabel(m.dan)).join(', ')} mastered!</div>` : ''}
         ${gainHTML ? `<div class="gain">${gainHTML}</div>` : ''}
         ${r.mist && r.mist.length ? `<div class="section-title">Check these answers</div><div class="mist-list">${r.mist.map(q => `<span class="mist">${q.a}×${q.b}＝${q.a * q.b}</span>`).join('')}</div>` : ''}
         <div class="row-btns">
@@ -1090,7 +1101,7 @@ function zukanHTML() {
     const list = ITEMS.filter(i => i.cat === c.id);
     return `<div class="sect">${c.icon} ${c.name}</div><div class="grid">${list.map(i => {
       const own = isOwned(i.id);
-      const hint = i.lim ? `Master ${i.lim}のだん` : i.sp ? 'Score 100 on a test' : 'Shop or Capsules';
+      const hint = i.lim ? `Master ${danLabel(i.lim)}` : i.sp ? 'Score 100 on a test' : 'Shop or Capsules';
       return `<div class="cell ${own ? '' : 'sil'}"><div class="tb">${thumb(i)}</div>${own ? i.name : '？？？'}<span class="stars">${starsOf(i.rar)}</span>${own ? '' : `<span style="font-size:14px;color:var(--ink-soft)">${hint}</span>`}</div>`;
     }).join('')}</div>`;
   }).join('');
@@ -1220,7 +1231,7 @@ screens.parent = () => {
   for (let d = 1; d <= 9; d++) {
     let m = 0, at = 0, co = 0;
     for (let b = 1; b <= 9; b++) { const k = qkey(d, b); m += S.mastery[k] || 0; at += S.attempts[k] || 0; co += S.correct[k] || 0; }
-    rows.push(`<div class="bar-row"><span class="lbl">${d}の段</span><div class="bar"><i style="width:${m / 27 * 100}%"></i></div><span class="val">${at ? `${Math.round(co / at * 100)}% correct (${at} tries)` : 'Not yet'}</span></div>`);
+    rows.push(`<div class="bar-row"><span class="lbl">${chantLang() === 'ko' ? d + '단' : d + 'の段'}</span><div class="bar"><i style="width:${m / 27 * 100}%"></i></div><span class="val">${at ? `${Math.round(co / at * 100)}% correct (${at} tries)` : 'Not yet'}</span></div>`);
   }
   const mins = S.today.date === dateStr() ? Math.floor(S.today.seconds / 60) : 0;
   const lim = S.settings.dailyLimitMinutes;
@@ -1232,6 +1243,7 @@ screens.parent = () => {
       <div class="mist-list" style="justify-content:flex-start">${weak.length ? weak.map(k => { const [a, b] = k.split('x'); return `<span class="mist">${a}×${b}＝${a * b}(missed ${S.mistakes[k]}x)</span>`; }).join('') : '<span>None yet</span>'}</div>
       <h2>⚙️ Settings</h2>
       <div class="set-row"><span>Player name</span><span class="nm"><b>${esc(S.name || '')}</b><button class="btn small" data-act="edit-name">Edit</button></span></div>
+      <div class="set-row"><span>Chant language</span><button class="btn small" data-act="set-chant" lang="${chantLang()}">${chantLang() === 'ko' ? '한국어' : '日本語'}</button></div>
       <div class="set-row"><span>Language</span><button class="btn small" data-act="set-lang">${S.settings.lang === 'ja' ? '日本語' : 'English'}</button></div>
       <div class="set-row">Sound effects<button class="btn small toggle ${S.settings.sound ? 'on' : ''}" data-act="set-sound">${S.settings.sound ? 'ON' : 'OFF'}</button></div>
       <div class="set-row">Voice reading<button class="btn small toggle ${S.settings.voice ? 'on' : ''}" data-act="set-voice">${S.settings.voice ? 'ON' : 'OFF'}</button></div>
@@ -1244,6 +1256,10 @@ screens.parent = () => {
 };
 actions['edit-name'] = () => askName(false).then(ok => { if (ok) { toast('Name saved!'); go('parent'); } });
 actions['set-lang'] = () => { S.settings.lang = S.settings.lang === 'ja' ? 'en' : 'ja'; save(); I18N.refreshMeta(); go('parent'); };
+actions['set-chant'] = async () => {
+  const k = await modal({ title: 'Chant language', buttons: [{ label: '日本語', cls: chantLang() === 'ja' ? 'mint' : '' }, { label: '한국어', cls: chantLang() === 'ko' ? 'mint' : '' }] });
+  S.settings.chant = k === 1 ? 'ko' : 'ja'; save(); Voice.refresh(); go('parent');
+};
 actions['set-sound'] = () => { S.settings.sound = !S.settings.sound; save(); Snd.init(); Snd.play('ok'); go('parent'); };
 actions['set-voice'] = () => { S.settings.voice = !S.settings.voice; save(); go('parent'); };
 actions['set-limit'] = async () => {
