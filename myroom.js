@@ -16,9 +16,17 @@ const MR_CATS = [
   { id: 'ceiling', name: 'Ceiling', icon: '💡', optional: true },
   { id: 'corner', name: 'Corner', icon: '🪴', optional: true },
 ];
+// ===== おへやの レイアウト（480x280）=====
+// かべ（上）： [ たな 12-116 ] [ ランプ用のあき 120-200 ] [ アバターの あたま 205-275 ] [ まど 292-384 ] [ ポスター 390-472 ]
+// ゆか（下）： [ ベッド 4-112 ] [ ペット 122-182 ] [ アバター 170-310 ] [ すみっこ 314-362 ] [ つくえ 364-476 ]
+// あたらしい かざりを ふやすときも、この はんいの なかで えがくこと（test: MR_ZONES で チェックできる）
+const MR_ZONES = {
+  shelf: [8, 118], window: [290, 386], poster: [388, 476], // かべ（たな・まど・ポスター）
+  bed: [0, 114], corner: [306, 362], desk: [364, 480], // ゆか（ベッド・すみっこ・つくえ）
+};
 const MR_BOX = {
   wall: [0, 0, 480, 196], floor: [0, 196, 480, 84], bed: [0, 118, 116, 124], desk: [356, 134, 124, 106],
-  shelf: [10, 24, 112, 94], window: [86, 24, 84, 94], poster: [366, 22, 102, 92], rug: [120, 218, 240, 58],
+  shelf: [10, 24, 112, 94], window: [290, 24, 98, 94], poster: [386, 24, 92, 84], rug: [120, 218, 240, 58],
   ceiling: [0, 0, 480, 56], corner: [310, 140, 56, 100],
 };
 // tier: 1=さいしょから / 2=家具を6こ買うと / 3=14こ買うと
@@ -65,11 +73,14 @@ MR_ITEMS.forEach(i => { MR_BY_ID[i.id] = i; });
 const mrStar = (cx, cy, R, r, fill) => `<polygon points="${starPts(cx, cy, R, r)}" fill="${fill}"/>`;
 
 /* ---------- 家具・壁紙・ゆかの絵（お部屋 480x280 の座標） ---------- */
-// まどは 中央よりも 左がわに よせて かざる
-const MR_WINDOW_SHIFT = -34;
+// まどは みぎがわの かべ、ポスターは そのとなり（たなと かさならない ばしょ）
+const MR_WINDOW_SHIFT = 176;
+const MR_POSTER_TF = 'translate(432 67) scale(.86) translate(-417 -67)';
 function mrDraw(id) {
-  const raw = mrDrawRaw(id);
-  return MR_BY_ID[id] && MR_BY_ID[id].slot === 'window' ? `<g transform="translate(${MR_WINDOW_SHIFT} 0)">${raw}</g>` : raw;
+  const raw = mrDrawRaw(id), it = MR_BY_ID[id];
+  if (it && it.slot === 'window') return `<g transform="translate(${MR_WINDOW_SHIFT} 0)">${raw}</g>`;
+  if (it && it.slot === 'poster') return `<g transform="${MR_POSTER_TF}">${raw}</g>`;
+  return raw;
 }
 function mrDrawRaw(id) {
   switch (id) {
@@ -113,11 +124,11 @@ function mrDrawRaw(id) {
     // てんじょう
     case 'c_garland': { let s = '<path d="M0 8 Q120 44 240 14 T480 8" fill="none" stroke="#e8b4c8" stroke-width="3"/>'; const cols = ['#ff8fb8', '#ffe27a', '#8fe3c8', '#8fd0ff', '#c9b6ff']; for (let i = 0; i < 11; i++) { const x = 20 + i * 44, y = 8 + Math.sin(i / 10 * Math.PI * 2 + .6) * 4 + (i % 5 === 2 ? 14 : 18); s += `<polygon points="${x - 11},${y - 6} ${x + 11},${y - 6} ${x},${y + 20}" fill="${cols[i % 5]}"/>`; } return s; }
     case 'c_lamp': return '<rect x="149" y="0" width="3" height="26" fill="#8d6f7a"/><path d="M128 52 L140 24 H162 L174 52Z" fill="#ffe27a" stroke="#f0c040" stroke-width="2" stroke-linejoin="round"/><ellipse cx="151" cy="54" rx="22" ry="4" fill="#fff7c0" opacity=".8"/>';
-    case 'c_stars': return [[70, 40, 12], [150, 24, 9], [330, 30, 10], [410, 44, 13]].map(p => `<rect x="${p[0] - 1}" y="0" width="2" height="${p[1] - p[2]}" fill="#c9b6ff"/>` + mrStar(p[0], p[1], p[2], p[2] / 2.2, '#ffe27a')).join('');
+    case 'c_stars': return [[140, 46, 11], [188, 26, 8], [405, 16, 8]].map(p => `<rect x="${p[0] - 1}" y="0" width="2" height="${p[1] - p[2]}" fill="#c9b6ff"/>` + mrStar(p[0], p[1], p[2], p[2] / 2.2, '#ffe27a')).join('');
     // すみっこ
-    case 'x_plant': return '<rect x="322" y="208" width="34" height="28" rx="6" fill="#ff9f7a"/><rect x="328" y="204" width="22" height="8" fill="#ff8a5c"/><ellipse cx="330" cy="188" rx="9" ry="20" fill="#5cc27a" transform="rotate(-24 330 188)"/><ellipse cx="348" cy="184" rx="9" ry="22" fill="#4aae68" transform="rotate(22 348 184)"/><ellipse cx="339" cy="178" rx="8" ry="22" fill="#6fd08c"/>';
+    case 'x_plant': return '<g transform="translate(-8 0)"><rect x="322" y="208" width="34" height="28" rx="6" fill="#ff9f7a"/><rect x="328" y="204" width="22" height="8" fill="#ff8a5c"/><ellipse cx="330" cy="188" rx="9" ry="20" fill="#5cc27a" transform="rotate(-24 330 188)"/><ellipse cx="348" cy="184" rx="9" ry="22" fill="#4aae68" transform="rotate(22 348 184)"/><ellipse cx="339" cy="178" rx="8" ry="22" fill="#6fd08c"/></g>';
     case 'x_toybox': return '<rect x="316" y="206" width="46" height="30" rx="5" fill="#8fd0ff"/><rect x="316" y="206" width="46" height="8" rx="3" fill="#6fb6ec"/><rect x="324" y="188" width="14" height="14" fill="#ff8fb8"/><rect x="340" y="192" width="12" height="12" fill="#ffe27a"/><circle cx="348" cy="184" r="8" fill="#ff6b7a"/><circle cx="339" cy="222" r="5" fill="#fff"/>';
-    case 'x_aquarium': return '<rect x="314" y="218" width="50" height="20" rx="3" fill="#c98f5b"/><rect x="314" y="170" width="50" height="50" rx="5" fill="#bfeaff" stroke="#fff" stroke-width="3"/><rect x="316" y="196" width="46" height="22" fill="#8fd0ff" opacity=".7"/><ellipse cx="334" cy="188" rx="7" ry="4.5" fill="#ff9f43"/><polygon points="341,188 348,183 348,193" fill="#ff9f43"/><ellipse cx="350" cy="206" rx="5" ry="3" fill="#ff8fb8"/><circle cx="326" cy="178" r="2" fill="#fff"/><circle cx="330" cy="172" r="1.5" fill="#fff"/><path d="M320 218 q2 -12 6 0 M352 218 q-2 -10 -5 0" stroke="#5cc27a" stroke-width="3" fill="none"/>';
+    case 'x_aquarium': return '<g transform="translate(-8 0)"><rect x="314" y="218" width="50" height="20" rx="3" fill="#c98f5b"/><rect x="314" y="170" width="50" height="50" rx="5" fill="#bfeaff" stroke="#fff" stroke-width="3"/><rect x="316" y="196" width="46" height="22" fill="#8fd0ff" opacity=".7"/><ellipse cx="334" cy="188" rx="7" ry="4.5" fill="#ff9f43"/><polygon points="341,188 348,183 348,193" fill="#ff9f43"/><ellipse cx="350" cy="206" rx="5" ry="3" fill="#ff8fb8"/><circle cx="326" cy="178" r="2" fill="#fff"/><circle cx="330" cy="172" r="1.5" fill="#fff"/><path d="M320 218 q2 -12 6 0 M352 218 q-2 -10 -5 0" stroke="#5cc27a" stroke-width="3" fill="none"/></g>';
     default: return '';
   }
 }
@@ -126,11 +137,11 @@ function myRoomSVG(av, my, face) {
   const p = (my && my.placed) || {};
   let s = '<svg class="scene myroom" viewBox="0 0 480 280" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">';
   s += mrDraw(p.wall || 'w_cream') + mrDraw(p.floor || 'f_wood') + '<rect y="190" width="480" height="8" fill="#fff" opacity=".55"/>';
-  ['rug', 'ceiling', 'window', 'shelf', 'poster', 'bed', 'desk', 'corner'].forEach(k => { if (p[k]) s += mrDraw(p[k]); });
+  ['rug', 'ceiling', 'shelf', 'window', 'poster', 'bed', 'desk', 'corner'].forEach(k => { if (p[k]) s += mrDraw(p[k]); });
   s += '<ellipse cx="240" cy="246" rx="44" ry="7" fill="#000" opacity=".1"/>';
   s += `<g transform="translate(170 50) scale(.875)">${avatarInner(av, face)}</g>`;
   const pet = getDef(av.pet);
-  if (pet) s += `<g transform="translate(106 190)">${petSVG(pet.kind)}</g>`;
+  if (pet) s += `<g transform="translate(122 190)">${petSVG(pet.kind)}</g>`;
   return s + '</svg>';
 }
 function mrThumb(it) {

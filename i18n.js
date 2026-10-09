@@ -11,6 +11,7 @@ const JA_EXACT = {
   // ホーム
   'Times Table Town': 'くくの ひみつのまち',
   "Hi! I'm Coco. Let's play together!": 'はじめまして！ ここちゃんだよ。いっしょに あそぼう！',
+  'Look! I am wearing something new today!': 'みて！ きょうは あたらしい おようふくだよ！',
   'Welcome back! I missed you!': 'またあえたね！ あいたかったよ！',
   "Let's do our best today!": 'きょうも いっしょに がんばろう！',
   'Welcome! What shall we play?': 'ようこそ！ なにして あそぶ？',
@@ -101,6 +102,7 @@ const JA_EXACT = {
 };
 // 保護者メニューは大人向け（漢字まじり）
 Object.assign(JA_EXACT, {
+  "Coco's outfit changes": 'ここちゃんの着替え', 'Every day': '毎日', 'Every 3 days': '3日ごと', 'Every week': '1週間ごと', Never: '変えない',
   'Voice settings': '音声の設定', 'Tap a voice to hear it': '声をタップすると試し聞きできます', 'Auto (recommended)': '自動（おすすめ）', Auto: '自動',
   Speed: '速さ', Pitch: '高さ', Slow: 'ゆっくり', Normal: 'ふつう', Fast: '速い', Low: '低い', High: '高い', Close: '閉じる',
   'No Japanese voices found on this device. You can add one in Android Settings → Text-to-speech output.': '日本語の音声が見つかりません。Androidの「設定」→「一般管理」→「言語」→「テキスト読み上げ」から日本語の音声を追加できます。',
