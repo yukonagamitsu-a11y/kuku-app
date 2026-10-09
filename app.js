@@ -1,8 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-12.64'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-12.62';
+const APP_VERSION = '2026-10-12.64';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -1244,8 +1245,8 @@ screens.parent = () => {
       <div class="mist-list" style="justify-content:flex-start">${weak.length ? weak.map(k => { const [a, b] = k.split('x'); return `<span class="mist">${a}×${b}＝${a * b}(missed ${S.mistakes[k]}x)</span>`; }).join('') : '<span>None yet</span>'}</div>
       <h2>⚙️ Settings</h2>
       <div class="set-row"><span>Player name</span><span class="nm"><b>${esc(S.name || '')}</b><button class="btn small" data-act="edit-name">Edit</button></span></div>
-      <div class="set-row"><span>Chant language</span><button class="btn small" data-act="set-chant" lang="${chantLang()}">${chantLang() === 'ko' ? '한국어' : '日本語'}</button></div>
       <div class="set-row"><span>Language</span><button class="btn small" data-act="set-lang">${LANG_NAMES[S.settings.lang] || 'English'}</button></div>
+      <div class="set-row"><span>Chant language</span><button class="btn small" data-act="set-chant" lang="${chantLang()}">${chantLang() === 'ko' ? '한국어' : '日本語'}</button></div>
       <div class="set-row">Sound effects<button class="btn small toggle ${S.settings.sound ? 'on' : ''}" data-act="set-sound">${S.settings.sound ? 'ON' : 'OFF'}</button></div>
       <div class="set-row">Voice reading<button class="btn small toggle ${S.settings.voice ? 'on' : ''}" data-act="set-voice">${S.settings.voice ? 'ON' : 'OFF'}</button></div>
       <div class="set-row">Daily play limit (today: ${mins} min)<button class="btn small" data-act="set-limit">${lim ? lim + ' min' : 'None'}</button></div>
