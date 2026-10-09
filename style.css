@@ -422,3 +422,11 @@ html[lang="ja"] .menu .btn { word-break: keep-all; overflow-wrap: break-word; li
   .cols.learn .array-col .row-btns .btn { flex: 1 1 0; min-width: 0; min-height: 52px; padding: 4px 6px; font-size: clamp(16px, 2.6vh, 22px); }
 }
 .grp { padding: calc(var(--as, 22px) * .12) calc(var(--as, 22px) * .22) !important; border-width: 2px !important; border-radius: calc(var(--as, 22px) * .55) !important; line-height: 1.05 !important; }
+
+/* おぼえよう：行は ちぢめない（ひらがなの唱えが かくれないように）。はいりきらない ぶんは スクロール */
+.kuku-list .krow { flex: none; }
+@media (max-width: 560px) {
+  .kuku-list .krow { min-height: 0; padding: 4px 8px 6px 12px; row-gap: 0; }
+  .kuku-list .krow .yomi { font-size: clamp(17px, 2.6vh, 21px); line-height: 1.25; }
+  .kuku-list .krow .speak { width: 50px; height: 50px; }
+}

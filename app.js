@@ -2,7 +2,7 @@
 'use strict';
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-10.56';
+const APP_VERSION = '2026-10-10.58';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -476,7 +476,7 @@ function fitArray(n, b) {
     const H = g.clientHeight + 1, W = g.clientWidth + 1;
     return [...g.children].every(c => c.offsetLeft >= -1 && c.offsetLeft + c.offsetWidth <= W && c.offsetTop >= -1 && c.offsetTop + c.offsetHeight <= H);
   };
-  for (let size = 30; size >= 9; size--) { g.style.setProperty('--as', size + 'px'); if (inside()) break; }
+  for (let size = 54; size >= 9; size--) { g.style.setProperty('--as', size + 'px'); if (inside()) break; }
 }
 actions.row = el => {
   if (L.playing) stopReadAll();
