@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-18.77'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-19.78'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-18.77';
+const APP_VERSION = '2026-10-19.78';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -1220,11 +1220,15 @@ screens.closet = p => {
   if (roomProgress().ok && !S.myroom.has) {
     S.myroom.has = true; S.myroom.items = MR_DEFAULT.slice(); S.myroom.placed = { wall: 'w_cream', floor: 'f_wood', window: 'm_plain' }; syncRoomGifts(); save(); justGranted = true;
   }
+  const season = activeSeason();
+  if (!season && C.tab === 'season') C.tab = 'wear';
   const tabs = [['wear', '👗 Dress Up'], ['shop', '🛍️ Shop'], ['gacha', '🎁 Capsules'], ['zukan', '📚 Collection'], ['myroom', '🏡 My Room']];
+  if (season) tabs.splice(2, 0, ['season', `${season.icon} Seasonal`]);
   let content;
   if (C.tab === 'gacha') content = gachaHTML();
   else if (C.tab === 'zukan') content = zukanHTML();
   else if (C.tab === 'myroom') content = myRoomHTML();
+  else if (C.tab === 'season' && season) content = seasonHTML(season);
   else content = `<div class="cats">${UI_CATS.map(c => `<button class="cat ${C.cat === c.id ? 'on' : ''}" data-act="cat" data-c="${c.id}">${c.icon} ${c.name}</button>`).join('')}</div>${closetGrid()}`;
   const prev = $('#cpanel'), top = prev ? prev.scrollTop : 0;
   const prevCats = $('.cats'), catsLeft = prevCats ? prevCats.scrollLeft : 0; // カテゴリの よこスクロールの いち
@@ -1265,6 +1269,33 @@ function syncRoomGifts(st) {
   });
   if (changed && st === S) save();
 }
+const seasonOwned = id => S.items.includes(id) || S.bookRoom.includes(id) || S.myroom.items.includes(id);
+function seasonHTML(se) {
+  const cells = se.items.map(id => ITEM_BY_ID[id]).filter(Boolean).map(i => seasonOwned(i.id)
+    ? `<div class="cell dim"><div class="tb">${thumb(i)}</div>${i.name}<span class="tag">✅</span><span>Owned</span></div>`
+    : `<button class="cell" data-act="season-buy" data-id="${i.id}"><div class="tb">${thumb(i)}</div>${i.name}<span class="price">🪙 ${i.sprice}</span></button>`)
+    .concat((se.room || []).map(id => MR_BY_ID[id]).filter(Boolean).map(i => seasonOwned(i.id)
+      ? `<div class="cell dim"><div class="tb">${mrThumb(i)}</div>${i.name}<span class="tag">✅</span><span>Owned</span></div>`
+      : `<button class="cell" data-act="season-buy" data-id="${i.id}"><div class="tb">${mrThumb(i)}</div>${i.name}<span class="price">🪙 ${i.sprice}</span></button>`));
+  return `<p class="section-title" style="margin-top:0">${se.icon} ${se.name}</p><p class="lang-note" style="margin-top:0">Until ${se.to[0]}/${se.to[1]}</p><div class="grid">${cells.join('')}</div>`;
+}
+actions['season-buy'] = async el => {
+  if (buying) return;
+  const se = activeSeason(); if (!se) return;
+  const id = el.dataset.id, it = ITEM_BY_ID[id] || MR_BY_ID[id], isRoom = !ITEM_BY_ID[id];
+  if (!it || !it.sprice || it.season !== se.id || seasonOwned(id)) return;
+  if (S.coins < it.sprice) { toast('Not enough coins. Play to earn more!'); return; }
+  buying = true; el.disabled = true;
+  let yes = false;
+  try { yes = await confirmDialog(it.name, `<div class="thumbbox">${isRoom ? mrThumb(it) : thumb(it)}</div><p>Buy for 🪙 ${it.sprice}?</p>`, 'Buy!', 'Cancel'); } finally { buying = false; }
+  if (!yes || seasonOwned(id) || S.coins < it.sprice || !activeSeason()) { if (el.isConnected) el.disabled = false; return; }
+  S.coins -= it.sprice;
+  if (isRoom) { if (!S.bookRoom.includes(id)) S.bookRoom.push(id); syncRoomGifts(); }
+  else grantItem(id);
+  save(); Snd.play('coin'); confetti();
+  toast(isRoom && !S.myroom.has ? 'It will be waiting in your room!' : 'Got it! Put it on in Dress Up');
+  go('closet');
+};
 const MRC = { cat: 'wall' };
 function roomProgress() {
   const ob = ITEMS.filter(i => !i.lim && !i.sp && i.cat !== 'room'), owned = ob.filter(i => S.items.includes(i.id)).length, need = Math.ceil(ob.length * ROOM_UNLOCK);

@@ -1,6 +1,6 @@
 /* ブロック風アバター・ペット・おへやのSVG（すべてオリジナル） */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['avatar'] = '2026-10-18.77'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['avatar'] = '2026-10-19.78'; // ファイルの新旧チェック用
 
 const SKIN = '#FFDFC9';
 const INK = '#4a3340';
@@ -129,6 +129,8 @@ function decoSVG(kind, o) {
         for (let i = 0; i < 5; i++) { const a = (i * 72 * Math.PI) / 180; s += `<circle cx="${(p[0] + Math.cos(a) * 5).toFixed(1)}" cy="${(p[1] + Math.sin(a) * 5).toFixed(1)}" r="3.6" fill="#fff"/>`; }
         return s + `<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="${acc}"/>`;
       }).join('');
+    case 'pumpkin':
+      return `<rect x="75" y="88" width="10" height="8" rx="3" fill="#5cc27a"/><path d="M62 112 L72 112 L67 104Z M88 112 L98 112 L93 104Z" fill="#7a3b12"/><path d="M62 124 Q70 136 80 128 Q90 136 98 124 L98 130 Q90 142 80 134 Q70 142 62 130Z" fill="#7a3b12"/>`;
     case 'galaxy':
       return `<polygon points="${starPts(68, 108, 6, 3)}" fill="${acc}"/><polygon points="${starPts(92, 126, 8, 4)}" fill="${acc}"/><circle cx="72" cy="136" r="2" fill="#fff"/><circle cx="96" cy="104" r="2" fill="#fff"/><circle cx="62" cy="124" r="1.6" fill="#fff"/>`;
     default: return '';
@@ -201,6 +203,10 @@ function accBackSVG(a) {
     const c = a.c1;
     const w = (mx, rot) => `<g transform="${mx}"><ellipse cx="20" cy="96" rx="22" ry="44" fill="${c}" stroke="#bfe4ff" stroke-width="3" transform="rotate(${rot} 20 96)"/><ellipse cx="22" cy="126" rx="14" ry="26" fill="${c}" stroke="#bfe4ff" stroke-width="3" transform="rotate(${rot * 1.6} 22 126)"/></g>`;
     return w('', 18) + w('translate(160 0) scale(-1 1)', 18);
+  }
+  if (a.kind === 'batwings') {
+    const c = a.c1, w = mx => `<g transform="${mx}"><path d="M50 100 L6 66 Q16 90 4 108 Q24 100 22 126 Q38 112 50 140 Z" fill="${c}" stroke="#6b4fb0" stroke-width="3" stroke-linejoin="round"/><path d="M40 108 Q24 100 14 78" fill="none" stroke="#fff" stroke-width="2.4" opacity=".5"/></g>`;
+    return w('') + w('translate(160 0) scale(-1 1)');
   }
   if (a.kind === 'cape') return `<path d="M46 92 L114 92 L132 196 L28 196 Z" fill="${a.c1}" stroke="${a.c1}" stroke-width="3" stroke-linejoin="round"/><path d="M46 92 L114 92 L132 196 L28 196 Z" fill="#000" opacity=".06"/>`;
   return '';
@@ -284,6 +290,8 @@ function petSVG(kind) {
       return `<path d="M50 38 q14 4 8 22 q-10 -6 -8 -22z" fill="#c9b6ff"/><path d="M50 40 q10 4 6 16" fill="none" stroke="#ff8fb8" stroke-width="3"/>${legs('#fff')}<rect x="10" y="34" width="38" height="22" rx="8" fill="#fff" stroke="#eee7ff" stroke-width="2"/><rect x="8" y="10" width="40" height="30" rx="9" fill="#fff" stroke="#eee7ff" stroke-width="2"/><rect x="10" y="6" width="8" height="26" rx="4" fill="#ff8fb8"/><rect x="18" y="8" width="7" height="22" rx="3.5" fill="#ffe27a"/><rect x="25" y="10" width="6" height="14" rx="3" fill="#8fd0ff" transform="translate(0 -1)"/><path d="M34 12 L38 -10 L42 12Z" fill="#ffd84a" stroke="#f0a800" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 12 L10 2 L20 10Z" fill="#fff" stroke="#eee7ff" stroke-width="1.5"/>${eye(34, 26)}<circle cx="42" cy="32" r="3.5" fill="#ff9bb5" opacity=".6"/>`;
     case 'lamb': // キラキラひつじ
       return `<rect x="18" y="52" width="6" height="11" rx="3" fill="#8d6f7a"/><rect x="36" y="52" width="6" height="11" rx="3" fill="#8d6f7a"/><circle cx="30" cy="42" r="17" fill="#fff" stroke="#f0e4ec" stroke-width="2"/><circle cx="15" cy="38" r="11" fill="#fff" stroke="#f0e4ec" stroke-width="2"/><circle cx="45" cy="38" r="11" fill="#fff" stroke="#f0e4ec" stroke-width="2"/><circle cx="30" cy="12" r="9" fill="#fff" stroke="#f0e4ec" stroke-width="2"/><ellipse cx="9" cy="26" rx="8" ry="5" fill="#ffd0bc" transform="rotate(-20 9 26)"/><ellipse cx="51" cy="26" rx="8" ry="5" fill="#ffd0bc" transform="rotate(20 51 26)"/><rect x="15" y="14" width="30" height="28" rx="13" fill="#ffe3d0"/>${eye(23, 27)}${eye(37, 27)}<path d="M26 33 Q30 37 34 33" fill="none" stroke="${INK}" stroke-width="2" stroke-linecap="round"/><circle cx="18" cy="34" r="3.5" fill="#ff9bb5" opacity=".6"/><circle cx="42" cy="34" r="3.5" fill="#ff9bb5" opacity=".6"/><path transform="translate(8 8)" d="M0 -6 L1.8 -1.8 L6 0 L1.8 1.8 L0 6 L-1.8 1.8 L-6 0 L-1.8 -1.8Z" fill="#ffd84a"/><path transform="translate(54 14)" d="M0 -5 L1.5 -1.5 L5 0 L1.5 1.5 L0 5 L-1.5 1.5 L-5 0 L-1.5 -1.5Z" fill="#8fd0ff"/><path transform="translate(52 52)" d="M0 -5 L1.5 -1.5 L5 0 L1.5 1.5 L0 5 L-1.5 1.5 L-5 0 L-1.5 -1.5Z" fill="#ff9fc4"/><path transform="translate(6 50)" d="M0 -4 L1.2 -1.2 L4 0 L1.2 1.2 L0 4 L-1.2 1.2 L-4 0 L-1.2 -1.2Z" fill="#c9b6ff"/>`;
+    case 'ghost':
+      return `<path d="M10 58 V28 Q10 6 30 6 Q50 6 50 28 V58 Q44 51 37 58 Q30 51 23 58 Q16 51 10 58Z" fill="#fff" stroke="#e6dff5" stroke-width="2"/><path d="M22 7 l8 -9 8 9z" fill="#c9b6ff"/>${eye(22, 28)}${eye(38, 28)}<ellipse cx="30" cy="38" rx="4" ry="5" fill="#8d6f7a"/><circle cx="15" cy="35" r="4" fill="#ff9bb5" opacity=".6"/><circle cx="45" cy="35" r="4" fill="#ff9bb5" opacity=".6"/><path transform="translate(54 10)" d="M0 -5 L1.5 -1.5 L5 0 L1.5 1.5 L0 5 L-1.5 1.5 L-5 0 L-1.5 -1.5Z" fill="#ffd84a"/>`;
     case 'chick':
       return `<rect x="18" y="52" width="6" height="11" rx="3" fill="#ffab40"/><rect x="34" y="52" width="6" height="11" rx="3" fill="#ffab40"/><rect x="8" y="14" width="44" height="42" rx="18" fill="#ffe27a"/><rect x="2" y="30" width="10" height="16" rx="5" fill="#ffd040"/><rect x="48" y="30" width="10" height="16" rx="5" fill="#ffd040"/>${eye(21, 30)}${eye(39, 30)}<path d="M25 36 L35 36 L30 42Z" fill="#ffab40"/><circle cx="15" cy="38" r="3.5" fill="#ff9bb5" opacity=".6"/><circle cx="45" cy="38" r="3.5" fill="#ff9bb5" opacity=".6"/><path d="M26 14 q4 -10 8 0" fill="none" stroke="#ffd040" stroke-width="3" stroke-linecap="round"/>`;
     default: return '';

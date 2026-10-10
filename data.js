@@ -1,6 +1,6 @@
 /* データ：九九の読み方・アイテム・文言 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['data'] = '2026-10-18.77'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['data'] = '2026-10-19.78'; // ファイルの新旧チェック用
 
 // 九九の読み方（数式から自動生成せず、手で持つ）kukuReading[段][かける数]
 const KUKU_TEXT = {
@@ -87,6 +87,11 @@ const ITEMS = [
   { id: 'ev_o1', cat: 'outfit', name: 'Sticker Princess Dress', rar: 3, sp: true, ev: true, hidden: true, def: { top: '#ffd1ec', bottom: '#c9b6ff', type: 'gown', sleeve: 22, deco: 'star', acc: '#ffd84a' } },
   { id: 'ev_o2', cat: 'outfit', name: 'Sweet Princess Dress', rar: 3, sp: true, ev: true, hidden: true, def: { top: '#fff0a8', bottom: '#ff8fc0', type: 'gown', sleeve: 22, deco: 'heart', acc: '#c9b6ff' } },
   { id: 'ev_o3', cat: 'outfit', name: 'Starry Night Dress', rar: 3, sp: true, ev: true, hidden: true, def: { top: '#7b66c4', bottom: '#4a3f8f', type: 'gown', sleeve: 22, deco: 'galaxy', acc: '#ffd84a' } },
+  // ---- シーズンもの（きせつの あいだだけ 「シーズン」タブで かえる）----
+  { id: 'hw_dress', cat: 'outfit', name: 'Pumpkin Dress', rar: 2, sp: true, hidden: true, season: 'halloween', sprice: 30, def: { top: '#ffb04a', bottom: '#ffb04a', type: 'dress', sleeve: 0, deco: 'pumpkin', acc: '#8a5bd6' } },
+  { id: 'hw_hat', cat: 'hat', name: 'Pink Witch Hat', rar: 2, sp: true, hidden: true, season: 'halloween', sprice: 20, def: { kind: 'witch', c1: '#ff8fb8' } },
+  { id: 'hw_wings', cat: 'accessory', name: 'Bat Wings', rar: 2, sp: true, hidden: true, season: 'halloween', sprice: 20, def: { kind: 'batwings', c1: '#9b7be0' } },
+  { id: 'hw_ghost', cat: 'pet', name: 'Little Ghost', rar: 2, sp: true, hidden: true, season: 'halloween', sprice: 30, def: { kind: 'ghost' } },
   { id: 'ev_lamb', cat: 'pet', name: 'Sparkle Lamb', rar: 3, sp: true, ev: true, hidden: true, def: { kind: 'lamb' } },
   // アクセサリー
   { id: 'a_neck', cat: 'accessory', name: 'Necklace', rar: 1, def: { kind: 'necklace' } },
@@ -172,3 +177,15 @@ const BOOK_ITEM_REWARDS = [ // 2さつめ・4さつめ・6さつめ・8さつめ
   { t: 'item', id: 'sp_sticker' }, { t: 'item', id: 'ev_lamb' }, { t: 'room', id: 'm_sticker' }, { t: 'room', id: 'p_sticker' },
 ];
 
+
+/* シーズンもの：from/to は [つき, ひ]。つきを またぐ きせつは from > to */
+const SEASONS = [
+  { id: 'halloween', name: 'Halloween', icon: '🎃', from: [10, 1], to: [10, 31], items: ['hw_dress', 'hw_hat', 'hw_wings', 'hw_ghost'], room: ['c_pumpkin'] },
+];
+function activeSeason(date) {
+  const dt = date || new Date(), md = (dt.getMonth() + 1) * 100 + dt.getDate();
+  return SEASONS.find(s => {
+    const f = s.from[0] * 100 + s.from[1], t = s.to[0] * 100 + s.to[1];
+    return f <= t ? (md >= f && md <= t) : (md >= f || md <= t);
+  }) || null;
+}

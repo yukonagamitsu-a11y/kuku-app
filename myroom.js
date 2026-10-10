@@ -1,6 +1,6 @@
 /* マイルーム：アイテムを8割そろえると買える、自分だけのお部屋（壁紙・ゆか・家具をだんかいてきに買う） */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['myroom'] = '2026-10-18.77'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['myroom'] = '2026-10-19.78'; // ファイルの新旧チェック用
 
 const ROOM_UNLOCK = 0.7;      // 集めた割合（ショップ・ガチャで手に入るアイテム）
 const MR_TIER_NEED = { 1: 0, 2: 6, 3: 14 }; // その段階の家具を買うために必要な「買った家具の数」
@@ -70,6 +70,7 @@ const MR_ITEMS = [
 ];
 // シールちょうの コンプリートで もらえる（おみせには でない）
 MR_ITEMS.push(
+  { id: 'c_pumpkin', slot: 'ceiling', name: 'Pumpkin Garland', price: 0, tier: 1, ev: true, season: 'halloween', sprice: 30 },
   { id: 'm_sticker', slot: 'window', name: 'Sticker Window', price: 0, tier: 1, ev: true },
   { id: 'p_sticker', slot: 'poster', name: 'Sticker Poster', price: 0, tier: 1, ev: true },
 );
@@ -131,6 +132,7 @@ function mrDrawRaw(id) {
     case 'r_rainbow': return ['#ff6b7a', '#ffa45c', '#ffe27a', '#8fe3c8', '#8fd0ff', '#c9b6ff'].map((c, i) => `<ellipse cx="240" cy="246" rx="${100 - i * 14}" ry="${20 - i * 2.6}" fill="${c}"/>`).join('');
     // てんじょう
     case 'c_garland': { let s = '<path d="M0 8 Q120 44 240 14 T480 8" fill="none" stroke="#e8b4c8" stroke-width="3"/>'; const cols = ['#ff8fb8', '#ffe27a', '#8fe3c8', '#8fd0ff', '#c9b6ff']; for (let i = 0; i < 11; i++) { const x = 20 + i * 44, y = 8 + Math.sin(i / 10 * Math.PI * 2 + .6) * 4 + (i % 5 === 2 ? 14 : 18); s += `<polygon points="${x - 11},${y - 6} ${x + 11},${y - 6} ${x},${y + 20}" fill="${cols[i % 5]}"/>`; } return s; }
+    case 'c_pumpkin': { let s = '<path d="M0 6 Q120 40 240 12 T480 6" fill="none" stroke="#c9a8b6" stroke-width="3"/>'; for (let i = 0; i < 9; i++) { const x = 30 + i * 52, y = 20 + (i % 2) * 10 + Math.sin(i * .9) * 5; s += `<rect x="${x - 2}" y="${y - 12}" width="4" height="7" fill="#5cc27a"/><ellipse cx="${x}" cy="${y + 6}" rx="13" ry="11" fill="${i % 3 === 1 ? '#c9b6ff' : '#ffa94a'}"/><path d="M${x - 6} ${y + 2} l3 -4 l3 4z M${x + 6} ${y + 2} l-3 -4 l-3 4z" fill="#7a3b12"/><path d="M${x - 6} ${y + 9} q3 4 6 0 q3 4 6 0" fill="none" stroke="#7a3b12" stroke-width="2" stroke-linecap="round"/>`; } return s; }
     case 'c_lamp': return '<rect x="149" y="0" width="3" height="26" fill="#8d6f7a"/><path d="M128 52 L140 24 H162 L174 52Z" fill="#ffe27a" stroke="#f0c040" stroke-width="2" stroke-linejoin="round"/><ellipse cx="151" cy="54" rx="22" ry="4" fill="#fff7c0" opacity=".8"/>';
     case 'c_stars': return [[140, 46, 11], [188, 26, 8], [405, 16, 8]].map(p => `<rect x="${p[0] - 1}" y="0" width="2" height="${p[1] - p[2]}" fill="#c9b6ff"/>` + mrStar(p[0], p[1], p[2], p[2] / 2.2, '#ffe27a')).join('');
     // すみっこ

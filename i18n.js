@@ -1,6 +1,6 @@
 /* 日本語表示：英語の画面文言を、ひらがな中心の日本語に置きかえる */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-18.77'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-19.78'; // ファイルの新旧チェック用
 
 const JA_EXACT = {
   // 共通
@@ -117,6 +117,14 @@ const JA_EXACT = {
   'Butterfly': 'ちょうちょ',
   'Music Note': 'おんぷ',
   'Ladybug': 'てんとうむし',
+  'Halloween': 'ハロウィン',
+  'Pumpkin Dress': 'かぼちゃの ワンピース',
+  'Pink Witch Hat': 'ピンクの まじょの ぼうし',
+  'Bat Wings': 'こうもりの はね',
+  'Little Ghost': 'ちいさな おばけ',
+  'Pumpkin Garland': 'かぼちゃの ガーランド',
+  '🎃 Seasonal': '🎃 シーズン',
+  'It will be waiting in your room!': 'おへやに とどくよ！',
   'Try it on in the Dress-Up Room!': 'きせかえルームで つけてみよう！',
   // ほごしゃ
   'For Parents': 'ほごしゃの かたへ',
@@ -189,6 +197,7 @@ function jaTr(s) {
   return null;
 }
 const JA_PATTERNS = [
+  [/^Until (\d+)\/(\d+)$/, m => `${m[1]}がつ ${m[2]}にち まで`],
   [/^Sticker Book (\d+)$/, m => `シールちょう ${m[1]}`],
   [/^Practice: (\d+) \/ 8$/, m => `おけいこ ${m[1]} / 8`],
   [/^Collected (\d+) \/ (\d+) stickers$/, m => `${m[1]} / ${m[2]} まい あつまったよ`],
