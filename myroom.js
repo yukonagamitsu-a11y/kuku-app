@@ -1,6 +1,6 @@
 /* マイルーム：アイテムを8割そろえると買える、自分だけのお部屋（壁紙・ゆか・家具をだんかいてきに買う） */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['myroom'] = '2026-10-13.68'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['myroom'] = '2026-10-13.69'; // ファイルの新旧チェック用
 
 const ROOM_UNLOCK = 0.7;      // 集めた割合（ショップ・ガチャで手に入るアイテム）
 const MR_TIER_NEED = { 1: 0, 2: 6, 3: 14 }; // その段階の家具を買うために必要な「買った家具の数」

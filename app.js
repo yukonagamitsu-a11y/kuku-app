@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-13.68'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-13.69'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-13.68';
+const APP_VERSION = '2026-10-13.69';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -1152,10 +1152,9 @@ function syncRoomGifts(st) {
   st = st || S;
   if (!st.myroom.has) return;
   let changed = false;
-  const gifts = Object.assign({}, ROOM_GIFTS);
-  if ((st.masteredDans || []).includes(6) || st.items.includes('lim6')) gifts.lim6 = 'w_night'; // 6のだんマスター：おへやを もらったら 「よぞら」の かべがみも
-  if ((st.masteredDans || []).includes(6)) st.items.includes('lim6') || st.items.push('lim6');
-  for (const [old, nu] of Object.entries(gifts)) {
+  // 6のだんの ごほうびは 「ぎんがの かみ」だけ。「よぞら」の かべがみは マイルームの ショップで かう。
+  // （むかしの ごほうびで「ほしぞらのおへや」を もっている人だけ、そのまま ひきつぐ）
+  for (const [old, nu] of Object.entries(ROOM_GIFTS)) {
     if (st.items.includes(old) && !st.myroom.items.includes(nu)) {
       st.myroom.items.push(nu); changed = true;
       const it = MR_BY_ID[nu]; if (it && !st.myroom.placed[it.slot]) st.myroom.placed[it.slot] = nu;
