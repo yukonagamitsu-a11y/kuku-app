@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-12.64'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-12.66'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-12.64';
+const APP_VERSION = '2026-10-12.66';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -1203,8 +1203,8 @@ actions.buy = async el => {
   if (S.coins < price) { toast('Not enough coins. Play to earn more!'); return; }
   const yes = await confirmDialog(it.name, `<div class="thumbbox">${thumb(it)}</div><p>Buy for 🪙 ${price}?</p>`, 'Buy!', 'Cancel');
   if (!yes || S.coins < price) return;
-  S.coins -= price; grantItem(it.id); S.avatar[it.cat] = it.id; save(); Snd.play('coin'); confetti();
-  toast('Got it! You are wearing it now'); go('closet');
+  S.coins -= price; grantItem(it.id); save(); Snd.play('coin'); confetti(); // 買っても すぐには きない：きせかえで じぶんで えらぶ
+  toast('Got it! Put it on in Dress Up'); go('closet');
 };
 actions.gacha = () => {
   if (C.rolling) return;
@@ -1216,7 +1216,7 @@ actions.gacha = () => {
     const r = Math.random() * 100, rar = r < 55 ? 1 : r < 88 ? 2 : 3;
     const it = pick(ITEMS.filter(i => !i.lim && !i.sp && i.cat !== 'room' && i.rar === rar));
     const dup = isOwned(it.id);
-    if (dup) S.coins += GACHA_REFUND; else { grantItem(it.id); S.avatar[it.cat] = it.id; }
+    if (dup) S.coins += GACHA_REFUND; else grantItem(it.id);
     save(); Snd.play('reveal'); confetti();
     modal({
       title: dup ? 'You got it again!' : '✨ New friend!',

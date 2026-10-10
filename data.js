@@ -1,6 +1,6 @@
 /* データ：九九の読み方・アイテム・文言 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['data'] = '2026-10-12.64'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['data'] = '2026-10-12.66'; // ファイルの新旧チェック用
 
 // 九九の読み方（数式から自動生成せず、手で持つ）kukuReading[段][かける数]
 const KUKU_TEXT = {
@@ -28,7 +28,7 @@ const SHOP_GOODS = [
 ];
 
 const OK_MSG = ['Great job!', 'You did it!', 'Genius!', 'Perfect!', 'Nice!', 'Sparkly!', 'Awesome!', 'Super!'];
-const NG_MSG = ['Almost! You can do it next time', "Just a little off. Let's look together", "It's okay! Try again", 'Almost! Just a bit more!'];
+const NG_MSG = ['Almost!', "It's okay!", 'Try again!', 'Keep going!']; // まちがえた ときは ひとこと
 const HELLO_MSG = ["Let's do our best today!", 'Welcome! What shall we play?', "Let's learn times tables together!"];
 
 // ---- アイテム ----

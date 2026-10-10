@@ -1,6 +1,6 @@
 /* 日本語表示：英語の画面文言を、ひらがな中心の日本語に置きかえる */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-12.64'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-12.66'; // ファイルの新旧チェック用
 
 const JA_EXACT = {
   // 共通
@@ -54,7 +54,7 @@ const JA_EXACT = {
   Owned: 'もってる', 'Score 100 on a test': 'テスト 100てんで', 'Shop or Capsules': 'ショップ・ガチャ',
   'What will come out? More ★ means rarer!': 'なにが でるかな？ ★が おおいほど レア！',
   'Not enough coins. Play to earn more!': 'コインが たりないよ。あそんで ためよう！',
-  'Buy!': 'かう！', 'Got it! You are wearing it now': 'てにいれたよ！ さっそく つけたよ',
+  'Buy!': 'かう！', 'Got it! Put it on in Dress Up': 'てにいれたよ！ きせかえで つけてみよう',
   'You got it again!': 'また でたよ！', '✨ New friend!': '✨ あたらしい なかま！',
   'Try it on in the Dress-Up Room!': 'きせかえルームで つけてみよう！',
   // ほごしゃ
@@ -87,6 +87,7 @@ const JA_EXACT = {
   // ほめことば・はげまし
   'Great job!': 'すごい！', 'You did it!': 'やったね！', 'Genius!': 'てんさい！', 'Perfect!': 'かんぺき！',
   'Nice!': 'いいね！', 'Sparkly!': 'きらきら！', 'Awesome!': 'さすが！', 'Super!': 'ばっちり！',
+  'Almost!': 'おしい！', "It's okay!": 'だいじょうぶ！', 'Try again!': 'もういちど！', 'Keep going!': 'もうすこし！',
   'Almost! You can do it next time': 'おしい！ つぎは できるよ',
   "Just a little off. Let's look together": 'ちょっとだけ ちがったね。いっしょに みてみよう',
   "It's okay! Try again": 'だいじょうぶ！ もういちど やってみよう', 'Almost! Just a bit more!': 'おしい！ もうすこし！',
