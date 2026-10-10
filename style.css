@@ -7,7 +7,7 @@
   --lemon: #FFE27A; --lemon-d: #e0bd45;
   --sky: #8FD0FF; --sky-d: #5fa9dd;
   --lav: #C9B6FF; --lav-d: #9d86e0;
-  --ink: #5A3E48; --ink-soft: #8d6f7a;
+  --ink: #5A3E48; --ink-soft: #77596a;
   --card: #ffffff;
   --r: 28px;
   --font: "Fredoka", "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Yu Gothic", "M PLUS Rounded 1c", "Noto Sans JP", "Noto Sans CJK JP", "Meiryo", sans-serif;
@@ -283,7 +283,7 @@ body.no-voice .voice-btn { display: none !important; }
 .homepet { flex: 0 0 38%; width: 38%; height: auto; margin-left: -8%; max-height: 26vh; animation: bob 2.6s ease-in-out infinite; }
 
 .dan-chip { line-height: 1.15; padding-top: 4px; padding-bottom: 4px; }
-.dan-chip small { display: block; font-size: 15px; font-weight: 700; opacity: .75; }
+.dan-chip small { display: block; font-size: 16px; font-weight: 700; opacity: .75; }
 .tip { margin: 8px auto; max-width: 520px; background: #fff8d6; border-radius: 22px; padding: 8px 16px; font-weight: 800; font-size: 20px; }
 
 .fx.earn { font-weight: 900; font-size: 34px; color: #b9770e; text-shadow: 0 2px 0 #fff, 0 0 8px #fff; white-space: nowrap; }
@@ -453,3 +453,15 @@ html[lang="ko"] .menu .btn { word-break: keep-all; overflow-wrap: break-word; te
 
 .save-warn { position: fixed; left: 8px; right: 8px; top: 8px; z-index: 120; background: #fff3cd; color: #5a3d00; border: 3px solid #f0b400; border-radius: 16px; padding: 10px 14px; display: flex; gap: 10px; align-items: center; font-weight: 800; font-size: 16px; line-height: 1.3; box-shadow: 0 4px 14px rgba(0,0,0,.2); }
 .save-warn button { flex: none; min-height: 44px; }
+
+/* せまい たかさ（スマホの よこむき）：テストの キーパッドを ちいさくして ぜんぶ おせるように */
+@media (max-height: 480px) {
+  .keypad { gap: 6px; margin-top: 2px; }
+  .keypad .btn { min-height: 38px; font-size: 22px; }
+  .keypad .wide { font-size: 15px; }
+  .main.fl .qbanner { font-size: clamp(26px, 9vh, 40px); margin: 2px 0 !important; }
+  .main.fl { overflow-y: auto; }
+}
+
+/* よみやすさ：いろの ついた ボタンの もじを すこし こく */
+.btn.pink, .btn.mint, .btn.lemon, .btn.sky, .btn.lav { color: #3f2530; }

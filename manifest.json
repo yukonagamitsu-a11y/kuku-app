@@ -3,6 +3,8 @@
   "short_name": "Times Table",
   "description": "Learn multiplication tables with dress-up avatars",
   "lang": "en",
+  "id": "./index.html",
+  "categories": ["education", "kids"],
   "start_url": "./index.html",
   "scope": "./",
   "display": "fullscreen",

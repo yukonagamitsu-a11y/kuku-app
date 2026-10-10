@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-15.71'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-15.73'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-15.71';
+const APP_VERSION = '2026-10-15.73';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -51,6 +51,7 @@ const numObj = v => { const o = {}; if (isObj(v)) for (const k of Object.keys(v)
 function sanitize(raw) {
   const d = defaultState(), r = isObj(raw) ? raw : {};
   const s = Object.assign(d, r);
+  s.schema = 1; // 保存データの かたの バージョン（今後 かえる ときの めじるし）
   s.coins = typeof r.coins === 'number' && isFinite(r.coins) && r.coins >= 0 ? Math.floor(r.coins) : 0;
   s.items = Array.isArray(r.items) ? strArr(r.items) : defaultState().items;
   defaultState().items.forEach(id => { if (!s.items.includes(id)) s.items.push(id); });
@@ -285,8 +286,17 @@ function baseCoin(a, b) {
   return p <= 12 ? 1 : p <= 30 ? 2 : p <= 54 ? 3 : 4;
 }
 function danCoinAvg(d) { let t = 0; for (let b = 1; b <= 9; b++) t += baseCoin(d, b); return t / 9; }
-const SC = { sum: 0, base: 0, n: 0, tired: 0, live: false };
-function resetCoins() { SC.sum = 0; SC.base = 0; SC.n = 0; SC.tired = 0; }
+const SC = { sum: 0, base: 0, n: 0, tired: 0, live: false, paid: 0 };
+function resetCoins() { SC.sum = 0; SC.base = 0; SC.n = 0; SC.tired = 0; SC.paid = 0; }
+// とちゅうで やめた・アプリを とじた ときも、ここまでに ためた コインは わたす（けっかがめんの ボーナスは なし）
+function bankPartial() {
+  if (!SC.live || SC.sum <= 0) return;
+  const owed = Math.max(1, Math.round(SC.sum)) - SC.paid;
+  if (owed <= 0) return;
+  SC.paid += owed; S.coins += owed; save(); updateCoin();
+}
+document.addEventListener('visibilitychange', () => { if (document.hidden) bankPartial(); });
+window.addEventListener('pagehide', bankPartial);
 // おなじ もんだいを その日に DAILY_FULL かいより おおく やると、それいこうは 1コインしか もらえない
 const DAILY_FULL = 10;
 function todayCounts() {
@@ -399,6 +409,7 @@ function frame({ title, back, body, home, mainCls = '' }) {
   </header><main class="main ${mainCls}">${body}</main></div>`;
 }
 function go(name, params) {
+  if (name !== 'result') bankPartial();
   if (cleanup) { try { cleanup(); } catch (e) { /* 無視 */ } cleanup = null; }
   Voice.cancel(); setWake(false);
   if (['balloon', 'shopgame', 'mole', 'frog'].includes(name)) resetCoins();
@@ -474,7 +485,7 @@ screens.home = () => {
       <div class="home-chars">
         <div class="bubble">${hello}</div>
         <div class="duo">
-          <div class="char mine ${petD ? 'haspet' : ''}"><div class="stage">${avatarSVG(S.avatar, { face: 'happy' })}${petD ? `<svg class="homepet" viewBox="-4 -20 68 88" aria-hidden="true">${petSVG(petD.kind)}</svg>` : ''}</div><span class="name">${esc(S.name || '')}</span></div>
+          <div class="char mine ${petD ? 'haspet' : ''}"><div class="stage">${avatarSVG(S.avatar, { face: 'happy' })}${petD ? `<svg class="homepet" viewBox="-4 -20 68 88" aria-hidden="true">${petSVG(petD.kind)}</svg>` : ''}</div><span class="name" translate="no">${esc(S.name || '')}</span></div>
           <div class="char nav">${avatarSVG(cocoCfg(), { face: 'happy', cls: 'bob' })}<span class="name">${NPC.coco.name}</span></div>
         </div>
       </div>
@@ -1090,7 +1101,7 @@ function finishSession(r) {
   if (r.coins > 0 && S.bonusDate !== today) { // 1日の さいしょの あそびに ボーナス
     S.bonusDate = today; r.bonus = 10 + 2 * Math.min(5, Math.max(0, curStreak() - 1)); r.coins += r.bonus;
   }
-  S.coins += r.coins;
+  S.coins += Math.max(0, r.coins - SC.paid); SC.paid = 0; // とちゅうで わたした ぶんは ひく
   const masters = checkMasters();
   const gained = (r.gained || []).slice();
   masters.forEach(m => m.item && gained.push(m.item));
@@ -1316,7 +1327,7 @@ screens.parent = () => {
       <h2>💪 Top 5 tricky problems</h2>
       <div class="mist-list" style="justify-content:flex-start">${weak.length ? weak.map(k => { const [a, b] = k.split('x'); return `<span class="mist">${a}×${b}＝${a * b}(missed ${S.mistakes[k]}x)</span>`; }).join('') : '<span>None yet</span>'}</div>
       <h2>⚙️ Settings</h2>
-      <div class="set-row"><span>Player name</span><span class="nm"><b>${esc(S.name || '')}</b><button class="btn small" data-act="edit-name">Edit</button></span></div>
+      <div class="set-row"><span>Player name</span><span class="nm"><b translate="no">${esc(S.name || '')}</b><button class="btn small" data-act="edit-name">Edit</button></span></div>
       <div class="set-row"><span>Language</span><button class="btn small" data-act="set-lang">${LANG_NAMES[S.settings.lang] || 'English'}</button></div>
       <div class="set-row"><span>Chant language</span><button class="btn small" data-act="set-chant" lang="${chantLang()}">${chantLang() === 'ko' ? '한국어' : '日本語'}</button></div>
       <div class="set-row">Sound effects<button class="btn small toggle ${S.settings.sound ? 'on' : ''}" data-act="set-sound">${S.settings.sound ? 'ON' : 'OFF'}</button></div>

@@ -1,6 +1,6 @@
 /* 日本語表示：英語の画面文言を、ひらがな中心の日本語に置きかえる */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-15.71'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-15.73'; // ファイルの新旧チェック用
 
 const JA_EXACT = {
   // 共通
@@ -178,6 +178,7 @@ const I18N = {
   node(n) {
     const v = n.nodeValue;
     if (!v || !/[A-Za-z]/.test(v)) return;
+    if (n.parentElement && n.parentElement.closest('[translate="no"]')) return; // なまえ など ユーザーの ことばは そのまま
     const t = v.trim(); if (!t) return;
     const out = this.tr(t);
     if (out !== null && out !== t) n.nodeValue = v.replace(t, out);
