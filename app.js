@@ -485,7 +485,7 @@ screens.home = () => {
       <div class="home-chars">
         <div class="bubble">${hello}</div>
         <div class="duo">
-          <div class="char mine ${petD ? 'haspet' : ''}"><div class="stage">${avatarSVG(S.avatar, { face: 'happy' })}${petD ? `<svg class="homepet" viewBox="-4 -20 68 88" aria-hidden="true">${petSVG(petD.kind)}</svg>` : ''}</div><span class="name" translate="no">${esc(S.name || '')}</span></div>
+          <div class="char mine ${petD ? 'haspet' : ''}"><div class="stage">${avatarSVG(S.avatar, { face: 'happy' })}${petD ? `<svg class="homepet" viewBox="-4 -20 68 88" aria-hidden="true">${petSVG(petD.kind)}</svg>` : ''}</div><span class="name" translate="no" data-no-i18n>${esc(S.name || '')}</span></div>
           <div class="char nav">${avatarSVG(cocoCfg(), { face: 'happy', cls: 'bob' })}<span class="name">${NPC.coco.name}</span></div>
         </div>
       </div>
@@ -1327,7 +1327,7 @@ screens.parent = () => {
       <h2>💪 Top 5 tricky problems</h2>
       <div class="mist-list" style="justify-content:flex-start">${weak.length ? weak.map(k => { const [a, b] = k.split('x'); return `<span class="mist">${a}×${b}＝${a * b}(missed ${S.mistakes[k]}x)</span>`; }).join('') : '<span>None yet</span>'}</div>
       <h2>⚙️ Settings</h2>
-      <div class="set-row"><span>Player name</span><span class="nm"><b translate="no">${esc(S.name || '')}</b><button class="btn small" data-act="edit-name">Edit</button></span></div>
+      <div class="set-row"><span>Player name</span><span class="nm"><b translate="no" data-no-i18n>${esc(S.name || '')}</b><button class="btn small" data-act="edit-name">Edit</button></span></div>
       <div class="set-row"><span>Language</span><button class="btn small" data-act="set-lang">${LANG_NAMES[S.settings.lang] || 'English'}</button></div>
       <div class="set-row"><span>Chant language</span><button class="btn small" data-act="set-chant" lang="${chantLang()}">${chantLang() === 'ko' ? '한국어' : '日本語'}</button></div>
       <div class="set-row">Sound effects<button class="btn small toggle ${S.settings.sound ? 'on' : ''}" data-act="set-sound">${S.settings.sound ? 'ON' : 'OFF'}</button></div>

@@ -178,7 +178,7 @@ const I18N = {
   node(n) {
     const v = n.nodeValue;
     if (!v || !/[A-Za-z]/.test(v)) return;
-    if (n.parentElement && n.parentElement.closest('[translate="no"]')) return; // なまえ など ユーザーの ことばは そのまま
+    if (n.parentElement && n.parentElement.closest('[data-no-i18n]')) return; // なまえ など ユーザーの ことばは そのまま
     const t = v.trim(); if (!t) return;
     const out = this.tr(t);
     if (out !== null && out !== t) n.nodeValue = v.replace(t, out);
