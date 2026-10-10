@@ -39,7 +39,7 @@
 <script>
 /* ファイルの新旧が まざっていたら、じぶんで さいしん版を とりなおして 1回だけ 読みこみなおす */
 (function () {
-  var EXPECT = '2026-10-15.73', B = window.FILE_BUILD || {};
+  var EXPECT = '2026-10-16.74', B = window.FILE_BUILD || {};
   var bad = ['data', 'avatar', 'myroom', 'i18n-ko', 'i18n', 'app'].filter(function (k) { return B[k] !== EXPECT; });
   if (!bad.length) return;
   try { if (sessionStorage.getItem('kuku-healed') === EXPECT) return; sessionStorage.setItem('kuku-healed', EXPECT); } catch (e) { return; }

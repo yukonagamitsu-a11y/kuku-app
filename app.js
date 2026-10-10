@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-15.73'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-16.74'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-15.73';
+const APP_VERSION = '2026-10-16.74';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -250,8 +250,9 @@ function askName(first) {
     const o = document.createElement('div'); o.className = 'overlay';
     o.innerHTML = `<div class="modal"><h2>What's your name?</h2>
       <input id="nameIn" class="name-in" maxlength="12" autocomplete="off" placeholder="${ph}" value="${esc(S.name || '')}">
-      ${first ? `<p class="mini">Times table chant</p><div class="row-btns" style="margin-top:0"><button class="btn small ${chantLang() === 'ja' ? 'mint' : ''}" data-c="ja">日本語</button><button class="btn small ${chantLang() === 'ko' ? 'mint' : ''}" data-c="ko">한국어</button></div>` : ''}
-      <div class="row-btns">${first ? ['en', 'ja', 'ko'].map(k => `<button class="btn small ${S.settings.lang === k ? 'mint' : ''}" data-l="${k}">${LANG_NAMES[k]}</button>`).join('') : '<button class="btn lemon" data-i="0">Cancel</button>'}<button class="btn pink" data-i="1">Save</button></div></div>`;
+      ${first ? `<p class="mini">Chant language</p><div class="row-btns" style="margin-top:0"><button class="btn small ${chantLang() === 'ja' ? 'mint' : ''}" data-c="ja" translate="no" data-no-i18n>日本語</button><button class="btn small ${chantLang() === 'ko' ? 'mint' : ''}" data-c="ko" translate="no" data-no-i18n>한국어</button></div>` : ''}
+      ${first ? `<p class="mini">App language</p><div class="row-btns" style="margin-top:0">${['en', 'ja', 'ko'].map(k => `<button class="btn small ${S.settings.lang === k ? 'mint' : ''}" data-l="${k}" translate="no" data-no-i18n>${LANG_NAMES[k]}</button>`).join('')}</div><p class="lang-note">💡 To use the whole app in Japanese or Korean, choose that language for BOTH App language and Chant language.</p>` : ''}
+      <div class="row-btns">${first ? '' : '<button class="btn lemon" data-i="0">Cancel</button>'}<button class="btn pink" data-i="1">Save</button></div></div>`;
     const save1 = () => {
       const v = $('#nameIn', o).value.trim();
       if (!v) { $('#nameIn', o).focus(); return; }
@@ -1028,7 +1029,7 @@ screens.testsel = () => {
     title: 'Test', back: 'home',
     body: `<p class="section-title">Which times tables to test?</p><div class="dan-picker" id="picker">${danPickerHTML()}</div>
       <div class="row-btns"><button class="btn lemon" style="min-width:min(420px,90%);min-height:84px;font-size:32px" data-act="test-go">✏️ Start!</button></div>
-      <p class="section-title" style="color:var(--ink-soft)">10 questions. Get them all right for a special prize!</p>`,
+      <p class="section-title" style="color:var(--ink-soft)">${isOwned('sp_gold') ? '10 questions. Get them all right for 100 points!' : '10 questions. Get them all right to win a Gold Crown! 👑'}</p>`,
   });
 };
 actions['test-go'] = () => startTest([...selDans]);
@@ -1089,7 +1090,7 @@ function finishTest() {
   const mist = T.mist.slice(), dans = T.dans;
   finishSession({
     title: 'Test', ok, total, coins: sessionCoins(ok), score: Math.round(ok / total * 100), gained, mist,
-    note: perfect ? '🌟 100 points! A special prize!' : '',
+    note: perfect ? (gained.includes('sp_gold') ? '🌟 100 points! A special prize!' : '🌟 100 points! You already have the Gold Crown!') : '',
     retry: mist.length ? () => startTest(dans, mist) : () => startTest(dans),
     retryLabel: mist.length ? 'Retry the ones I missed' : 'Try again',
   });
@@ -1120,7 +1121,7 @@ screens.result = () => {
   else msg = "Good effort! Let's try again together";
   const gainHTML = r.gained.map(id => {
     const it = ITEM_BY_ID[id], m = r.masters.find(x => x.item === id);
-    return `<div class="gain-card"><div class="thumbbox">${thumb(it)}</div><div>${m ? `${danLabel(m.dan)} Master!<br>` : ''}<b>${it.name}</b><div class="stars-lg" style="font-size:20px">${'★'.repeat(it.rar)}</div></div></div>`;
+    return `<div class="gain-card"><div class="gain-new">🎁 You got a new prize!</div><div class="thumbbox">${thumb(it)}</div><div>${m ? `${danLabel(m.dan)} Master!<br>` : ''}<b>${it.name}</b><div class="stars-lg" style="font-size:20px">${'★'.repeat(it.rar)}</div>${it.cat !== 'room' ? `<button class="btn small mint" data-act="wear-prize" data-id="${it.id}">✨ Wear it now!</button><div class="gain-where">Try it on in the Dress-Up Room!</div>` : ''}</div></div>`;
   }).join('');
   app.innerHTML = frame({
     title: esc(r.title), back: 'home',
@@ -1146,6 +1147,10 @@ screens.result = () => {
   if (ratio >= .8 || r.gained.length) confetti();
 };
 actions.retry = () => lastRes && lastRes.retry && lastRes.retry();
+actions['wear-prize'] = el => {
+  const it = ITEM_BY_ID[el.dataset.id]; if (!it || !isOwned(it.id) || it.cat === 'room') return;
+  S.avatar[it.cat] = it.id; save(); Snd.play('ok'); C.tab = 'wear'; C.cat = it.cat; go('closet');
+};
 
 /* =============== きせかえルーム =============== */
 const C = { tab: 'wear', cat: 'hair', rolling: false };
@@ -1328,8 +1333,9 @@ screens.parent = () => {
       <div class="mist-list" style="justify-content:flex-start">${weak.length ? weak.map(k => { const [a, b] = k.split('x'); return `<span class="mist">${a}×${b}＝${a * b}(missed ${S.mistakes[k]}x)</span>`; }).join('') : '<span>None yet</span>'}</div>
       <h2>⚙️ Settings</h2>
       <div class="set-row"><span>Player name</span><span class="nm"><b translate="no" data-no-i18n>${esc(S.name || '')}</b><button class="btn small" data-act="edit-name">Edit</button></span></div>
-      <div class="set-row"><span>Language</span><button class="btn small" data-act="set-lang">${LANG_NAMES[S.settings.lang] || 'English'}</button></div>
-      <div class="set-row"><span>Chant language</span><button class="btn small" data-act="set-chant" lang="${chantLang()}">${chantLang() === 'ko' ? '한국어' : '日本語'}</button></div>
+      <div class="lang-main"><span class="lang-lbl">🌐 App language</span><button class="btn pink lang-big" data-act="set-lang" translate="no" data-no-i18n>${LANG_NAMES[S.settings.lang] || 'English'}</button></div>
+      <div class="lang-sub"><span>Chant language</span><button class="btn small" data-act="set-chant" lang="${chantLang()}" translate="no" data-no-i18n>${chantLang() === 'ko' ? '한국어' : '日本語'}</button></div>
+      <p class="lang-note">💡 To use the whole app in Japanese or Korean, choose that language for BOTH App language and Chant language.</p>
       <div class="set-row">Sound effects<button class="btn small toggle ${S.settings.sound ? 'on' : ''}" data-act="set-sound">${S.settings.sound ? 'ON' : 'OFF'}</button></div>
       <div class="set-row">Voice reading<button class="btn small toggle ${S.settings.voice ? 'on' : ''}" data-act="set-voice">${S.settings.voice ? 'ON' : 'OFF'}</button></div>
       <div class="set-row">Daily play limit (today: ${mins} min)<button class="btn small" data-act="set-limit">${lim ? lim + ' min' : 'None'}</button></div>
@@ -1342,7 +1348,7 @@ screens.parent = () => {
 actions['edit-name'] = () => askName(false).then(ok => { if (ok) { toast('Name saved!'); go('parent'); } });
 actions['set-lang'] = async () => {
   const keys = ['en', 'ja', 'ko'];
-  const k = await modal({ title: 'Language', buttons: keys.map(x => ({ label: LANG_NAMES[x], cls: x === S.settings.lang ? 'mint' : '' })) });
+  const k = await modal({ title: 'Language', buttons: keys.map(x => ({ label: `<span translate="no" data-no-i18n>${LANG_NAMES[x]}</span>`, cls: x === S.settings.lang ? 'mint' : '' })) });
   S.settings.lang = keys[k]; save(); I18N.refreshMeta(); go('parent');
 };
 actions['set-chant'] = async () => {

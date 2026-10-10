@@ -1,6 +1,6 @@
 /* 한국어 표시：영어 화면 문구를 한국어로 바꿔 줍니다 (친구에게 확인 받을 것) */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-10-15.73'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-10-16.74'; // ファイルの新旧チェック用
 
 const KO_EXACT = {
   // 공통
@@ -57,6 +57,14 @@ const KO_EXACT = {
   'Not enough coins. Play to earn more!': '코인이 부족해요. 놀면서 모아 봐요!',
   'Buy!': '사기!', 'Got it! Put it on in Dress Up': '얻었어요! 꾸미기에서 입어 봐요',
   'You got it again!': '또 나왔어요!', '✨ New friend!': '✨ 새 친구!',
+  '🌐 App language': '🌐 화면 언어',
+  'App language': '화면 언어',
+  '💡 To use the whole app in Japanese or Korean, choose that language for BOTH App language and Chant language.': '💡 앱 전체를 일본어나 한국어로 쓰려면, \'화면 언어\'와 \'구구단 읽는 말\'을 둘 다 같은 언어로 바꿔 주세요.',
+  '🌟 100 points! You already have the Gold Crown!': '🌟 100점! 황금 왕관은 이미 있어요!',
+  '🎁 You got a new prize!': '🎁 새 선물을 받았어요!',
+  '✨ Wear it now!': '✨ 지금 입어 보기!',
+  '10 questions. Get them all right to win a Gold Crown! 👑': '10문제예요. 다 맞히면 황금 왕관을 받아요! 👑',
+  '10 questions. Get them all right for 100 points!': '10문제예요. 다 맞히면 100점!',
   'Try it on in the Dress-Up Room!': '옷 갈아입기 방에서 입어 봐요!',
   // 보호자
   'For Parents': '보호자 메뉴',

@@ -465,3 +465,26 @@ html[lang="ko"] .menu .btn { word-break: keep-all; overflow-wrap: break-word; te
 
 /* よみやすさ：いろの ついた ボタンの もじを すこし こく */
 .btn.pink, .btn.mint, .btn.lemon, .btn.sky, .btn.lav { color: #3f2530; }
+
+/* ---- じょうぶな ヘッダー：せまい がめんでは チップを おりかえす ---- */
+.top { min-width: 0; }
+.stats { flex-wrap: wrap; justify-content: flex-end; min-width: 0; row-gap: 6px; }
+.chip { flex: 0 1 auto; max-width: 100%; }
+@media (max-width: 560px) {
+  .stats { flex: 1 1 100%; justify-content: center; gap: 6px; }
+  .chip { font-size: 15px; padding: 4px 10px; }
+  .chip b { font-size: 18px; }
+}
+/* ---- 言語せってい ---- */
+.lang-main { background: #fff; border: 3px solid var(--pink); border-radius: 26px; padding: 12px 16px; margin: 10px 0 6px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-weight: 800; }
+.lang-main .lang-lbl { font-size: 22px; }
+.lang-main .lang-big { min-height: 56px; font-size: 26px; padding: 6px 26px; }
+.lang-sub { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 2px 16px; margin: 0 0 4px; font-weight: 700; font-size: 15px; color: var(--ink-soft); }
+.lang-sub .btn.small { min-height: 40px; font-size: 16px; padding: 4px 14px; }
+.lang-note { font-size: 15px; line-height: 1.4; color: var(--ink-soft); font-weight: 700; margin: 4px 4px 10px; }
+.modal .lang-note { font-size: 14px; margin: 8px 0 0; }
+.gain-card .gain-new { font-size: 15px; font-weight: 800; color: var(--pink-d); margin-bottom: 4px; }
+.gain-card .gain-where { font-size: 14px; color: var(--ink-soft); font-weight: 700; margin-top: 4px; }
+.gain-card .btn.small { min-height: 44px; font-size: 16px; margin-top: 6px; }
+
+.modal .row-btns .btn.small { padding-left: 14px; padding-right: 14px; }

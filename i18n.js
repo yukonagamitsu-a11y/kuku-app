@@ -1,6 +1,6 @@
 /* 日本語表示：英語の画面文言を、ひらがな中心の日本語に置きかえる */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-15.73'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-16.74'; // ファイルの新旧チェック用
 
 const JA_EXACT = {
   // 共通
@@ -57,6 +57,14 @@ const JA_EXACT = {
   'Not enough coins. Play to earn more!': 'コインが たりないよ。あそんで ためよう！',
   'Buy!': 'かう！', 'Got it! Put it on in Dress Up': 'てにいれたよ！ きせかえで つけてみよう',
   'You got it again!': 'また でたよ！', '✨ New friend!': '✨ あたらしい なかま！',
+  '🌐 App language': '🌐 がめんの ことば',
+  'App language': 'がめんの ことば',
+  '💡 To use the whole app in Japanese or Korean, choose that language for BOTH App language and Chant language.': '💡 ぜんぶ 日本語や 韓国語で あそぶときは、「がめんの ことば」と「九九の となえの ことば」を、どちらも おなじ ことばに してね。',
+  '🌟 100 points! You already have the Gold Crown!': '🌟 100てん！ ゴールドクラウンは もう もってるよ！',
+  '🎁 You got a new prize!': '🎁 あたらしい プレゼントを ゲット！',
+  '✨ Wear it now!': '✨ いま つけてみる！',
+  '10 questions. Get them all right to win a Gold Crown! 👑': '10もん。ぜんぶ せいかいで ゴールドクラウンを ゲット！👑',
+  '10 questions. Get them all right for 100 points!': '10もん。ぜんぶ せいかいで 100てん！',
   'Try it on in the Dress-Up Room!': 'きせかえルームで つけてみよう！',
   // ほごしゃ
   'For Parents': 'ほごしゃの かたへ',
