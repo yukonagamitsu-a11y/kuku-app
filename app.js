@@ -1420,7 +1420,11 @@ function treatNote(k) { // 正解した「ちがう もんだい」を かぞえ
 }
 function treatPracticeReady(t) { return t.pick === 'practice' && t.keys.length >= TREAT_NEED; }
 function bookEvent(n) { // 1さつ そろったときの ごほうびを きめる
-  if (n % 2 === 1) return { kind: 'coco', look: ['ev1', 'ev2', 'ev3'][((n - 1) / 2) % 3], n };
+  if (n % 2 === 1) {
+    if (n <= 5) return { kind: 'coco', look: ['ev1', 'ev2', 'ev3'][(n - 1) / 2], n }; // 1・3・5さつめ：ココちゃんが ふくを きて とうじょう
+    const dress = ['ev_o1', 'ev_o2', 'ev_o3'][(n - 7) / 2]; // 7・9・11さつめ：ココちゃんの ドレスを アイテムとして プレゼント
+    return dress ? { kind: 'item', id: dress, n } : { kind: 'coins', amount: 100, n };
+  }
   const r = BOOK_ITEM_REWARDS[n / 2 - 1];
   if (!r) return { kind: 'coins', amount: 100, n };
   return { kind: r.t, id: r.id, n };
