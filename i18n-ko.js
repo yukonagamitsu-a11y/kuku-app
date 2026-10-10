@@ -1,6 +1,6 @@
 /* 한국어 표시：영어 화면 문구를 한국어로 바꿔 줍니다 (친구에게 확인 받을 것) */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-10-16.74'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-10-17.75'; // ファイルの新旧チェック用
 
 const KO_EXACT = {
   // 공통
@@ -65,6 +65,38 @@ const KO_EXACT = {
   '✨ Wear it now!': '✨ 지금 입어 보기!',
   '10 questions. Get them all right to win a Gold Crown! 👑': '10문제예요. 다 맞히면 황금 왕관을 받아요! 👑',
   '10 questions. Get them all right for 100 points!': '10문제예요. 다 맞히면 100점!',
+  'Today\'s Treat': '오늘의 즐거움',
+  'What shall we do today?': '오늘은 뭐 할까?',
+  'Play & Get': '놀고 받기',
+  'Play 1 game': '게임 1번 하기',
+  'Practice with Coco': '코코와 연습',
+  'Get 8 different ones right': '다른 문제 8개 맞히기',
+  'Sticker': '스티커',
+  'Special sticker': '특별 스티커',
+  'Close': '닫기',
+  'Choose today\'s treat!': '오늘의 즐거움을 골라요!',
+  'Done! Sticker collected': '완료! 스티커를 받았어요',
+  'Sticker Book': '스티커북',
+  'Collect them all to get the Sticker Crown!': '모두 모으면 스티커 왕관을 받아요!',
+  '👑 Sticker Crown!': '👑 스티커 왕관!',
+  '🎉 Treat complete!': '🎉 즐거움 완료!',
+  'Sticker Book complete! You got the Sticker Crown!': '스티커북 완성! 스티커 왕관을 받았어요!',
+  'You got all the stickers!': '스티커를 모두 가지고 있어요!',
+  'Come back tomorrow!': '내일 또 만나요!',
+  'Sticker Crown': '스티커 왕관',
+  'Complete the Sticker Book': '스티커북 완성하기',
+  'Pink Heart': '분홍 하트',
+  'Yellow Star': '노란 별',
+  'Sakura': '벚꽃',
+  'Twin Cherries': '쌍둥이 체리',
+  'Bow': '리본',
+  'Strawberry': '딸기',
+  'Little Rainbow': '작은 무지개',
+  'Fluffy Cloud': '몽실 구름',
+  'Bunny Pal': '토끼 친구',
+  'Kitty Pal': '고양이 친구',
+  'Tiny Crown': '작은 왕관',
+  'Cupcake': '컵케이크',
   'Try it on in the Dress-Up Room!': '옷 갈아입기 방에서 입어 봐요!',
   // 보호자
   'For Parents': '보호자 메뉴',
@@ -119,6 +151,8 @@ const KO_EXACT = {
 const KO_GOODS = { cookies: '쿠키', candies: '사탕', strawberries: '딸기', cupcakes: '컵케이크', apples: '사과', tangerines: '귤', chocolates: '초콜릿', donuts: '도넛' };
 function koTr(s) { return Object.prototype.hasOwnProperty.call(KO_EXACT, s) ? KO_EXACT[s] : null; }
 const KO_PATTERNS = [
+  [/^Practice: (\d+) \/ 8$/, m => `연습 ${m[1]} / 8`],
+  [/^Collected (\d+) \/ (\d+) stickers$/, m => `${m[1]} / ${m[2]}장 모았어요`],
   [/^Quiz (\d+)\/9$/, m => `퀴즈 ${m[1]}/9`],
   [/^Sweet Shop (\d+)\/(\d+)$/, m => `귀여운 과자 가게 ${m[1]}/${m[2]}`],
   [/^Test (\d+)\/(\d+)$/, m => `시험 ${m[1]}/${m[2]}`],

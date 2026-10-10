@@ -1,6 +1,6 @@
 /* 日本語表示：英語の画面文言を、ひらがな中心の日本語に置きかえる */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-16.74'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-17.75'; // ファイルの新旧チェック用
 
 const JA_EXACT = {
   // 共通
@@ -65,6 +65,38 @@ const JA_EXACT = {
   '✨ Wear it now!': '✨ いま つけてみる！',
   '10 questions. Get them all right to win a Gold Crown! 👑': '10もん。ぜんぶ せいかいで ゴールドクラウンを ゲット！👑',
   '10 questions. Get them all right for 100 points!': '10もん。ぜんぶ せいかいで 100てん！',
+  'Today\'s Treat': 'きょうの おたのしみ',
+  'What shall we do today?': 'きょうは なにを する？',
+  'Play & Get': 'あそんで ゲット',
+  'Play 1 game': 'ゲームを 1かい あそぶ',
+  'Practice with Coco': 'ココと おけいこ',
+  'Get 8 different ones right': 'ちがう もんだいを 8こ せいかい',
+  'Sticker': 'シール',
+  'Special sticker': 'とくべつ シール',
+  'Close': 'とじる',
+  'Choose today\'s treat!': 'きょうの おたのしみを えらぼう！',
+  'Done! Sticker collected': 'クリア！ シールを ゲット',
+  'Sticker Book': 'シールちょう',
+  'Collect them all to get the Sticker Crown!': 'ぜんぶ あつめると、シールの おうかんが もらえるよ！',
+  '👑 Sticker Crown!': '👑 シールの おうかん！',
+  '🎉 Treat complete!': '🎉 おたのしみ クリア！',
+  'Sticker Book complete! You got the Sticker Crown!': 'シールちょう コンプリート！ シールの おうかんを ゲット！',
+  'You got all the stickers!': 'シールは ぜんぶ もってるよ！',
+  'Come back tomorrow!': 'また あしたね！',
+  'Sticker Crown': 'シールの おうかん',
+  'Complete the Sticker Book': 'シールちょうを コンプリート',
+  'Pink Heart': 'ピンクの ハート',
+  'Yellow Star': 'きいろい ほし',
+  'Sakura': 'さくら',
+  'Twin Cherries': 'ふたごの さくらんぼ',
+  'Bow': 'リボン',
+  'Strawberry': 'いちご',
+  'Little Rainbow': 'ちいさな にじ',
+  'Fluffy Cloud': 'ふわふわ くも',
+  'Bunny Pal': 'うさぎさん',
+  'Kitty Pal': 'ねこさん',
+  'Tiny Crown': 'ちいさな おうかん',
+  'Cupcake': 'カップケーキ',
   'Try it on in the Dress-Up Room!': 'きせかえルームで つけてみよう！',
   // ほごしゃ
   'For Parents': 'ほごしゃの かたへ',
@@ -137,6 +169,8 @@ function jaTr(s) {
   return null;
 }
 const JA_PATTERNS = [
+  [/^Practice: (\d+) \/ 8$/, m => `おけいこ ${m[1]} / 8`],
+  [/^Collected (\d+) \/ (\d+) stickers$/, m => `${m[1]} / ${m[2]} まい あつまったよ`],
   [/^Quiz (\d+)\/9$/, m => `おぼえたかな？ ${m[1]}/9`],
   [/^Sweet Shop (\d+)\/(\d+)$/, m => `かわいい おみせやさん ${m[1]}/${m[2]}`],
   [/^Test (\d+)\/(\d+)$/, m => `ためしてみよう ${m[1]}/${m[2]}`],

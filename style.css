@@ -488,3 +488,81 @@ html[lang="ko"] .menu .btn { word-break: keep-all; overflow-wrap: break-word; te
 .gain-card .btn.small { min-height: 44px; font-size: 16px; margin-top: 6px; }
 
 .modal .row-btns .btn.small { padding-left: 14px; padding-right: 14px; }
+
+/* ---- きょうの おたのしみ・シールちょう ---- */
+.home-side { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.treat-card { display: flex; gap: 8px; align-items: stretch; }
+.treat-main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; background: #fff; border: 0; border-radius: 26px; padding: 8px 14px; box-shadow: 0 5px 0 #f2d3de; cursor: pointer; text-align: left; font-family: inherit; color: var(--ink); min-height: 64px; }
+.treat-card.done .treat-main { background: #eefaf4; box-shadow: 0 5px 0 #cdeadf; }
+.tc-art { flex: none; width: 46px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: 30px; }
+.tc-art svg, .tb-art svg { width: 100%; height: 100%; display: block; }
+.tc-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
+.tc-text b { font-size: 18px; font-weight: 800; }
+.tc-text small { font-size: 15px; font-weight: 700; color: var(--ink-soft); }
+.treat-book { flex: none; width: 76px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff; border: 0; border-radius: 26px; box-shadow: 0 5px 0 #f2d3de; cursor: pointer; font-family: inherit; color: var(--ink); padding: 4px; }
+.tb-art { width: 36px; height: 38px; display: block; }
+.tb-n { font-size: 14px; font-weight: 800; }
+.stk-svg { display: block; width: 100%; height: 100%; filter: drop-shadow(0 3px 2px rgba(180,100,130,.3)); }
+.stk-svg.sil { filter: none; opacity: .9; }
+.modal.treat { position: relative; padding: 14px 14px 16px; max-width: min(460px, 94vw); }
+.treat-x { position: absolute; top: 8px; right: 8px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: #FFF1F5; color: var(--ink); font-size: 20px; font-weight: 800; cursor: pointer; font-family: inherit; }
+.treat-head { display: flex; align-items: flex-end; gap: 8px; justify-content: center; padding-right: 36px; }
+.treat-coco { width: 74px; flex: none; }
+.treat-coco svg { width: 100%; height: auto; display: block; }
+.treat-head .bubble { margin: 0 0 10px; font-size: 17px; padding: 8px 14px; }
+.treat-head .bubble::after { left: -10px; bottom: 14px; border: 10px solid transparent; border-right-color: #fff; border-left: 0; border-top-color: transparent; }
+.modal.treat h2 { margin: 6px 0 10px; font-size: 22px; }
+.tcards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.tcard { border: 3px solid transparent; border-radius: 24px; padding: 10px 6px 10px; cursor: pointer; font-family: inherit; color: var(--ink); display: flex; flex-direction: column; align-items: center; gap: 4px; min-height: 190px; }
+.tcard.pinkc { background: #FFE3EE; box-shadow: 0 5px 0 #f4bfd4; }
+.tcard.mintc { background: #DDF6EC; box-shadow: 0 5px 0 #b7e5d2; }
+.tcard.sel { border-color: var(--pink); }
+.tcard:disabled { opacity: .55; cursor: default; }
+.tcard:active:not(:disabled) { transform: translateY(3px); }
+.tcard .tc-ico { width: 58px; height: 58px; display: block; }
+.tcard .svgi, .tcard .svgi svg { display: block; width: 100%; height: 100%; }
+.tcard .tc-t { font-size: 17px; font-weight: 800; line-height: 1.2; }
+.tcard .tc-s { font-size: 14px; font-weight: 700; color: var(--ink-soft); line-height: 1.25; }
+.tcard .tc-r { margin-top: auto; background: #fff; border-radius: 999px; padding: 4px 10px 4px 6px; display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 800; }
+.tcard .tc-st { width: 26px; height: 27px; display: block; }
+.stk-big { width: 120px; height: 124px; margin: 0 auto 4px; }
+.treat-got .stk-big { width: 96px; height: 100px; }
+.stk-page { background: #fffdf5; border-radius: 24px; box-shadow: inset 0 0 0 3px #f7dfe7; padding: 10px 12px 14px; margin: 10px 0; background-image: radial-gradient(#f3dde5 1.2px, transparent 1.4px); background-size: 16px 16px; }
+.stk-title { font-weight: 800; text-align: center; margin-bottom: 6px; font-size: 18px; }
+.stk-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.stk-cell { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.stk-cell svg { width: min(100%, 92px); height: auto; }
+.stk-name { font-size: 14px; font-weight: 700; color: var(--ink-soft); text-align: center; }
+.stk-cell.got.sp .stk-name { color: var(--pink-d); }
+@media (max-width: 560px) { .home-side .menu .btn { min-height: 84px; } .treat-main { min-height: 56px; } .tcard { min-height: 176px; } }
+
+/* おたのしみポップアップの ととのえ */
+.treat-head { padding: 0 44px 0 0; gap: 10px; min-width: 0; }
+.treat-coco { flex: 0 0 64px; width: 64px; }
+.treat-head .bubble { flex: 1 1 auto; min-width: 0; text-align: center; }
+.tcard .tc-t, .tcard .tc-s, .modal.treat h2 { word-break: keep-all; overflow-wrap: break-word; text-wrap: balance; }
+
+.tc-text b, .tc-text small { word-break: keep-all; overflow-wrap: break-word; text-wrap: balance; }
+
+/* よこむき スマホ（たかさが ひくい）：ホームの おたのしみを コンパクトに */
+@media (max-height: 480px) {
+  .home-side { gap: 8px; }
+  .home-side .menu .btn { min-height: 74px; }
+  .home-side .menu .btn .ico.ico-svg { width: 38px; height: 38px; }
+  .treat-main { min-height: 46px; padding: 4px 12px; }
+  .tc-art { height: 34px; width: 40px; }
+  .tc-text b { font-size: 16px; }
+  .tc-text small { font-size: 14px; }
+  .treat-book { width: 62px; }
+  .tb-art { width: 28px; height: 30px; }
+  .modal.treat { padding: 10px 12px 12px; }
+  .treat-head { display: none; }
+  .modal.treat h2 { margin: 2px 40px 8px 0; font-size: 20px; }
+  .tcard { min-height: 0; padding: 8px 6px; }
+  .tcard .tc-ico { width: 42px; height: 42px; }
+}
+@media (max-height: 480px) {
+  .home-side .menu { gap: 8px; }
+  .home-side .menu .btn { min-height: 0; padding: 6px 8px; font-size: 19px; border-radius: 26px; }
+  .home-side .menu .btn small { display: none; }
+}

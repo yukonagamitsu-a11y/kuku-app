@@ -1,6 +1,6 @@
 /* データ：九九の読み方・アイテム・文言 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['data'] = '2026-10-16.74'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['data'] = '2026-10-17.75'; // ファイルの新旧チェック用
 
 // 九九の読み方（数式から自動生成せず、手で持つ）kukuReading[段][かける数]
 const KUKU_TEXT = {
@@ -82,6 +82,7 @@ const ITEMS = [
   { id: 'lim3', cat: 'hat', name: 'Sparkle Tiara', rar: 3, lim: 3, def: { kind: 'tiara', c1: '#e8e8ff' } },
   { id: 'lim8', cat: 'hat', name: 'Magic Hat', rar: 3, lim: 8, def: { kind: 'witch', c1: '#7a5ccc' } },
   { id: 'sp_gold', cat: 'hat', name: 'Gold Crown', rar: 3, sp: true, def: { kind: 'crown', c1: '#ffc400', big: true } },
+  { id: 'sp_sticker', cat: 'hat', name: 'Sticker Crown', rar: 3, sp: true, spHint: 'Complete the Sticker Book', def: { kind: 'crown', c1: '#8fd0ff', big: true } },
   // アクセサリー
   { id: 'a_neck', cat: 'accessory', name: 'Necklace', rar: 1, def: { kind: 'necklace' } },
   { id: 'a_scarf', cat: 'accessory', name: 'Scarf', rar: 1, def: { kind: 'scarf', c1: '#ff8fb8' } },
@@ -141,3 +142,13 @@ const NPC = {
 const FRIENDS = ['mint', 'yuzu', 'lala', 'sora'];
 
 const BALLOON_COLORS = ['#ff8fb8', '#8fe3c8', '#ffe27a', '#8fd0ff', '#c9b6ff', '#ffb27a'];
+
+/* シールちょう：「きょうの おたのしみ」でだけ もらえる（n=ふつう s=とくべつ） */
+const STICKERS = [
+  { id: 'st_heart', name: 'Pink Heart', t: 'n' }, { id: 'st_star', name: 'Yellow Star', t: 'n' }, { id: 'st_flower', name: 'Sakura', t: 'n' },
+  { id: 'st_cherry', name: 'Twin Cherries', t: 'n' }, { id: 'st_ribbon', name: 'Bow', t: 'n' }, { id: 'st_berry', name: 'Strawberry', t: 'n' },
+  { id: 'st_rainbow', name: 'Little Rainbow', t: 'n' }, { id: 'st_cloud', name: 'Fluffy Cloud', t: 'n' },
+  { id: 'st_bunny', name: 'Bunny Pal', t: 's' }, { id: 'st_kitty', name: 'Kitty Pal', t: 's' },
+  { id: 'st_crown', name: 'Tiny Crown', t: 's' }, { id: 'st_cake', name: 'Cupcake', t: 's' },
+];
+const STICKER_BY_ID = Object.fromEntries(STICKERS.map(s => [s.id, s]));

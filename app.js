@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-16.74'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-17.75'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-16.74';
+const APP_VERSION = '2026-10-17.75';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -40,6 +40,8 @@ const defaultState = () => ({
   cocoSeen: null,
   cocoDays: { date: null, count: 0 },
   myroom: { has: false, items: [], placed: {}, seen: false },
+  treat: { date: null, shown: null, pick: null, keys: [], playDone: false, done: false },
+  stickers: [],
 });
 function defaultLang() { const l = navigator.language || ''; return /^ja/i.test(l) ? 'ja' : /^ko/i.test(l) ? 'ko' : 'en'; }
 const LANG_NAMES = { en: 'English', ja: '日本語', ko: '한국어' };
@@ -66,6 +68,10 @@ function sanitize(raw) {
   s.daily = Object.assign(defaultState().daily, isObj(r.daily) ? r.daily : {});
   if (!isObj(s.daily.counts)) s.daily.counts = {};
   s.cocoDays = Object.assign(defaultState().cocoDays, isObj(r.cocoDays) ? r.cocoDays : {});
+  s.treat = Object.assign(defaultState().treat, isObj(r.treat) ? r.treat : {});
+  s.treat.keys = strArr(s.treat.keys);
+  if (s.treat.pick !== 'play' && s.treat.pick !== 'practice') s.treat.pick = null;
+  s.stickers = strArr(r.stickers).filter((id, i, a) => a.indexOf(id) === i && typeof STICKER_BY_ID !== 'undefined' && STICKER_BY_ID[id]);
   for (const k of ['mastery', 'mistakes', 'attempts', 'correct']) s[k] = numObj(r[k]);
   s.masteredDans = Array.isArray(r.masteredDans) ? r.masteredDans.filter(n => Number.isInteger(n)) : [];
   s.stamps = Array.isArray(r.stamps) ? r.stamps : [];
@@ -339,7 +345,7 @@ function sessionCoins(ok) { return ok > 0 ? Math.max(1, Math.round(SC.sum)) : 0;
 function record(a, b, ok) {
   const k = qkey(a, b), m = S.mastery[k] || 0;
   S.attempts[k] = (S.attempts[k] || 0) + 1;
-  if (ok) { S.correct[k] = (S.correct[k] || 0) + 1; S.mastery[k] = Math.min(3, m + 1); }
+  if (ok) { S.correct[k] = (S.correct[k] || 0) + 1; S.mastery[k] = Math.min(3, m + 1); treatNote(k); }
   else { S.mistakes[k] = (S.mistakes[k] || 0) + 1; S.mastery[k] = Math.max(0, m - 1); }
   touchStreak(); save();
 }
@@ -490,15 +496,17 @@ screens.home = () => {
           <div class="char nav">${avatarSVG(cocoCfg(), { face: 'happy', cls: 'bob' })}<span class="name">${NPC.coco.name}</span></div>
         </div>
       </div>
+      <div class="home-side">${treatCardHTML()}
       <nav class="menu">
         <button class="btn pink" data-act="go" data-to="learn"><span class="ico ico-svg">${bookIcon()}</span>Learn<small>Chant and remember</small></button>
         <button class="btn mint" data-act="go" data-to="play"><span class="ico ico-svg">${balloonIcon()}</span>Play<small>Practice with games</small></button>
         <button class="btn lemon" data-act="go" data-to="testsel"><span class="ico ico-svg">${pencilIcon()}</span>Test<small>10-question challenge</small></button>
         <button class="btn lav" data-act="go" data-to="closet"><span class="ico ico-svg">${dressIcon()}</span>Dress-Up Room<small>Rewards and outfits</small></button>
-      </nav></div>`,
+      </nav></div></div>`,
   });
   S.seenHello = true; save();
   if (!S.name) askName(true).then(() => { if (cur === 'home') go('home'); });
+  else treatOnHome(); // その日の さいしょの ひらきで ポップアップ
   // ほごしゃ用：ながおしで ひらく
   const gear = $('#gear'); let gt = null;
   const stop = () => { clearTimeout(gt); gear.classList.remove('holding'); };
@@ -728,7 +736,7 @@ screens.balloon = () => {
     say("Time's up! Great effort!", 'ok'); faces('cheer');
     setTimeout(() => {
       if (cur !== 'balloon') return;
-      finishSession({ title: 'Balloon Pop', ok: G.ok, total: G.ok, coins: sessionCoins(G.ok), unit: 'q', retry: () => go('balloon') });
+      finishSession({ kind: 'game', title: 'Balloon Pop', ok: G.ok, total: G.ok, coins: sessionCoins(G.ok), unit: 'q', retry: () => go('balloon') });
     }, 1400);
   };
   field.addEventListener('pointerdown', e => {
@@ -765,7 +773,7 @@ screens.shopgame = () => {
 };
 function nextCustomer() {
   const g = SG;
-  if (g.n >= g.total) { finishSession({ title: 'Sweet Shop', ok: g.ok, total: g.total, coins: sessionCoins(g.ok), retry: () => go('shopgame') }); return; }
+  if (g.n >= g.total) { finishSession({ kind: 'game', title: 'Sweet Shop', ok: g.ok, total: g.total, coins: sessionCoins(g.ok), retry: () => go('shopgame') }); return; }
   g.q = pickQ(g.dans, g.last); g.last = qkey(g.q.a, g.q.b);
   g.wrong = false; g.locked = false; g.cust = pick(FRIENDS); g.good = pick(SHOP_GOODS);
   const { a, b } = g.q, opts = choices(a, b);
@@ -894,7 +902,7 @@ screens.mole = () => {
   const end = () => {
     MO.over = true; clearInterval(MO.iv);
     say("Time's up! Great effort!", 'ok');
-    setTimeout(() => { if (cur === 'mole') finishSession({ title: 'Whack-a-Mole', ok: MO.ok, total: MO.ok, coins: sessionCoins(MO.ok), unit: 'q', retry: () => go('mole') }); }, 1400);
+    setTimeout(() => { if (cur === 'mole') finishSession({ kind: 'game', title: 'Whack-a-Mole', ok: MO.ok, total: MO.ok, coins: sessionCoins(MO.ok), unit: 'q', retry: () => go('mole') }); }, 1400);
   };
   field.addEventListener('pointerdown', e => {
     if (MO.over) return;
@@ -1009,7 +1017,7 @@ screens.frog = () => {
             FG.fx = sl + sw * .22;
           }, 700);
         }, 1000);
-        later(() => finishSession({ title: 'Froggy Hop', ok: FG.ok, total: FG.total, coins: sessionCoins(FG.ok), retry: () => go('frog') }), 5000);
+        later(() => finishSession({ kind: 'game', title: 'Froggy Hop', ok: FG.ok, total: FG.total, coins: sessionCoins(FG.ok), retry: () => go('frog') }), 5000);
         return;
       }
       later(() => { pan(); FG.pads.filter(p => p !== el).forEach(p => { p.style.animation = 'none'; p.style.opacity = '0'; }); }, 800);
@@ -1098,17 +1106,15 @@ function finishTest() {
 
 /* =============== けっか =============== */
 function finishSession(r) {
-  const today = dateStr();
-  if (r.coins > 0 && S.bonusDate !== today) { // 1日の さいしょの あそびに ボーナス
-    S.bonusDate = today; r.bonus = 10 + 2 * Math.min(5, Math.max(0, curStreak() - 1)); r.coins += r.bonus;
-  }
   S.coins += Math.max(0, r.coins - SC.paid); SC.paid = 0; // とちゅうで わたした ぶんは ひく
   const masters = checkMasters();
   const gained = (r.gained || []).slice();
   masters.forEach(m => m.item && gained.push(m.item));
+  const sticker = treatCheck(r); // おたのしみを やりおえていたら シールを わたす
+  if (sticker && sticker.bookComplete) gained.push('sp_sticker');
   touchStreak(); syncRoomGifts(); save();
   const easy = SC.n >= 5 && SC.base / SC.n < 1, tired = SC.tired >= 3;
-  lastRes = Object.assign({}, r, { masters, gained, easy, tired });
+  lastRes = Object.assign({}, r, { masters, gained, easy, tired, sticker });
   go('result');
 }
 screens.result = () => {
@@ -1135,6 +1141,8 @@ screens.result = () => {
         ${r.tired ? '<div class="tip">🌱 You practiced these a lot today, so coins are lower. Try other times tables!</div>' : ''}
         ${r.easy ? '<div class="tip">💡 Tip: bigger times tables earn more coins!</div>' : ''}
         ${r.masters.length ? `<div class="coin-line">🎉 ${r.masters.map(m => danLabel(m.dan)).join(', ')} mastered!</div>` : ''}
+        ${r.sticker && r.sticker.id ? treatResultHTML(r.sticker) : ''}
+        ${r.sticker && r.sticker.allHad ? '<div class="coin-line">🎉 Treat complete!</div><div class="tip">You got all the stickers!</div>' : ''}
         ${gainHTML ? `<div class="gain">${gainHTML}</div>` : ''}
         ${r.mist && r.mist.length ? `<div class="section-title">Check these answers</div><div class="mist-list">${r.mist.map(q => `<span class="mist">${q.a}×${q.b}＝${q.a * q.b}</span>`).join('')}</div>` : ''}
         <div class="row-btns">
@@ -1180,7 +1188,7 @@ function zukanHTML() {
     const list = ITEMS.filter(i => i.cat === c.id && shown(i));
     return `<div class="sect">${c.icon} ${c.name}</div><div class="grid">${list.map(i => {
       const own = isOwned(i.id);
-      const hint = i.lim ? `Master ${danLabel(i.lim)}` : i.sp ? 'Score 100 on a test' : 'Shop or Capsules';
+      const hint = i.lim ? `Master ${danLabel(i.lim)}` : i.sp ? (i.spHint || 'Score 100 on a test') : 'Shop or Capsules';
       return `<div class="cell ${own ? '' : 'sil'}"><div class="tb">${thumb(i)}</div>${own ? i.name : '？？？'}<span class="stars">${starsOf(i.rar)}</span>${own ? '' : `<span style="font-size:14px;color:var(--ink-soft)">${hint}</span>`}</div>`;
     }).join('')}</div>`;
   }).join('');
@@ -1366,6 +1374,142 @@ actions.reset = async () => {
   if (!(await confirmDialog('Erase progress?', '<p>Coins and items will be deleted too.</p>', 'Next', 'Cancel'))) return;
   if (!(await confirmDialog('Are you sure?', '<p>This cannot be undone.</p>', 'Erase', 'Cancel'))) return;
   S = defaultState(); save(); toast('Progress erased'); go('home');
+};
+
+
+/* =============== きょうの おたのしみ ＋ シールちょう =============== */
+const TREAT_NEED = 8;
+function treatToday() {
+  const t = dateStr();
+  if (!S.treat || typeof S.treat !== 'object') S.treat = defaultState().treat;
+  if (S.treat.date !== t) S.treat = { date: t, shown: S.treat.shown || null, pick: null, keys: [], playDone: false, done: false };
+  return S.treat;
+}
+function treatNote(k) { // 正解した「ちがう もんだい」を かぞえる（おけいこ用）
+  const t = treatToday();
+  if (t.pick === 'practice' && !t.done && !t.keys.includes(k)) t.keys.push(k);
+}
+function treatPracticeReady(t) { return t.pick === 'practice' && t.keys.length >= TREAT_NEED; }
+function treatComplete() { // シールを 1まい わたす（ふつう／とくべつ）
+  const t = treatToday(); t.done = true;
+  const want = t.pick === 'practice' ? 's' : 'n';
+  const have = S.stickers;
+  const left = STICKERS.filter(x => !have.includes(x.id));
+  const pool = left.filter(x => x.t === want).length ? left.filter(x => x.t === want) : left;
+  let id = null, bookComplete = false;
+  if (pool.length) { id = pick(pool).id; have.push(id); }
+  if (have.length >= STICKERS.length && !S.items.includes('sp_sticker')) { grantItem('sp_sticker'); bookComplete = true; syncRoomGifts(); }
+  save();
+  return { id, bookComplete, allHad: !id };
+}
+function treatCheck(r) { // けっかがめんの まえに よばれる
+  const t = treatToday();
+  if (!t.pick || t.done) return null;
+  const ready = t.pick === 'practice' ? treatPracticeReady(t) : (r && r.kind === 'game' && r.ok >= 3);
+  return ready ? treatComplete() : null;
+}
+function stickerSVG(id, opt) {
+  const sil = opt && opt.sil;
+  const tint = { st_heart: '#ff8fb8', st_star: '#ffe27a', st_flower: '#ffb3c9', st_cherry: '#ff9fb0', st_ribbon: '#c9b6ff', st_berry: '#ffa3b8', st_rainbow: '#8fd0ff', st_cloud: '#b8e0ff', st_bunny: '#d9c8ff', st_kitty: '#ffe27a', st_crown: '#ffe27a', st_cake: '#8fe3c8' }[id] || '#ffb3c9';
+  const m = {
+    st_heart: '<path transform="translate(50 56)" d="M0 24 C-32 2 -26 -26 -11 -25 C-5 -24 0 -18 0 -14 C0 -18 5 -24 11 -25 C26 -26 32 2 0 24Z" fill="#ff5d9b"/>',
+    st_star: '<polygon points="50,24 58,43 78,44 62,57 68,76 50,65 32,76 38,57 22,44 42,43" fill="#ffc933" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>',
+    st_flower: [0, 72, 144, 216, 288].map(a => `<circle cx="50" cy="37" r="12" fill="#ff9fc4" transform="rotate(${a} 50 53)"/>`).join('') + '<circle cx="50" cy="53" r="8" fill="#ffd84a"/>',
+    st_cherry: '<path d="M52 28 Q42 40 36 60 M52 28 Q62 40 66 58" stroke="#4fae6a" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M52 28 q12 -9 20 -4 q-7 9 -20 4" fill="#5cc27a"/><circle cx="36" cy="64" r="12" fill="#ff4d6d"/><circle cx="67" cy="62" r="12" fill="#ff4d6d"/><circle cx="32" cy="60" r="3" fill="#fff" opacity=".7"/><circle cx="63" cy="58" r="3" fill="#fff" opacity=".7"/>',
+    st_ribbon: '<path d="M50 52 L24 36 Q20 52 24 68 Z M50 52 L76 36 Q80 52 76 68 Z" fill="#ff7fae"/><path d="M45 60 L36 82 M55 60 L64 82" stroke="#ff7fae" stroke-width="8" stroke-linecap="round"/><circle cx="50" cy="52" r="9" fill="#ff5d9b"/>',
+    st_berry: '<path d="M50 80 C26 68 24 46 37 40 C44 37 50 41 50 41 C50 41 56 37 63 40 C76 46 74 68 50 80Z" fill="#ff4d6d"/><path d="M38 40 L50 29 L62 40 L50 44Z" fill="#5cc27a"/><circle cx="42" cy="54" r="2" fill="#ffe27a"/><circle cx="58" cy="54" r="2" fill="#ffe27a"/><circle cx="50" cy="64" r="2" fill="#ffe27a"/><circle cx="45" cy="70" r="1.8" fill="#ffe27a"/><circle cx="55" cy="70" r="1.8" fill="#ffe27a"/>',
+    st_rainbow: [[26, '#ff7fae'], [19, '#ffd84a'], [12, '#7fc8ff']].map(([r, c]) => `<path d="M${50 - r} 68 A${r} ${r} 0 0 1 ${50 + r} 68" stroke="${c}" stroke-width="7" fill="none"/>`).join('') + '<circle cx="22" cy="70" r="8" fill="#fff"/><circle cx="32" cy="72" r="7" fill="#fff"/><circle cx="78" cy="70" r="8" fill="#fff"/><circle cx="68" cy="72" r="7" fill="#fff"/>',
+    st_cloud: '<circle cx="36" cy="58" r="14" fill="#fff"/><circle cx="52" cy="48" r="18" fill="#fff"/><circle cx="68" cy="58" r="14" fill="#fff"/><rect x="30" y="56" width="44" height="16" rx="8" fill="#fff"/><circle cx="44" cy="58" r="2.8" fill="#5a3e48"/><circle cx="60" cy="58" r="2.8" fill="#5a3e48"/><path d="M47 64 Q52 69 57 64" fill="none" stroke="#5a3e48" stroke-width="2.4" stroke-linecap="round"/><circle cx="38" cy="64" r="4" fill="#ffb3c9" opacity=".7"/><circle cx="66" cy="64" r="4" fill="#ffb3c9" opacity=".7"/>',
+    st_bunny: '<ellipse cx="38" cy="30" rx="8" ry="19" fill="#fff"/><ellipse cx="62" cy="30" rx="8" ry="19" fill="#fff"/><ellipse cx="38" cy="31" rx="4" ry="13" fill="#ffc2d8"/><ellipse cx="62" cy="31" rx="4" ry="13" fill="#ffc2d8"/><circle cx="50" cy="60" r="23" fill="#fff"/><circle cx="42" cy="58" r="3" fill="#5a3e48"/><circle cx="58" cy="58" r="3" fill="#5a3e48"/><circle cx="36" cy="66" r="4.5" fill="#ffb3c9"/><circle cx="64" cy="66" r="4.5" fill="#ffb3c9"/><path d="M45 66 Q50 71 55 66" fill="none" stroke="#5a3e48" stroke-width="2.6" stroke-linecap="round"/>',
+    st_kitty: '<path d="M28 42 L30 20 L46 34Z M72 42 L70 20 L54 34Z" fill="#ffe0b3" stroke="#fff" stroke-width="2"/><circle cx="50" cy="58" r="24" fill="#ffe0b3"/><circle cx="41" cy="56" r="3" fill="#5a3e48"/><circle cx="59" cy="56" r="3" fill="#5a3e48"/><circle cx="35" cy="65" r="4.5" fill="#ffb3c9"/><circle cx="65" cy="65" r="4.5" fill="#ffb3c9"/><path d="M46 64 Q50 68 54 64" fill="none" stroke="#5a3e48" stroke-width="2.6" stroke-linecap="round"/><path d="M24 58 L34 60 M24 66 L34 64 M76 58 L66 60 M76 66 L66 64" stroke="#5a3e48" stroke-width="1.8" stroke-linecap="round"/>',
+    st_crown: '<path d="M24 70 L28 38 L41 54 L50 30 L59 54 L72 38 L76 70Z" fill="#ffc400" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><rect x="24" y="70" width="52" height="9" rx="4" fill="#f0a800"/><circle cx="50" cy="58" r="4.5" fill="#ff5d9b"/><circle cx="36" cy="62" r="3" fill="#8fd0ff"/><circle cx="64" cy="62" r="3" fill="#8fd0ff"/>',
+    st_cake: '<path d="M26 56 L74 56 L68 82 Q50 87 32 82 Z" fill="#f5b87a"/><path d="M36 58 L39 83 M50 58 L50 85 M64 58 L61 83" stroke="#e39a55" stroke-width="2.5" stroke-linecap="round"/><path d="M22 60 Q18 42 36 40 Q38 26 52 28 Q66 26 68 40 Q84 42 78 60 Z" fill="#ff9fc4"/><ellipse cx="40" cy="38" rx="6" ry="3.5" fill="#fff" opacity=".6"/><circle cx="52" cy="24" r="7" fill="#ff4d6d"/><circle cx="43" cy="49" r="3" fill="#5a3e48"/><circle cx="60" cy="49" r="3" fill="#5a3e48"/><path d="M47 54 Q52 59 57 54" fill="none" stroke="#5a3e48" stroke-width="2.6" stroke-linecap="round"/>',
+  }[id] || '';
+  const special = (STICKER_BY_ID[id] || {}).t === 's';
+  const spark = special ? '<path d="M82 18 l2.2 5.6 5.6 2.2 -5.6 2.2 -2.2 5.6 -2.2 -5.6 -5.6 -2.2 5.6 -2.2z" fill="#fff"/><path d="M16 80 l1.6 4 4 1.6 -4 1.6 -1.6 4 -1.6 -4 -4 -1.6 4 -1.6z" fill="#fff"/>' : '';
+  if (sil) return `<svg class="stk-svg sil" viewBox="0 0 100 104" aria-hidden="true"><circle cx="50" cy="53" r="42" fill="#e9d9e0" stroke="#fff" stroke-width="6"/><text x="50" y="66" text-anchor="middle" font-size="40" font-weight="800" fill="#fff">?</text></svg>`;
+  return `<svg class="stk-svg ${special ? 'sp' : ''}" viewBox="0 0 100 104" aria-hidden="true"><circle cx="50" cy="53" r="42" fill="${tint}" fill-opacity=".5" stroke="#fff" stroke-width="6"/><circle cx="50" cy="53" r="35" fill="#fff" fill-opacity=".22"/><g>${m}</g><ellipse cx="33" cy="30" rx="13" ry="6" fill="#fff" opacity=".9" transform="rotate(-32 33 30)"/><circle cx="73" cy="80" r="3.5" fill="#fff" opacity=".75"/>${special ? '<circle cx="50" cy="53" r="42" fill="none" stroke="#ffd84a" stroke-width="1.8" stroke-dasharray="3 5"/>' : ''}${spark}</svg>`;
+}
+function treatStatus(t) {
+  if (t.done) return 'Done! Sticker collected';
+  if (!t.pick) return "Choose today's treat!";
+  if (t.pick === 'play') return 'Play 1 game';
+  return `Practice: ${Math.min(TREAT_NEED, t.keys.length)} / ${TREAT_NEED}`;
+}
+function treatCardHTML() {
+  const t = treatToday();
+  const n = S.stickers.length;
+  const prev = t.pick === 'practice' ? stickerSVG('st_bunny') : stickerSVG('st_heart');
+  return `<div class="treat-card ${t.done ? 'done' : ''}">
+    <button class="treat-main" data-act="treat-open"><span class="tc-art">${t.done ? '✅' : (t.pick ? prev : stickerSVG('st_heart', { sil: true }))}</span>
+      <span class="tc-text"><b>Today's Treat</b><small>${treatStatus(t)}</small></span></button>
+    <button class="treat-book" data-act="go" data-to="stickers" aria-label="Sticker Book"><span class="tb-art">${stickerSVG('st_star')}</span><span class="tb-n">${n}/${STICKERS.length}</span></button>
+  </div>`;
+}
+function treatResultHTML(st) {
+  const it = STICKER_BY_ID[st.id];
+  return `<div class="gain"><div class="gain-card treat-got"><div class="gain-new">🎉 Treat complete!</div><div class="stk-big">${stickerSVG(st.id)}</div><b>${it.name}</b>${st.bookComplete ? '<div class="gain-where">Sticker Book complete! You got the Sticker Crown!</div>' : ''}<button class="btn small mint" data-act="go" data-to="stickers">Sticker Book</button></div></div>`;
+}
+function showTreatPopup() {
+  const t = treatToday();
+  const o = document.createElement('div'); o.className = 'overlay';
+  const card = (k, cls, icon, title, sub, rw, sid) => `<button class="tcard ${cls} ${t.pick === k ? 'sel' : ''}" data-pick="${k}" ${t.pick && t.pick !== k ? 'disabled' : ''}><span class="tc-ico">${icon}</span><span class="tc-t">${title}</span><span class="tc-s">${sub}</span><span class="tc-r"><span class="tc-st">${stickerSVG(sid, { sil: true })}</span>${rw}</span></button>`;
+  o.innerHTML = `<div class="modal treat" role="dialog" aria-modal="true">
+    <button class="treat-x" data-x="1" aria-label="Close">✕</button>
+    <div class="treat-head"><div class="treat-coco">${avatarSVG(cocoCfg(), { face: 'happy' })}</div><div class="bubble">What shall we do today?</div></div>
+    <h2>Today's Treat</h2>
+    <div class="tcards">
+      ${card('play', 'pinkc', `<span class="svgi">${balloonIcon()}</span>`, 'Play & Get', 'Play 1 game', 'Sticker', 'st_heart')}
+      ${card('practice', 'mintc', `<span class="svgi">${bookIcon()}</span>`, 'Practice with Coco', 'Get 8 different ones right', 'Special sticker', 'st_bunny')}
+    </div></div>`;
+  const close = () => { o.remove(); document.removeEventListener('keydown', onKey); };
+  const onKey = e => { if (e.key === 'Escape') close(); };
+  o.addEventListener('click', e => {
+    const x = e.target.closest('[data-x]'); if (x) { Snd.play('tap'); close(); return; }
+    const b = e.target.closest('[data-pick]'); if (!b || b.disabled) return;
+    Snd.play('ok'); const tt = treatToday();
+    if (!tt.pick) { tt.pick = b.dataset.pick; save(); }
+    close();
+    if (cur === 'home' || true) go(tt.pick === 'play' ? 'play' : 'learn');
+  });
+  document.addEventListener('keydown', onKey);
+  document.body.appendChild(o);
+}
+function treatOnHome() {
+  const t = treatToday();
+  if (t.pick === 'practice' && treatPracticeReady(t) && !t.done) { // とちゅうで やめても シールは わたす
+    const st = treatComplete(); showTreatGot(st); return;
+  }
+  const today = dateStr();
+  if (S.treat.shown !== today) { S.treat.shown = today; save(); if (!t.done) showTreatPopup(); }
+}
+function showTreatGot(st) {
+  if (!st) return;
+  const it = st.id && STICKER_BY_ID[st.id];
+  modal({
+    title: '🎉 Treat complete!',
+    html: it ? `<div class="stk-big">${stickerSVG(st.id)}</div><p><b>${it.name}</b></p>${st.bookComplete ? '<p>Sticker Book complete! You got the Sticker Crown!</p>' : ''}` : '<p>You got all the stickers!</p>',
+    buttons: [{ label: 'Sticker Book', cls: 'mint' }, { label: 'Yay!', cls: 'pink' }],
+  }).then(i => { if (i === 0) go('stickers'); else if (cur === 'home') go('home'); });
+}
+actions['treat-open'] = () => {
+  const t = treatToday();
+  if (t.done) { toast('Come back tomorrow!'); go('stickers'); return; }
+  if (!t.pick) { showTreatPopup(); return; }
+  go(t.pick === 'play' ? 'play' : 'learn');
+};
+screens.stickers = () => {
+  const have = S.stickers, n = have.length;
+  const slot = (x, i) => have.includes(x.id)
+    ? `<div class="stk-cell got ${x.t === 's' ? 'sp' : ''}">${stickerSVG(x.id)}<span class="stk-name">${x.name}</span></div>`
+    : `<div class="stk-cell">${stickerSVG(x.id, { sil: true })}<span class="stk-name">？？？</span></div>`;
+  const page = (title, list) => `<div class="stk-page"><div class="stk-title">${title}</div><div class="stk-grid">${list.map(slot).join('')}</div></div>`;
+  app.innerHTML = frame({
+    title: 'Sticker Book', back: 'home',
+    body: `<p class="section-title" style="margin-top:0">Collected ${n} / ${STICKERS.length} stickers</p>
+      ${page('🌸 1', STICKERS.slice(0, 6))}${page('🌷 2', STICKERS.slice(6))}
+      <p class="lang-note" style="text-align:center">${S.items.includes('sp_sticker') ? '👑 Sticker Crown!' : 'Collect them all to get the Sticker Crown!'}</p>`,
+  });
 };
 
 /* =============== 共通イベント =============== */
