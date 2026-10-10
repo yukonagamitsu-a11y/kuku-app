@@ -1,6 +1,6 @@
 /* 日本語表示：英語の画面文言を、ひらがな中心の日本語に置きかえる */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-13.67'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-13.68'; // ファイルの新旧チェック用
 
 const JA_EXACT = {
   // 共通
@@ -95,7 +95,7 @@ const JA_EXACT = {
   Back: 'もどる', Parents: 'ほごしゃ', Listen: 'よむ',
   // アイテム
   Bob: 'おかっぱ', 'Short Hair': 'ショート', Ponytail: 'ポニーテール', Pigtails: 'ツインテール', 'Long Hair': 'ロングヘア', Buns: 'おだんご', Braids: 'みつあみ', 'Fluffy Waves': 'ふわふわ',
-  Chocolate: 'チョコ', Black: 'くろかみ', 'Toasty Brown': 'きなこ', 'Cherry Pink': 'さくら', Lemon: 'レモン', Mint: 'ミント', 'Sky Blue': 'そらいろ', Lavender: 'ラベンダー', Rainbow: 'にじいろ',
+  'Galaxy Hair': 'ぎんがの かみ', Chocolate: 'チョコ', Black: 'くろかみ', 'Toasty Brown': 'きなこ', 'Cherry Pink': 'さくら', Lemon: 'レモン', Mint: 'ミント', 'Sky Blue': 'そらいろ', Lavender: 'ラベンダー', Rainbow: 'にじいろ',
   'Heart Skirt': 'ハートのスカート', 'Striped Pants': 'しましまパンツ', 'Mint Dress': 'ミントのワンピ', 'Star Tee': 'おほしさまT', Overalls: 'オーバーオール', 'Ribbon Dress': 'リボンのワンピ', 'Sailor Outfit': 'セーラーふく', 'Strawberry Dress': 'いちごのワンピ', 'Rainbow Shirt': 'にじいろシャツ', 'Princess Dress': 'プリンセスドレス', 'Sunflower Dress': 'ひまわりワンピ', 'Starry Robe': 'ほしぞらローブ',
   'Pink Shoes': 'ピンクのくつ', Sneakers: 'スニーカー', 'Red Shoes': 'あかいくつ', Boots: 'ブーツ', 'Crystal Shoes': 'クリスタルのくつ',
   'Big Ribbon': 'おおきなリボン', 'Cat Ears': 'ねこみみ', Cap: 'キャップ', Beret: 'ベレーぼう', 'Flower Crown': 'おはなのかんむり', Crown: 'おうかん', 'Sparkle Tiara': 'キラキラティアラ', 'Magic Hat': 'まほうのぼうし', 'Gold Crown': 'ゴールドクラウン',

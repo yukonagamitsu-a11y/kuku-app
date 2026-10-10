@@ -1,6 +1,6 @@
 /* 한국어 표시：영어 화면 문구를 한국어로 바꿔 줍니다 (친구에게 확인 받을 것) */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-10-13.67'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-10-13.68'; // ファイルの新旧チェック用
 
 const KO_EXACT = {
   // 공통
@@ -98,7 +98,7 @@ const KO_EXACT = {
   Back: '뒤로', Parents: '보호자', Listen: '듣기',
   // 아이템
   Bob: '단발머리', 'Short Hair': '짧은 머리', Ponytail: '포니테일', Pigtails: '양 갈래', 'Long Hair': '긴 머리', Buns: '동글 묶음', Braids: '땋은 머리', 'Fluffy Waves': '풍성한 웨이브',
-  Chocolate: '초콜릿', Black: '검정', 'Toasty Brown': '고소한 갈색', 'Cherry Pink': '벚꽃 분홍', Lemon: '레몬', Mint: '민트', 'Sky Blue': '하늘색', Lavender: '라벤더', Rainbow: '무지개',
+  'Galaxy Hair': '은하수 머리', Chocolate: '초콜릿', Black: '검정', 'Toasty Brown': '고소한 갈색', 'Cherry Pink': '벚꽃 분홍', Lemon: '레몬', Mint: '민트', 'Sky Blue': '하늘색', Lavender: '라벤더', Rainbow: '무지개',
   'Heart Skirt': '하트 치마', 'Striped Pants': '줄무늬 바지', 'Mint Dress': '민트 원피스', 'Star Tee': '별 티셔츠', Overalls: '멜빵바지', 'Ribbon Dress': '리본 원피스', 'Sailor Outfit': '세일러복', 'Strawberry Dress': '딸기 원피스', 'Rainbow Shirt': '무지개 셔츠', 'Princess Dress': '공주 드레스', 'Sunflower Dress': '해바라기 원피스', 'Starry Robe': '별빛 로브',
   'Pink Shoes': '분홍 신발', Sneakers: '운동화', 'Red Shoes': '빨간 신발', Boots: '부츠', 'Crystal Shoes': '크리스탈 신발',
   'Big Ribbon': '큰 리본', 'Cat Ears': '고양이 귀', Cap: '야구 모자', Beret: '베레모', 'Flower Crown': '꽃 왕관', Crown: '왕관', 'Sparkle Tiara': '반짝 티아라', 'Magic Hat': '마법 모자', 'Gold Crown': '황금 왕관',

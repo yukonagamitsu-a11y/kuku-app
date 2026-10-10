@@ -21,6 +21,10 @@
       <stop offset=".5" stop-color="#8fe3c8"/><stop offset=".75" stop-color="#8fd0ff"/>
       <stop offset="1" stop-color="#c9b6ff"/>
     </linearGradient>
+    <linearGradient id="gGalaxy" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3a2f8f"/><stop offset=".4" stop-color="#8a5bd6"/>
+      <stop offset=".75" stop-color="#ff8fb8"/><stop offset="1" stop-color="#ffd0e8"/>
+    </linearGradient>
   </defs>
 </svg>
 <div id="app"></div>
@@ -35,7 +39,7 @@
 <script>
 /* ファイルの新旧が まざっていたら、じぶんで さいしん版を とりなおして 1回だけ 読みこみなおす */
 (function () {
-  var EXPECT = '2026-10-13.67', B = window.FILE_BUILD || {};
+  var EXPECT = '2026-10-13.68', B = window.FILE_BUILD || {};
   var bad = ['data', 'avatar', 'myroom', 'i18n-ko', 'i18n', 'app'].filter(function (k) { return B[k] !== EXPECT; });
   if (!bad.length) return;
   try { if (sessionStorage.getItem('kuku-healed') === EXPECT) return; sessionStorage.setItem('kuku-healed', EXPECT); } catch (e) { return; }

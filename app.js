@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-13.67'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-13.68'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-13.67';
+const APP_VERSION = '2026-10-13.68';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -54,6 +54,7 @@ function loadState() {
       s.settings = Object.assign(defaultState().settings, raw.settings || {});
       s.today = Object.assign(defaultState().today, raw.today || {});
       s.myroom = Object.assign(defaultState().myroom, raw.myroom || {});
+      (s.masteredDans || []).forEach(dn => { const id = LIMITED_BY_DAN[dn]; if (id && !s.items.includes(id)) s.items.push(id); });
       syncRoomGifts(s);
       if (s.myroom.has && !s.myroom.items.includes('m_plain')) { // すでに おへやが ある人にも、ふつうの まどを プレゼント
         s.myroom.items.push('m_plain'); if (!s.myroom.placed.window) s.myroom.placed.window = 'm_plain';
@@ -448,7 +449,7 @@ screens.learn = () => {
         const stamp = S.stamps.includes(n), master = S.masteredDans.includes(n);
         const rid = LIMITED_BY_DAN[n], rit = rid && ITEM_BY_ID[rid], got = rid && S.items.includes(rid);
         // マスターしたら もらえる ごほうび：まだの あいだは シルエット＋「？」（ひみつ）、もらったら カラー
-        const reward = rit ? `<span class="reward ${got ? 'got' : 'secret'}" aria-hidden="true"><span class="r-art">${rit.cat === 'room' && !got ? '🏠' : thumb(rit)}</span>${got ? '' : '<b>?</b>'}</span>` : '';
+        const reward = rit ? `<span class="reward ${got ? 'got' : 'secret'}" aria-hidden="true"><span class="r-art">${thumb(rit)}</span>${got ? '' : '<b>?</b>'}</span>` : '';
         return `<button class="btn ${DAN_COLORS[(n - 1) % 5]} dan-card" data-act="dan" data-n="${n}">${reward}<span lang="${chantLang()}" translate="no">${danLabel(n)}</span><small>${master ? 'Master!' : stamp ? 'Stamp earned' : 'Practice'}</small>${master ? '<span class="stamp">👑</span>' : stamp ? '<span class="stamp">⭐</span>' : ''}</button>`;
       }).join('') + '</div>',
   });
@@ -1151,7 +1152,10 @@ function syncRoomGifts(st) {
   st = st || S;
   if (!st.myroom.has) return;
   let changed = false;
-  for (const [old, nu] of Object.entries(ROOM_GIFTS)) {
+  const gifts = Object.assign({}, ROOM_GIFTS);
+  if ((st.masteredDans || []).includes(6) || st.items.includes('lim6')) gifts.lim6 = 'w_night'; // 6のだんマスター：おへやを もらったら 「よぞら」の かべがみも
+  if ((st.masteredDans || []).includes(6)) st.items.includes('lim6') || st.items.push('lim6');
+  for (const [old, nu] of Object.entries(gifts)) {
     if (st.items.includes(old) && !st.myroom.items.includes(nu)) {
       st.myroom.items.push(nu); changed = true;
       const it = MR_BY_ID[nu]; if (it && !st.myroom.placed[it.slot]) st.myroom.placed[it.slot] = nu;

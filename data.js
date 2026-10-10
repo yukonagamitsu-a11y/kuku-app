@@ -1,6 +1,6 @@
 /* データ：九九の読み方・アイテム・文言 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['data'] = '2026-10-13.67'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['data'] = '2026-10-13.68'; // ファイルの新旧チェック用
 
 // 九九の読み方（数式から自動生成せず、手で持つ）kukuReading[段][かける数]
 const KUKU_TEXT = {
@@ -102,7 +102,8 @@ const ITEMS = [
   { id: 'r_garland', cat: 'room', name: 'Star Garland', rar: 1, def: { kind: 'garland' } },
   { id: 'r_plant', cat: 'room', name: 'Flower Pot', rar: 2, def: { kind: 'plant' } },
   { id: 'r_rainbow', cat: 'room', name: 'Rainbow Poster', rar: 2, def: { kind: 'rainbow' } },
-  { id: 'lim6', cat: 'room', name: 'Starry Night Room', rar: 3, lim: 6, def: { kind: 'night' } },
+  { id: 'lim6', cat: 'room', name: 'Starry Night Room', rar: 3, def: { kind: 'night' } }, // むかしの ごほうび（いまは マイルームの おまけ）
+  { id: 'lim6b', cat: 'hairColor', name: 'Galaxy Hair', rar: 3, lim: 6, def: { color: 'url(#gGalaxy)' } },
 ];
 const ITEM_BY_ID = {};
 ITEMS.forEach(i => { ITEM_BY_ID[i.id] = i; });
