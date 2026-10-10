@@ -1,6 +1,6 @@
 /* マイルーム：アイテムを8割そろえると買える、自分だけのお部屋（壁紙・ゆか・家具をだんかいてきに買う） */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['myroom'] = '2026-10-17.75'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['myroom'] = '2026-10-18.76'; // ファイルの新旧チェック用
 
 const ROOM_UNLOCK = 0.7;      // 集めた割合（ショップ・ガチャで手に入るアイテム）
 const MR_TIER_NEED = { 1: 0, 2: 6, 3: 14 }; // その段階の家具を買うために必要な「買った家具の数」
@@ -68,6 +68,11 @@ const MR_ITEMS = [
   { id: 'x_toybox', slot: 'corner', name: 'Toy Box', price: 135, tier: 2 },
   { id: 'x_aquarium', slot: 'corner', name: 'Aquarium', price: 330, tier: 3 },
 ];
+// シールちょうの コンプリートで もらえる（おみせには でない）
+MR_ITEMS.push(
+  { id: 'm_sticker', slot: 'window', name: 'Sticker Window', price: 0, tier: 1, ev: true },
+  { id: 'p_sticker', slot: 'poster', name: 'Sticker Poster', price: 0, tier: 1, ev: true },
+);
 const MR_BY_ID = {};
 MR_ITEMS.forEach(i => { MR_BY_ID[i.id] = i; });
 
@@ -114,6 +119,8 @@ function mrDrawRaw(id) {
     case 'm_plain': return '<rect x="132" y="28" width="60" height="78" rx="6" fill="#cdeaff" stroke="#fff" stroke-width="6"/><path d="M162 28 V106 M132 67 H192" stroke="#fff" stroke-width="4"/><ellipse cx="150" cy="48" rx="12" ry="6" fill="#fff"/><ellipse cx="178" cy="88" rx="10" ry="5" fill="#fff"/>';
     case 'm_window': return '<path d="M118 24 H146 V112 Q132 100 118 112Z" fill="#ff9fc4"/><path d="M206 24 H178 V112 Q192 100 206 112Z" fill="#ff9fc4"/><rect x="132" y="28" width="60" height="78" rx="6" fill="#cdeaff" stroke="#fff" stroke-width="6"/><path d="M162 28 V106 M132 67 H192" stroke="#fff" stroke-width="4"/><circle cx="178" cy="46" r="9" fill="#ffe27a"/><ellipse cx="148" cy="84" rx="12" ry="6" fill="#fff"/>';
     case 'm_star': return '<rect x="132" y="28" width="60" height="78" rx="30" fill="#3d3470" stroke="#fff" stroke-width="6"/><path d="M162 28 V106" stroke="#fff" stroke-width="3"/>' + mrStar(150, 56, 6, 2.5, '#ffe27a') + mrStar(176, 74, 5, 2, '#ffe27a') + mrStar(152, 88, 4, 1.8, '#fff') + '<circle cx="176" cy="48" r="9" fill="#fff7d0"/><circle cx="181" cy="45" r="8" fill="#3d3470"/>';
+    case 'm_sticker': return '<rect x="132" y="28" width="60" height="78" rx="6" fill="#d9f0ff" stroke="#fff" stroke-width="6"/><path d="M162 28 V106 M132 67 H192" stroke="#fff" stroke-width="4"/><circle cx="146" cy="46" r="9" fill="#ffb3c9" stroke="#fff" stroke-width="2.5"/><circle cx="178" cy="48" r="8" fill="#ffe27a" stroke="#fff" stroke-width="2.5"/><circle cx="150" cy="86" r="8" fill="#c9b6ff" stroke="#fff" stroke-width="2.5"/><circle cx="176" cy="88" r="9" fill="#8fe3c8" stroke="#fff" stroke-width="2.5"/>' + mrStar(178, 48, 4, 1.8, '#fff') + '<path transform="translate(146 46) scale(.55)" d="M0 8 C-10 0 -10 -8 -4 -9 C-2 -9.5 0 -7 0 -5 C0 -7 2 -9.5 4 -9 C10 -8 10 0 0 8Z" fill="#ff5d9b"/>';
+    case 'p_sticker': return '<rect x="372" y="28" width="90" height="78" rx="8" fill="#fffdf5" stroke="#ffd6e4" stroke-width="5"/>' + [[396, 54, '#ffb3c9'], [438, 54, '#ffe27a'], [396, 88, '#c9b6ff'], [438, 88, '#8fe3c8']].map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="14" fill="${p[2]}" stroke="#fff" stroke-width="3"/><ellipse cx="${p[0] - 5}" cy="${p[1] - 6}" rx="5" ry="2.6" fill="#fff" opacity=".9" transform="rotate(-30 ${p[0] - 5} ${p[1] - 6})"/>`).join('') + mrStar(438, 54, 7, 3, '#fff');
     // ポスター
     case 'p_rainbow': return '<rect x="372" y="28" width="90" height="78" rx="8" fill="#fff" stroke="#ffd6e4" stroke-width="5"/>' + ['#ff6b7a', '#ffa45c', '#ffe27a', '#8fe3c8', '#8fd0ff'].map((c, i) => `<path d="M${382 + i * 5} 90 a${35 - i * 5} ${35 - i * 5} 0 0 1 ${(35 - i * 5) * 2} 0" fill="none" stroke="${c}" stroke-width="5"/>`).join('');
     case 'p_frame': return '<rect x="374" y="30" width="38" height="46" rx="4" fill="#fff" stroke="#c98f5b" stroke-width="4"/><circle cx="393" cy="48" r="7" fill="#ffd0b0"/><rect x="384" y="56" width="18" height="12" rx="4" fill="#ff8fb8"/><rect x="420" y="40" width="40" height="32" rx="4" fill="#fff" stroke="#c98f5b" stroke-width="4"/><polygon points="424,70 436,52 446,64 452,56 458,70" fill="#8fe3c8"/><rect x="396" y="82" width="46" height="26" rx="4" fill="#fff" stroke="#c98f5b" stroke-width="4"/>' + `<path transform="translate(419 96) scale(.9)" d="M0 8 C-10 0 -10 -8 -4 -9 C-2 -9.5 0 -7 0 -5 C0 -7 2 -9.5 4 -9 C10 -8 10 0 0 8Z" fill="#ff5d8f"/>`;

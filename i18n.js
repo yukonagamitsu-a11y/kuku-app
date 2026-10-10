@@ -1,6 +1,6 @@
 /* 日本語表示：英語の画面文言を、ひらがな中心の日本語に置きかえる */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-17.75'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-18.76'; // ファイルの新旧チェック用
 
 const JA_EXACT = {
   // 共通
@@ -97,6 +97,26 @@ const JA_EXACT = {
   'Kitty Pal': 'ねこさん',
   'Tiny Crown': 'ちいさな おうかん',
   'Cupcake': 'カップケーキ',
+  '🎉 Sticker Book complete!': '🎉 シールちょう コンプリート！',
+  'Coco is wearing a special outfit for 3 days!': 'ココちゃんが とくべつな ふくを きて、3にち いるよ！',
+  'A special item just for you!': 'とくべつな アイテムを ゲット！',
+  'A special item just for you! Find it in My Room.': 'とくべつな かざりを ゲット！ マイルームで つかえるよ',
+  'A new Sticker Book has started!': 'あたらしい シールちょうが はじまったよ！',
+  'You got 100 bonus coins!': 'ボーナスコイン 100まいを ゲット！',
+  'Look! I am wearing something special for you!': 'みて！ きょうは とくべつな ふくだよ！',
+  'Collect them all for something special!': 'ぜんぶ あつめると、とくべつな ことが おこるよ！',
+  'Sticker Princess Dress': 'シールプリンセスの ドレス',
+  'Sweet Princess Dress': 'おかしの おひめさま ドレス',
+  'Starry Night Dress': 'ほしぞらの ドレス',
+  'Sparkle Lamb': 'キラキラ ひつじ',
+  'Sticker Window': 'シールの まど',
+  'Sticker Poster': 'シールの ポスター',
+  'Crescent Moon': 'みかづき',
+  'Ice Cream': 'アイスクリーム',
+  'Red Balloon': 'あかい ふうせん',
+  'Butterfly': 'ちょうちょ',
+  'Music Note': 'おんぷ',
+  'Ladybug': 'てんとうむし',
   'Try it on in the Dress-Up Room!': 'きせかえルームで つけてみよう！',
   // ほごしゃ
   'For Parents': 'ほごしゃの かたへ',
@@ -169,6 +189,7 @@ function jaTr(s) {
   return null;
 }
 const JA_PATTERNS = [
+  [/^Sticker Book (\d+)$/, m => `シールちょう ${m[1]}`],
   [/^Practice: (\d+) \/ 8$/, m => `おけいこ ${m[1]} / 8`],
   [/^Collected (\d+) \/ (\d+) stickers$/, m => `${m[1]} / ${m[2]} まい あつまったよ`],
   [/^Quiz (\d+)\/9$/, m => `おぼえたかな？ ${m[1]}/9`],

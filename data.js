@@ -1,6 +1,6 @@
 /* データ：九九の読み方・アイテム・文言 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['data'] = '2026-10-17.75'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['data'] = '2026-10-18.76'; // ファイルの新旧チェック用
 
 // 九九の読み方（数式から自動生成せず、手で持つ）kukuReading[段][かける数]
 const KUKU_TEXT = {
@@ -82,7 +82,12 @@ const ITEMS = [
   { id: 'lim3', cat: 'hat', name: 'Sparkle Tiara', rar: 3, lim: 3, def: { kind: 'tiara', c1: '#e8e8ff' } },
   { id: 'lim8', cat: 'hat', name: 'Magic Hat', rar: 3, lim: 8, def: { kind: 'witch', c1: '#7a5ccc' } },
   { id: 'sp_gold', cat: 'hat', name: 'Gold Crown', rar: 3, sp: true, def: { kind: 'crown', c1: '#ffc400', big: true } },
-  { id: 'sp_sticker', cat: 'hat', name: 'Sticker Crown', rar: 3, sp: true, spHint: 'Complete the Sticker Book', def: { kind: 'crown', c1: '#8fd0ff', big: true } },
+  { id: 'sp_sticker', cat: 'hat', name: 'Sticker Crown', rar: 3, sp: true, ev: true, spHint: 'Complete the Sticker Book', def: { kind: 'crown', c1: '#8fd0ff', big: true } },
+  // シールちょうの コンプリートで だけ もらえる・ココちゃんが きる とくべつな ふく（図鑑・ショップ・ガチャには でない）
+  { id: 'ev_o1', cat: 'outfit', name: 'Sticker Princess Dress', rar: 3, sp: true, ev: true, hidden: true, def: { top: '#ffd1ec', bottom: '#c9b6ff', type: 'dress', sleeve: 0, deco: 'crownline', acc: '#8fd0ff' } },
+  { id: 'ev_o2', cat: 'outfit', name: 'Sweet Princess Dress', rar: 3, sp: true, ev: true, hidden: true, def: { top: '#fff0a8', bottom: '#ffb3c9', type: 'dress', sleeve: 22, deco: 'dots', acc: '#ff8fb8' } },
+  { id: 'ev_o3', cat: 'outfit', name: 'Starry Night Dress', rar: 3, sp: true, ev: true, hidden: true, def: { top: '#6a5ba8', bottom: '#6a5ba8', type: 'dress', sleeve: 22, deco: 'galaxy', acc: '#ffe27a' } },
+  { id: 'ev_lamb', cat: 'pet', name: 'Sparkle Lamb', rar: 3, sp: true, ev: true, hidden: true, def: { kind: 'lamb' } },
   // アクセサリー
   { id: 'a_neck', cat: 'accessory', name: 'Necklace', rar: 1, def: { kind: 'necklace' } },
   { id: 'a_scarf', cat: 'accessory', name: 'Scarf', rar: 1, def: { kind: 'scarf', c1: '#ff8fb8' } },
@@ -151,4 +156,19 @@ const STICKERS = [
   { id: 'st_bunny', name: 'Bunny Pal', t: 's' }, { id: 'st_kitty', name: 'Kitty Pal', t: 's' },
   { id: 'st_crown', name: 'Tiny Crown', t: 's' }, { id: 'st_cake', name: 'Cupcake', t: 's' },
 ];
-const STICKER_BY_ID = Object.fromEntries(STICKERS.map(s => [s.id, s]));
+// だい2だんいこうで まざる あたらしい シール
+const STICKERS_NEW = [
+  { id: 'st_moon', name: 'Crescent Moon', t: 'n' }, { id: 'st_icecream', name: 'Ice Cream', t: 'n' }, { id: 'st_balloon', name: 'Red Balloon', t: 'n' },
+  { id: 'st_butterfly', name: 'Butterfly', t: 's' }, { id: 'st_note', name: 'Music Note', t: 's' }, { id: 'st_ladybug', name: 'Ladybug', t: 's' },
+];
+const STICKER_BY_ID = Object.fromEntries(STICKERS.concat(STICKERS_NEW).map(s => [s.id, s]));
+// 1さつ そろったときに おこること：奇数=ココちゃんが とくべつな ふくで とうじょう（3にち）／偶数=とくべつな アイテム
+const EVENT_LOOKS = {
+  ev1: { outfit: 'ev_o1', hat: 'sp_sticker', shoes: 'lim7' },
+  ev2: { outfit: 'ev_o2', hat: 't_flower', shoes: 's_pink', accessory: 'a_wand' },
+  ev3: { outfit: 'ev_o3', hat: 'lim3', shoes: 'lim7' },
+};
+const BOOK_ITEM_REWARDS = [ // 2さつめ・4さつめ・6さつめ・8さつめ…
+  { t: 'item', id: 'sp_sticker' }, { t: 'item', id: 'ev_lamb' }, { t: 'room', id: 'm_sticker' }, { t: 'room', id: 'p_sticker' },
+];
+

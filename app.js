@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-17.75'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-18.76'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-17.75';
+const APP_VERSION = '2026-10-18.76';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -42,6 +42,9 @@ const defaultState = () => ({
   myroom: { has: false, items: [], placed: {}, seen: false },
   treat: { date: null, shown: null, pick: null, keys: [], playDone: false, done: false },
   stickers: [],
+  book: { n: 1 },
+  bookRoom: [],
+  guest: { look: null, until: 0, seen: false },
 });
 function defaultLang() { const l = navigator.language || ''; return /^ja/i.test(l) ? 'ja' : /^ko/i.test(l) ? 'ko' : 'en'; }
 const LANG_NAMES = { en: 'English', ja: '日本語', ko: '한국어' };
@@ -72,6 +75,12 @@ function sanitize(raw) {
   s.treat.keys = strArr(s.treat.keys);
   if (s.treat.pick !== 'play' && s.treat.pick !== 'practice') s.treat.pick = null;
   s.stickers = strArr(r.stickers).filter((id, i, a) => a.indexOf(id) === i && typeof STICKER_BY_ID !== 'undefined' && STICKER_BY_ID[id]);
+  s.book = Object.assign(defaultState().book, isObj(r.book) ? r.book : {});
+  if (!Number.isInteger(s.book.n) || s.book.n < 1) s.book.n = 1;
+  s.bookRoom = strArr(r.bookRoom).filter((id, i, a) => a.indexOf(id) === i);
+  s.guest = Object.assign(defaultState().guest, isObj(r.guest) ? r.guest : {});
+  if (typeof s.guest.look !== 'string' || !EVENT_LOOKS[s.guest.look]) s.guest.look = null;
+  if (typeof s.guest.until !== 'number' || !isFinite(s.guest.until)) s.guest.until = 0;
   for (const k of ['mastery', 'mistakes', 'attempts', 'correct']) s[k] = numObj(r[k]);
   s.masteredDans = Array.isArray(r.masteredDans) ? r.masteredDans.filter(n => Number.isInteger(n)) : [];
   s.stamps = Array.isArray(r.stamps) ? r.stamps : [];
@@ -466,7 +475,12 @@ function cocoLookIndex() {
   touchCocoDay();
   return (Math.floor((S.cocoDays.count - 1) / n) * 4) % COCO_LOOKS.length; // 4とびで ぐるぐる（となりあう ふくが にない）
 }
-function cocoCfg() { return Object.assign({}, NPC.coco, COCO_LOOKS[cocoLookIndex()]); }
+function guestActive() { return !!(S.guest && S.guest.look && S.cocoDays && S.cocoDays.count < S.guest.until); }
+function cocoCfg() {
+  const i = cocoLookIndex(); // （ひらいた ひを かぞえる）
+  if (guestActive()) return Object.assign({}, NPC.coco, EVENT_LOOKS[S.guest.look]);
+  return Object.assign({}, NPC.coco, COCO_LOOKS[i]);
+}
 
 /* =============== ゲームの アイコン（アプリの なかで かいた かわいい え）=============== */
 const balloonIcon = () => `<svg viewBox="0 0 100 110" aria-hidden="true"><path d="M50 82 C44 92 56 98 50 108" fill="none" stroke="#c9a8b6" stroke-width="3" stroke-linecap="round"/><ellipse cx="50" cy="42" rx="33" ry="38" fill="#ffd84a" stroke="#fff" stroke-width="4"/><path d="M42 80 L58 80 L50 70Z" fill="#f0a800"/><ellipse cx="36" cy="24" rx="8" ry="13" fill="#fff" opacity=".6" transform="rotate(22 36 24)"/><circle cx="40" cy="46" r="3.6" fill="#5a3e48"/><circle cx="60" cy="46" r="3.6" fill="#5a3e48"/><circle cx="31" cy="54" r="5.5" fill="#ff8a65" opacity=".6"/><circle cx="69" cy="54" r="5.5" fill="#ff8a65" opacity=".6"/><path d="M42 55 Q50 63 58 55" fill="none" stroke="#5a3e48" stroke-width="3" stroke-linecap="round"/></svg>`;
@@ -485,6 +499,7 @@ screens.home = () => {
   else hello = pick(HELLO_MSG);
   const lookNow = cocoLookIndex();
   if (S.cocoSeen !== null && S.cocoSeen !== lookNow ) hello = 'Look! I am wearing something new today!';
+  if (guestActive() && !S.guest.seen) { hello = 'Look! I am wearing something special for you!'; S.guest.seen = true; }
   S.cocoSeen = lookNow;
   app.innerHTML = frame({
     title: 'Times Table Town', home: true,
@@ -1111,7 +1126,7 @@ function finishSession(r) {
   const gained = (r.gained || []).slice();
   masters.forEach(m => m.item && gained.push(m.item));
   const sticker = treatCheck(r); // おたのしみを やりおえていたら シールを わたす
-  if (sticker && sticker.bookComplete) gained.push('sp_sticker');
+  if (sticker && sticker.event && (sticker.event.kind === 'item' || sticker.event.kind === 'room')) { /* ごほうびは けっか画面で ひょうじ */ }
   touchStreak(); syncRoomGifts(); save();
   const easy = SC.n >= 5 && SC.base / SC.n < 1, tired = SC.tired >= 3;
   lastRes = Object.assign({}, r, { masters, gained, easy, tired, sticker });
@@ -1241,6 +1256,13 @@ function syncRoomGifts(st) {
       const it = MR_BY_ID[nu]; if (it && !st.myroom.placed[it.slot]) st.myroom.placed[it.slot] = nu;
     }
   }
+  // シールちょうで もらった かざり：おへやが あれば わたす
+  (st.bookRoom || []).forEach(id => {
+    if (!st.myroom.items.includes(id)) {
+      st.myroom.items.push(id); changed = true;
+      const it = MR_BY_ID[id]; if (it && !st.myroom.placed[it.slot]) st.myroom.placed[it.slot] = id;
+    }
+  });
   if (changed && st === S) save();
 }
 const MRC = { cat: 'wall' };
@@ -1248,14 +1270,14 @@ function roomProgress() {
   const ob = ITEMS.filter(i => !i.lim && !i.sp && i.cat !== 'room'), owned = ob.filter(i => S.items.includes(i.id)).length, need = Math.ceil(ob.length * ROOM_UNLOCK);
   return { owned, need, ok: owned >= need };
 }
-const mrBought = () => S.myroom.items.filter(id => !MR_DEFAULT.includes(id)).length;
+const mrBought = () => S.myroom.items.filter(id => !MR_DEFAULT.includes(id) && !(MR_BY_ID[id] && MR_BY_ID[id].ev)).length;
 function myRoomHTML() {
   const u = roomProgress();
   if (!S.myroom.has) return `<div class="mr-lock"><div class="mr-ico">🔒🏡</div><h2>My Room</h2><p>Collect 70% of the items to get your own room!</p><div class="bar big"><i style="width:${Math.min(100, u.owned / u.need * 100)}%"></i></div><p><b>${u.owned} / ${u.need} items collected</b></p></div>`;
   const cat = MRC.cat, cdef = MR_CATS.find(c => c.id === cat), placed = S.myroom.placed, bought = mrBought();
   let cells = '';
   if (cdef.optional) cells += `<button class="cell ${!placed[cat] ? 'eq' : ''}" data-act="mr-none" data-c="${cat}"><div class="tb" style="font-size:40px">🚫</div>None</button>`;
-  MR_ITEMS.filter(i => i.slot === cat).forEach(i => {
+  MR_ITEMS.filter(i => i.slot === cat && (!i.ev || S.myroom.items.includes(i.id))).forEach(i => {
     if (S.myroom.items.includes(i.id)) cells += `<button class="cell ${placed[cat] === i.id ? 'eq' : ''}" data-act="mr-place" data-id="${i.id}"><div class="tb">${mrThumb(i)}</div>${i.name}${placed[cat] === i.id ? '<span class="tag">✅</span>' : ''}</button>`;
     else if (bought >= MR_TIER_NEED[i.tier]) cells += `<button class="cell" data-act="mr-buy" data-id="${i.id}"><div class="tb">${mrThumb(i)}</div>${i.name}<span class="price">🪙 ${i.price}</span></button>`;
     else cells += `<div class="cell dim"><div class="tb">${mrThumb(i)}</div>${i.name}<span style="font-size:14px">🔒 Buy ${MR_TIER_NEED[i.tier] - bought} more room items</span></div>`;
@@ -1379,6 +1401,13 @@ actions.reset = async () => {
 
 /* =============== きょうの おたのしみ ＋ シールちょう =============== */
 const TREAT_NEED = 8;
+function bookPool() {
+  const n = (S.book && S.book.n) || 1;
+  if (n === 1) return STICKERS;
+  const off = ((n - 2) * 3) % STICKERS.length;
+  return STICKERS_NEW.concat(STICKERS.slice(off).concat(STICKERS).slice(0, 6));
+}
+const bookIds = () => bookPool().map(x => x.id);
 function treatToday() {
   const t = dateStr();
   if (!S.treat || typeof S.treat !== 'object') S.treat = defaultState().treat;
@@ -1390,17 +1419,31 @@ function treatNote(k) { // 正解した「ちがう もんだい」を かぞえ
   if (t.pick === 'practice' && !t.done && !t.keys.includes(k)) t.keys.push(k);
 }
 function treatPracticeReady(t) { return t.pick === 'practice' && t.keys.length >= TREAT_NEED; }
+function bookEvent(n) { // 1さつ そろったときの ごほうびを きめる
+  if (n % 2 === 1) return { kind: 'coco', look: ['ev1', 'ev2', 'ev3'][((n - 1) / 2) % 3], n };
+  const r = BOOK_ITEM_REWARDS[n / 2 - 1];
+  if (!r) return { kind: 'coins', amount: 100, n };
+  return { kind: r.t, id: r.id, n };
+}
+function applyBookEvent(ev) {
+  if (ev.kind === 'coco') { S.guest = { look: ev.look, until: S.cocoDays.count + 3, seen: false }; }
+  else if (ev.kind === 'item') grantItem(ev.id);
+  else if (ev.kind === 'room') { if (!S.bookRoom.includes(ev.id)) S.bookRoom.push(ev.id); }
+  else if (ev.kind === 'coins') S.coins += ev.amount;
+  S.book = { n: S.book.n + 1 }; S.stickers = [];
+  syncRoomGifts();
+}
 function treatComplete() { // シールを 1まい わたす（ふつう／とくべつ）
   const t = treatToday(); t.done = true;
   const want = t.pick === 'practice' ? 's' : 'n';
-  const have = S.stickers;
-  const left = STICKERS.filter(x => !have.includes(x.id));
-  const pool = left.filter(x => x.t === want).length ? left.filter(x => x.t === want) : left;
-  let id = null, bookComplete = false;
-  if (pool.length) { id = pick(pool).id; have.push(id); }
-  if (have.length >= STICKERS.length && !S.items.includes('sp_sticker')) { grantItem('sp_sticker'); bookComplete = true; syncRoomGifts(); }
+  const pool = bookPool(), have = S.stickers;
+  const left = pool.filter(x => !have.includes(x.id));
+  const cand = left.filter(x => x.t === want).length ? left.filter(x => x.t === want) : left;
+  let id = null, event = null;
+  if (cand.length) { id = pick(cand).id; have.push(id); }
+  if (have.length >= pool.length) { event = bookEvent(S.book.n); applyBookEvent(event); }
   save();
-  return { id, bookComplete, allHad: !id };
+  return { id, bookComplete: !!event, event, allHad: !id && !event };
 }
 function treatCheck(r) { // けっかがめんの まえに よばれる
   const t = treatToday();
@@ -1410,7 +1453,7 @@ function treatCheck(r) { // けっかがめんの まえに よばれる
 }
 function stickerSVG(id, opt) {
   const sil = opt && opt.sil;
-  const tint = { st_heart: '#ff8fb8', st_star: '#ffe27a', st_flower: '#ffb3c9', st_cherry: '#ff9fb0', st_ribbon: '#c9b6ff', st_berry: '#ffa3b8', st_rainbow: '#8fd0ff', st_cloud: '#b8e0ff', st_bunny: '#d9c8ff', st_kitty: '#ffe27a', st_crown: '#ffe27a', st_cake: '#8fe3c8' }[id] || '#ffb3c9';
+  const tint = { st_heart: '#ff8fb8', st_star: '#ffe27a', st_flower: '#ffb3c9', st_cherry: '#ff9fb0', st_ribbon: '#c9b6ff', st_berry: '#ffa3b8', st_rainbow: '#8fd0ff', st_cloud: '#b8e0ff', st_bunny: '#d9c8ff', st_kitty: '#ffe27a', st_crown: '#ffe27a', st_cake: '#8fe3c8', st_moon: '#ffe27a', st_icecream: '#ffd0e2', st_balloon: '#ffb3c9', st_butterfly: '#d9c8ff', st_note: '#c9e8ff', st_ladybug: '#ffb3b3' }[id] || '#ffb3c9';
   const m = {
     st_heart: '<path transform="translate(50 56)" d="M0 24 C-32 2 -26 -26 -11 -25 C-5 -24 0 -18 0 -14 C0 -18 5 -24 11 -25 C26 -26 32 2 0 24Z" fill="#ff5d9b"/>',
     st_star: '<polygon points="50,24 58,43 78,44 62,57 68,76 50,65 32,76 38,57 22,44 42,43" fill="#ffc933" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>',
@@ -1423,6 +1466,12 @@ function stickerSVG(id, opt) {
     st_bunny: '<ellipse cx="38" cy="30" rx="8" ry="19" fill="#fff"/><ellipse cx="62" cy="30" rx="8" ry="19" fill="#fff"/><ellipse cx="38" cy="31" rx="4" ry="13" fill="#ffc2d8"/><ellipse cx="62" cy="31" rx="4" ry="13" fill="#ffc2d8"/><circle cx="50" cy="60" r="23" fill="#fff"/><circle cx="42" cy="58" r="3" fill="#5a3e48"/><circle cx="58" cy="58" r="3" fill="#5a3e48"/><circle cx="36" cy="66" r="4.5" fill="#ffb3c9"/><circle cx="64" cy="66" r="4.5" fill="#ffb3c9"/><path d="M45 66 Q50 71 55 66" fill="none" stroke="#5a3e48" stroke-width="2.6" stroke-linecap="round"/>',
     st_kitty: '<path d="M28 42 L30 20 L46 34Z M72 42 L70 20 L54 34Z" fill="#ffe0b3" stroke="#fff" stroke-width="2"/><circle cx="50" cy="58" r="24" fill="#ffe0b3"/><circle cx="41" cy="56" r="3" fill="#5a3e48"/><circle cx="59" cy="56" r="3" fill="#5a3e48"/><circle cx="35" cy="65" r="4.5" fill="#ffb3c9"/><circle cx="65" cy="65" r="4.5" fill="#ffb3c9"/><path d="M46 64 Q50 68 54 64" fill="none" stroke="#5a3e48" stroke-width="2.6" stroke-linecap="round"/><path d="M24 58 L34 60 M24 66 L34 64 M76 58 L66 60 M76 66 L66 64" stroke="#5a3e48" stroke-width="1.8" stroke-linecap="round"/>',
     st_crown: '<path d="M24 70 L28 38 L41 54 L50 30 L59 54 L72 38 L76 70Z" fill="#ffc400" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><rect x="24" y="70" width="52" height="9" rx="4" fill="#f0a800"/><circle cx="50" cy="58" r="4.5" fill="#ff5d9b"/><circle cx="36" cy="62" r="3" fill="#8fd0ff"/><circle cx="64" cy="62" r="3" fill="#8fd0ff"/>',
+    st_moon: '<path d="M62 28 A26 26 0 1 0 62 78 A20 20 0 1 1 62 28Z" fill="#ffd84a"/><path transform="translate(70 40)" d="M0 -7 L2 -2 L7 0 L2 2 L0 7 L-2 2 L-7 0 L-2 -2Z" fill="#fff"/><circle cx="44" cy="52" r="2.6" fill="#5a3e48"/><path d="M40 62 Q46 67 52 62" fill="none" stroke="#5a3e48" stroke-width="2.4" stroke-linecap="round"/>',
+    st_icecream: '<path d="M36 58 L64 58 L50 90 Z" fill="#f5b87a"/><path d="M42 62 L50 80 M52 62 L56 76" stroke="#e39a55" stroke-width="2.4" stroke-linecap="round"/><circle cx="40" cy="50" r="14" fill="#ff9fc4"/><circle cx="60" cy="50" r="14" fill="#8fe3c8"/><circle cx="50" cy="38" r="15" fill="#ffe27a"/><circle cx="50" cy="22" r="6" fill="#ff4d6d"/>',
+    st_balloon: '<path d="M50 74 C46 82 54 86 50 94" fill="none" stroke="#c9a8b6" stroke-width="2.6" stroke-linecap="round"/><ellipse cx="50" cy="48" rx="24" ry="28" fill="#ff6f8f"/><path d="M44 74 L56 74 L50 66Z" fill="#e0506f"/><ellipse cx="40" cy="36" rx="5" ry="9" fill="#fff" opacity=".6" transform="rotate(18 40 36)"/>',
+    st_butterfly: '<ellipse cx="34" cy="42" rx="15" ry="19" fill="#c9b6ff" transform="rotate(-18 34 42)"/><ellipse cx="66" cy="42" rx="15" ry="19" fill="#c9b6ff" transform="rotate(18 66 42)"/><ellipse cx="38" cy="66" rx="11" ry="13" fill="#ff9fc4" transform="rotate(14 38 66)"/><ellipse cx="62" cy="66" rx="11" ry="13" fill="#ff9fc4" transform="rotate(-14 62 66)"/><rect x="47" y="34" width="6" height="42" rx="3" fill="#5a3e48"/><path d="M50 34 q-6 -10 -10 -12 M50 34 q6 -10 10 -12" fill="none" stroke="#5a3e48" stroke-width="2" stroke-linecap="round"/><circle cx="34" cy="40" r="4" fill="#fff" opacity=".8"/><circle cx="66" cy="40" r="4" fill="#fff" opacity=".8"/>',
+    st_note: '<ellipse cx="38" cy="72" rx="13" ry="10" fill="#ff7fae" transform="rotate(-18 38 72)"/><ellipse cx="68" cy="66" rx="13" ry="10" fill="#ff7fae" transform="rotate(-18 68 66)"/><rect x="46" y="28" width="6" height="44" rx="3" fill="#7a5c67"/><rect x="76" y="22" width="6" height="44" rx="3" fill="#7a5c67"/><path d="M46 28 L82 22 L82 36 L46 42Z" fill="#7a5c67"/>',
+    st_ladybug: '<circle cx="50" cy="56" r="26" fill="#ff4d6d"/><path d="M50 30 V82" stroke="#3a2a30" stroke-width="3"/><circle cx="50" cy="32" r="12" fill="#3a2a30"/><circle cx="38" cy="50" r="5" fill="#3a2a30"/><circle cx="62" cy="50" r="5" fill="#3a2a30"/><circle cx="40" cy="68" r="5" fill="#3a2a30"/><circle cx="60" cy="68" r="5" fill="#3a2a30"/><circle cx="45" cy="30" r="2.6" fill="#fff"/><circle cx="55" cy="30" r="2.6" fill="#fff"/><ellipse cx="38" cy="42" rx="5" ry="3" fill="#fff" opacity=".5"/>',
     st_cake: '<path d="M26 56 L74 56 L68 82 Q50 87 32 82 Z" fill="#f5b87a"/><path d="M36 58 L39 83 M50 58 L50 85 M64 58 L61 83" stroke="#e39a55" stroke-width="2.5" stroke-linecap="round"/><path d="M22 60 Q18 42 36 40 Q38 26 52 28 Q66 26 68 40 Q84 42 78 60 Z" fill="#ff9fc4"/><ellipse cx="40" cy="38" rx="6" ry="3.5" fill="#fff" opacity=".6"/><circle cx="52" cy="24" r="7" fill="#ff4d6d"/><circle cx="43" cy="49" r="3" fill="#5a3e48"/><circle cx="60" cy="49" r="3" fill="#5a3e48"/><path d="M47 54 Q52 59 57 54" fill="none" stroke="#5a3e48" stroke-width="2.6" stroke-linecap="round"/>',
   }[id] || '';
   const special = (STICKER_BY_ID[id] || {}).t === 's';
@@ -1438,17 +1487,26 @@ function treatStatus(t) {
 }
 function treatCardHTML() {
   const t = treatToday();
-  const n = S.stickers.length;
+  const n = S.stickers.length, total = bookPool().length;
   const prev = t.pick === 'practice' ? stickerSVG('st_bunny') : stickerSVG('st_heart');
   return `<div class="treat-card ${t.done ? 'done' : ''}">
     <button class="treat-main" data-act="treat-open"><span class="tc-art">${t.done ? '✅' : (t.pick ? prev : stickerSVG('st_heart', { sil: true }))}</span>
       <span class="tc-text"><b>Today's Treat</b><small>${treatStatus(t)}</small></span></button>
-    <button class="treat-book" data-act="go" data-to="stickers" aria-label="Sticker Book"><span class="tb-art">${stickerSVG('st_star')}</span><span class="tb-n">${n}/${STICKERS.length}</span></button>
+    <button class="treat-book" data-act="go" data-to="stickers" aria-label="Sticker Book"><span class="tb-art">${stickerSVG('st_star')}</span><span class="tb-n">${n}/${total}</span></button>
   </div>`;
+}
+function bookEventHTML(ev, noHead) {
+  if (!ev) return '';
+  let art = '', line = '';
+  if (ev.kind === 'coco') { art = `<div class="ev-coco">${avatarSVG(Object.assign({}, NPC.coco, EVENT_LOOKS[ev.look]), { face: 'cheer' })}</div>`; line = 'Coco is wearing a special outfit for 3 days!'; }
+  else if (ev.kind === 'item') { const it = ITEM_BY_ID[ev.id]; art = `<div class="thumbbox">${thumb(it)}</div><b>${it.name}</b>`; line = 'A special item just for you!'; }
+  else if (ev.kind === 'room') { const it = MR_BY_ID[ev.id]; art = `<div class="thumbbox">${mrThumb(it)}</div><b>${it.name}</b>`; line = 'A special item just for you! Find it in My Room.'; }
+  else line = 'You got 100 bonus coins!';
+  return `<div class="gain"><div class="gain-card treat-got book-ev">${noHead ? '' : '<div class="gain-new">🎉 Sticker Book complete!</div>'}${art}<div class="gain-where">${line}</div><div class="gain-where">A new Sticker Book has started!</div></div></div>`;
 }
 function treatResultHTML(st) {
   const it = STICKER_BY_ID[st.id];
-  return `<div class="gain"><div class="gain-card treat-got"><div class="gain-new">🎉 Treat complete!</div><div class="stk-big">${stickerSVG(st.id)}</div><b>${it.name}</b>${st.bookComplete ? '<div class="gain-where">Sticker Book complete! You got the Sticker Crown!</div>' : ''}<button class="btn small mint" data-act="go" data-to="stickers">Sticker Book</button></div></div>`;
+  return `<div class="gain"><div class="gain-card treat-got"><div class="gain-new">🎉 Treat complete!</div><div class="stk-big">${stickerSVG(st.id)}</div><b>${it.name}</b><button class="btn small mint" data-act="go" data-to="stickers">Sticker Book</button></div></div>${bookEventHTML(st.event)}`;
 }
 function showTreatPopup() {
   const t = treatToday();
@@ -1480,15 +1538,17 @@ function treatOnHome() {
   if (t.pick === 'practice' && treatPracticeReady(t) && !t.done) { // とちゅうで やめても シールは わたす
     const st = treatComplete(); showTreatGot(st); return;
   }
+  if (S.stickers.length >= bookPool().length) { const ev = bookEvent(S.book.n); applyBookEvent(ev); save(); showTreatGot({ id: null, event: ev, bookComplete: true }); return; }
   const today = dateStr();
   if (S.treat.shown !== today) { S.treat.shown = today; save(); if (!t.done) showTreatPopup(); }
 }
 function showTreatGot(st) {
   if (!st) return;
   const it = st.id && STICKER_BY_ID[st.id];
+  const ev = st.event ? bookEventHTML(st.event, !it) : '';
   modal({
-    title: '🎉 Treat complete!',
-    html: it ? `<div class="stk-big">${stickerSVG(st.id)}</div><p><b>${it.name}</b></p>${st.bookComplete ? '<p>Sticker Book complete! You got the Sticker Crown!</p>' : ''}` : '<p>You got all the stickers!</p>',
+    title: it ? '🎉 Treat complete!' : '🎉 Sticker Book complete!',
+    html: (it ? `<div class="stk-big">${stickerSVG(st.id)}</div><p><b>${it.name}</b></p>` : (st.event ? '' : '<p>You got all the stickers!</p>')) + ev,
     buttons: [{ label: 'Sticker Book', cls: 'mint' }, { label: 'Yay!', cls: 'pink' }],
   }).then(i => { if (i === 0) go('stickers'); else if (cur === 'home') go('home'); });
 }
@@ -1499,16 +1559,16 @@ actions['treat-open'] = () => {
   go(t.pick === 'play' ? 'play' : 'learn');
 };
 screens.stickers = () => {
-  const have = S.stickers, n = have.length;
-  const slot = (x, i) => have.includes(x.id)
+  const pool = bookPool(), have = S.stickers, n = have.length, bn = S.book.n;
+  const slot = x => have.includes(x.id)
     ? `<div class="stk-cell got ${x.t === 's' ? 'sp' : ''}">${stickerSVG(x.id)}<span class="stk-name">${x.name}</span></div>`
     : `<div class="stk-cell">${stickerSVG(x.id, { sil: true })}<span class="stk-name">？？？</span></div>`;
   const page = (title, list) => `<div class="stk-page"><div class="stk-title">${title}</div><div class="stk-grid">${list.map(slot).join('')}</div></div>`;
   app.innerHTML = frame({
-    title: 'Sticker Book', back: 'home',
-    body: `<p class="section-title" style="margin-top:0">Collected ${n} / ${STICKERS.length} stickers</p>
-      ${page('🌸 1', STICKERS.slice(0, 6))}${page('🌷 2', STICKERS.slice(6))}
-      <p class="lang-note" style="text-align:center">${S.items.includes('sp_sticker') ? '👑 Sticker Crown!' : 'Collect them all to get the Sticker Crown!'}</p>`,
+    title: bn > 1 ? `Sticker Book ${bn}` : 'Sticker Book', back: 'home',
+    body: `<p class="section-title" style="margin-top:0">Collected ${n} / ${pool.length} stickers</p>
+      ${page('🌸 1', pool.slice(0, 6))}${page('🌷 2', pool.slice(6))}
+      <p class="lang-note" style="text-align:center">Collect them all for something special!</p>`,
   });
 };
 

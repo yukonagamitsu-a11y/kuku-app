@@ -1,6 +1,6 @@
 /* 한국어 표시：영어 화면 문구를 한국어로 바꿔 줍니다 (친구에게 확인 받을 것) */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-10-17.75'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-10-18.76'; // ファイルの新旧チェック用
 
 const KO_EXACT = {
   // 공통
@@ -97,6 +97,26 @@ const KO_EXACT = {
   'Kitty Pal': '고양이 친구',
   'Tiny Crown': '작은 왕관',
   'Cupcake': '컵케이크',
+  '🎉 Sticker Book complete!': '🎉 스티커북 완성!',
+  'Coco is wearing a special outfit for 3 days!': '코코가 3일 동안 특별한 옷을 입어요!',
+  'A special item just for you!': '특별한 아이템을 받았어요!',
+  'A special item just for you! Find it in My Room.': '특별한 장식을 받았어요! 마이룸에서 쓸 수 있어요',
+  'A new Sticker Book has started!': '새 스티커북이 시작됐어요!',
+  'You got 100 bonus coins!': '보너스 코인 100개를 받았어요!',
+  'Look! I am wearing something special for you!': '봐! 오늘은 특별한 옷이야!',
+  'Collect them all for something special!': '모두 모으면 특별한 일이 생겨요!',
+  'Sticker Princess Dress': '스티커 공주 드레스',
+  'Sweet Princess Dress': '사탕 공주 드레스',
+  'Starry Night Dress': '별밤 드레스',
+  'Sparkle Lamb': '반짝 양',
+  'Sticker Window': '스티커 창문',
+  'Sticker Poster': '스티커 포스터',
+  'Crescent Moon': '초승달',
+  'Ice Cream': '아이스크림',
+  'Red Balloon': '빨간 풍선',
+  'Butterfly': '나비',
+  'Music Note': '음표',
+  'Ladybug': '무당벌레',
   'Try it on in the Dress-Up Room!': '옷 갈아입기 방에서 입어 봐요!',
   // 보호자
   'For Parents': '보호자 메뉴',
@@ -151,6 +171,7 @@ const KO_EXACT = {
 const KO_GOODS = { cookies: '쿠키', candies: '사탕', strawberries: '딸기', cupcakes: '컵케이크', apples: '사과', tangerines: '귤', chocolates: '초콜릿', donuts: '도넛' };
 function koTr(s) { return Object.prototype.hasOwnProperty.call(KO_EXACT, s) ? KO_EXACT[s] : null; }
 const KO_PATTERNS = [
+  [/^Sticker Book (\d+)$/, m => `스티커북 ${m[1]}`],
   [/^Practice: (\d+) \/ 8$/, m => `연습 ${m[1]} / 8`],
   [/^Collected (\d+) \/ (\d+) stickers$/, m => `${m[1]} / ${m[2]}장 모았어요`],
   [/^Quiz (\d+)\/9$/, m => `퀴즈 ${m[1]}/9`],
