@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-19.78'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-20.79'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-19.78';
+const APP_VERSION = '2026-10-20.79';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -748,7 +748,7 @@ screens.balloon = () => {
   };
   const end = () => {
     G.over = true; cancelAnimationFrame(G.raf);
-    say("Time's up! Great effort!", 'ok'); faces('cheer');
+    bigPraise(field, "Time's up! Great effort!", 'soft'); faces('cheer');
     setTimeout(() => {
       if (cur !== 'balloon') return;
       finishSession({ kind: 'game', title: 'Balloon Pop', ok: G.ok, total: G.ok, coins: sessionCoins(G.ok), unit: 'q', retry: () => go('balloon') });
@@ -766,12 +766,12 @@ screens.balloon = () => {
       earn(a, bb);
       if (!G.wrong) record(a, bb, true);
       G.ok++; G.total++;
-      say(pick(OK_MSG), 'ok'); cheerUp('cheer');
+      bigPraise(field, pick(OK_MSG)); cheerUp('cheer');
       nextQ();
     } else {
       el.classList.remove('wob'); void el.offsetWidth; el.classList.add('wob'); setTimeout(() => el.classList.remove('wob'), 520);
       if (!G.wrong) { G.wrong = true; record(a, bb, false); G.mist.add(qkey(a, bb)); }
-      Snd.play('ng'); say(pick(NG_MSG), 'ng'); cheerUp('sad');
+      Snd.play('ng'); bigPraise(field, pick(NG_MSG), 'soft'); cheerUp('sad');
     }
   });
   cleanup = () => { G.over = true; cancelAnimationFrame(G.raf); window.removeEventListener('resize', measure); clearTimeout(G.ft); };
@@ -916,7 +916,7 @@ screens.mole = () => {
   };
   const end = () => {
     MO.over = true; clearInterval(MO.iv);
-    say("Time's up! Great effort!", 'ok');
+    bigPraise(field, "Time's up! Great effort!", 'soft');
     setTimeout(() => { if (cur === 'mole') finishSession({ kind: 'game', title: 'Whack-a-Mole', ok: MO.ok, total: MO.ok, coins: sessionCoins(MO.ok), unit: 'q', retry: () => go('mole') }); }, 1400);
   };
   field.addEventListener('pointerdown', e => {
