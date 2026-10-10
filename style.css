@@ -571,3 +571,10 @@ html[lang="ko"] .menu .btn { word-break: keep-all; overflow-wrap: break-word; te
 .ev-coco svg { width: 100%; height: auto; display: block; }
 .book-ev { border: 3px solid var(--pink); }
 .book-ev .thumbbox { width: 96px; height: 96px; margin: 0 auto; }
+
+/* きせかえルームの タブ：3れつ・えもじを うえに、ことばを したに（たてに わかれて よみにくいのを なおす） */
+.tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.tabs .tab { flex: none; flex-direction: column; gap: 0; min-height: 58px; padding: 6px 4px; line-height: 1.15; font-size: 15px; }
+.tabs .tab .ti { font-size: 24px; line-height: 1.1; }
+.tabs .tab .tl { text-align: center; word-break: keep-all; overflow-wrap: anywhere; text-wrap: balance; }
+@media (max-height: 480px) { .tabs .tab { min-height: 44px; flex-direction: row; gap: 6px; font-size: 14px; } .tabs .tab .ti { font-size: 18px; } }

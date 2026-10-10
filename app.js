@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-20.79'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-21.80'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-20.79';
+const APP_VERSION = '2026-10-21.80';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -1236,7 +1236,10 @@ screens.closet = p => {
     title: 'Dress-Up Room', back: 'home',
     body: `<div class="cols ${S.myroom.has ? 'roomy' : ''}"><div class="side">${S.myroom.has ? myRoomSVG(S.avatar, S.myroom, 'happy') : sceneSVG(S.avatar, { face: 'happy' })}</div>
       <div style="display:flex;flex-direction:column;min-height:0">
-        <div class="tabs">${tabs.map(t => `<button class="btn tab small ${C.tab === t[0] ? 'on' : ''}" data-act="tab" data-t="${t[0]}">${t[1]}</button>`).join('')}</div>
+        <div class="tabs">${tabs.map(t => {
+          const full = I18N.lang() === 'en' ? t[1] : (I18N.tr(t[1]) || t[1]), m = full.match(/^(\S+)\s+(.+)$/); // 絵文字を うえ、ことばを した に ならべる
+          return `<button class="btn tab small ${C.tab === t[0] ? 'on' : ''}" data-act="tab" data-t="${t[0]}">${m ? `<span class="ti" aria-hidden="true">${m[1]}</span><span class="tl">${m[2]}</span>` : full}</button>`;
+        }).join('')}</div>
         <div class="panel" id="cpanel" style="flex:1">${content}</div></div></div>`,
   });
   if (prev) { const np = $('#cpanel'); if (np) np.scrollTop = top; }
