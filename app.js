@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-13.69'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-14.70'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-13.69';
+const APP_VERSION = '2026-10-14.70';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -1102,9 +1102,10 @@ function closetGrid() {
     : `<button class="cell" data-act="buy" data-id="${i.id}"><div class="tb">${thumb(i)}</div>${i.name}<span class="stars">${starsOf(i.rar)}</span><span class="price">🪙 ${PRICE[i.rar]}</span></button>`).join('')}</div>`;
 }
 function zukanHTML() {
-  const total = ITEMS.filter(i => i.cat !== 'room').length, have = ITEMS.filter(i => i.cat !== 'room' && isOwned(i.id)).length;
+  const shown = i => !i.hidden || isOwned(i.id); // もう くばらない アイテムは もっている人だけに みせる
+  const total = ITEMS.filter(i => i.cat !== 'room' && shown(i)).length, have = ITEMS.filter(i => i.cat !== 'room' && shown(i) && isOwned(i.id)).length;
   return `<p class="section-title" style="margin-top:0">Collected ${have} / ${total}</p>` + UI_CATS.map(c => {
-    const list = ITEMS.filter(i => i.cat === c.id);
+    const list = ITEMS.filter(i => i.cat === c.id && shown(i));
     return `<div class="sect">${c.icon} ${c.name}</div><div class="grid">${list.map(i => {
       const own = isOwned(i.id);
       const hint = i.lim ? `Master ${danLabel(i.lim)}` : i.sp ? 'Score 100 on a test' : 'Shop or Capsules';

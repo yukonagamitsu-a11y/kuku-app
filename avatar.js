@@ -1,6 +1,6 @@
 /* ブロック風アバター・ペット・おへやのSVG（すべてオリジナル） */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['avatar'] = '2026-10-13.69'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['avatar'] = '2026-10-14.70'; // ファイルの新旧チェック用
 
 const SKIN = '#FFDFC9';
 const INK = '#4a3340';
@@ -58,6 +58,13 @@ function hairParts(style, c) {
         br += `<rect x="${x}" y="36" width="18" height="24" rx="8" fill="${c}"/><rect x="${x + 2}" y="58" width="15" height="24" rx="7" fill="${c}"/><rect x="${x + 3}" y="80" width="13" height="22" rx="6" fill="${c}"/><rect x="${x + 1}" y="98" width="17" height="9" rx="4" fill="#ff5d8f"/>`;
       });
       return { back: br, front: cap + side };
+    }
+    case 'bunny': { // うさみみヘア：あたまの うえに うさぎの みみの ような わっか ＋ リボン
+      const loop = (cx, rot) => `<g transform="rotate(${rot} ${cx} 14)"><ellipse cx="${cx}" cy="-6" rx="13" ry="25" fill="${c}"/><ellipse cx="${cx}" cy="-3" rx="5.5" ry="15" fill="#fff" opacity=".3"/></g>`;
+      return {
+        back: loop(54, -10) + loop(106, 10) + `<rect x="32" y="16" width="96" height="72" rx="18" fill="${c}"/>`,
+        front: cap + side + tie(45, 5) + tie(99, 5),
+      };
     }
     case 'wave':
       return {
@@ -312,7 +319,7 @@ function sceneSVG(av, opt) {
 /* ---------- サムネイル ---------- */
 const THUMB_BASE = { hair: 'h_bob', hairColor: 'c_choco', outfit: 'o_pink', shoes: 's_pink', hat: null, accessory: null, pet: null, room: null };
 const THUMB_VIEW = {
-  hair: '10 -6 140 150', hairColor: '26 -6 108 100', outfit: '20 82 120 132',
+  hair: '10 -32 140 176', hairColor: '26 -6 108 100', outfit: '20 82 120 132',
   shoes: '36 172 90 60', hat: '20 -34 120 100', accessory: '0 -30 160 262',
 };
 function thumb(it) {
