@@ -1,6 +1,6 @@
 /* データ：九九の読み方・アイテム・文言 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['data'] = '2026-10-18.76'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['data'] = '2026-10-18.77'; // ファイルの新旧チェック用
 
 // 九九の読み方（数式から自動生成せず、手で持つ）kukuReading[段][かける数]
 const KUKU_TEXT = {
@@ -84,9 +84,9 @@ const ITEMS = [
   { id: 'sp_gold', cat: 'hat', name: 'Gold Crown', rar: 3, sp: true, def: { kind: 'crown', c1: '#ffc400', big: true } },
   { id: 'sp_sticker', cat: 'hat', name: 'Sticker Crown', rar: 3, sp: true, ev: true, spHint: 'Complete the Sticker Book', def: { kind: 'crown', c1: '#8fd0ff', big: true } },
   // シールちょうの コンプリートで だけ もらえる・ココちゃんが きる とくべつな ふく（図鑑・ショップ・ガチャには でない）
-  { id: 'ev_o1', cat: 'outfit', name: 'Sticker Princess Dress', rar: 3, sp: true, ev: true, hidden: true, def: { top: '#ffd1ec', bottom: '#c9b6ff', type: 'dress', sleeve: 0, deco: 'crownline', acc: '#8fd0ff' } },
-  { id: 'ev_o2', cat: 'outfit', name: 'Sweet Princess Dress', rar: 3, sp: true, ev: true, hidden: true, def: { top: '#fff0a8', bottom: '#ffb3c9', type: 'dress', sleeve: 22, deco: 'dots', acc: '#ff8fb8' } },
-  { id: 'ev_o3', cat: 'outfit', name: 'Starry Night Dress', rar: 3, sp: true, ev: true, hidden: true, def: { top: '#6a5ba8', bottom: '#6a5ba8', type: 'dress', sleeve: 22, deco: 'galaxy', acc: '#ffe27a' } },
+  { id: 'ev_o1', cat: 'outfit', name: 'Sticker Princess Dress', rar: 3, sp: true, ev: true, hidden: true, def: { top: '#ffd1ec', bottom: '#c9b6ff', type: 'gown', sleeve: 22, deco: 'star', acc: '#ffd84a' } },
+  { id: 'ev_o2', cat: 'outfit', name: 'Sweet Princess Dress', rar: 3, sp: true, ev: true, hidden: true, def: { top: '#fff0a8', bottom: '#ff8fc0', type: 'gown', sleeve: 22, deco: 'heart', acc: '#c9b6ff' } },
+  { id: 'ev_o3', cat: 'outfit', name: 'Starry Night Dress', rar: 3, sp: true, ev: true, hidden: true, def: { top: '#7b66c4', bottom: '#4a3f8f', type: 'gown', sleeve: 22, deco: 'galaxy', acc: '#ffd84a' } },
   { id: 'ev_lamb', cat: 'pet', name: 'Sparkle Lamb', rar: 3, sp: true, ev: true, hidden: true, def: { kind: 'lamb' } },
   // アクセサリー
   { id: 'a_neck', cat: 'accessory', name: 'Necklace', rar: 1, def: { kind: 'necklace' } },

@@ -1,6 +1,6 @@
 /* 한국어 표시：영어 화면 문구를 한국어로 바꿔 줍니다 (친구에게 확인 받을 것) */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-10-18.76'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-10-18.77'; // ファイルの新旧チェック用
 
 const KO_EXACT = {
   // 공통

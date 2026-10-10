@@ -1,6 +1,6 @@
 /* ブロック風アバター・ペット・おへやのSVG（すべてオリジナル） */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['avatar'] = '2026-10-18.76'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['avatar'] = '2026-10-18.77'; // ファイルの新旧チェック用
 
 const SKIN = '#FFDFC9';
 const INK = '#4a3340';
@@ -215,6 +215,20 @@ function accFrontSVG(a) {
   }
 }
 
+/* ---------- ロングスカートの ドレス（とくべつな ドレス用） ---------- */
+function gownSVG(o) {
+  const g = o.bottom, acc = o.acc || '#ffffff';
+  const sp = [[36, 170, 6], [62, 158, 4], [96, 172, 6], [122, 160, 4], [50, 188, 4], [108, 190, 5], [80, 180, 7], [26, 196, 4], [134, 196, 4], [70, 198, 3.5]];
+  return `<path d="M50 136 h60 C124 156 140 182 146 205 Q80 217 14 205 C20 182 36 156 50 136Z" fill="${g}"/>`
+    + `<path d="M64 140 L96 140 L116 205 L44 205Z" fill="#fff" opacity=".2"/>`
+    + `<path d="M50 136 C36 156 22 182 14 205" fill="none" stroke="#fff" stroke-width="3" opacity=".55"/>`
+    + `<path d="M110 136 C124 156 138 182 146 205" fill="none" stroke="#fff" stroke-width="3" opacity=".55"/>`
+    + `<path d="M17 192 Q28 202 40 192 T64 192 T88 192 T112 192 T136 192 L146 206 Q80 220 14 206Z" fill="${acc}" opacity=".9"/>`
+    + `<path d="M17 192 Q28 202 40 192 T64 192 T88 192 T112 192 T136 192" fill="none" stroke="#fff" stroke-width="2.4"/>`
+    + sp.map(p => `<polygon points="${starPts(p[0], p[1], p[2], p[2] / 2.3)}" fill="#fff" opacity=".92"/>`).join('')
+    + `<rect x="52" y="134" width="56" height="9" rx="3" fill="${acc}"/><circle cx="80" cy="138" r="5" fill="#fff" opacity=".85"/>`;
+}
+
 /* ---------- アバター本体 ---------- */
 function avatarInner(cfg, face) {
   face = face || cfg.face || 'normal';
@@ -231,6 +245,7 @@ function avatarInner(cfg, face) {
   // あし
   s += `<rect x="56" y="148" width="22" height="60" rx="8" fill="${SKIN}"/><rect x="82" y="148" width="22" height="60" rx="8" fill="${SKIN}"/>`;
   if (o.type === 'pants') s += `<rect x="55" y="148" width="24" height="48" rx="8" fill="${o.bottom}"/><rect x="81" y="148" width="24" height="48" rx="8" fill="${o.bottom}"/>`;
+  if (o.type === 'gown') s += gownSVG(o);
   s += shoeSVG(sh);
   if (o.type === 'skirt') s += `<path d="M50 138 h60 l8 38 h-76 z" fill="${o.bottom}" stroke="${o.bottom}" stroke-width="3" stroke-linejoin="round"/><rect x="42" y="170" width="76" height="6" fill="#000" opacity=".08"/>`;
   if (o.type === 'dress') s += `<path d="M52 138 h56 l10 40 h-76 z" fill="${o.top}" stroke="${o.top}" stroke-width="3" stroke-linejoin="round"/><rect x="42" y="170" width="76" height="8" rx="3" fill="${o.acc || '#fff'}" opacity=".6"/>`;
@@ -330,7 +345,8 @@ function thumb(it) {
   if (it.cat === 'room') return sceneSVG({ room: it.id }, { noAvatar: true }).replace('class="scene"', 'class="thumb scene"');
   d[it.cat] = it.id;
   if (it.cat === 'hair') d.hairColor = { color: '#ff8fb8' };
-  return avatarSVG(d, { view: THUMB_VIEW[it.cat], cls: 'thumb', face: 'happy' });
+  const view = (it.cat === 'outfit' && it.def.type === 'gown') ? '8 82 144 142' : THUMB_VIEW[it.cat];
+  return avatarSVG(d, { view, cls: 'thumb', face: 'happy' });
 }
 
 /* ---------- ガチャのカプセル ---------- */
