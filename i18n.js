@@ -1,6 +1,6 @@
 /* 日本語表示：英語の画面文言を、ひらがな中心の日本語に置きかえる */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-12.66'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-13.67'; // ファイルの新旧チェック用
 
 const JA_EXACT = {
   // 共通

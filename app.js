@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-12.66'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-13.67'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-12.66';
+const APP_VERSION = '2026-10-13.67';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -446,7 +446,10 @@ screens.learn = () => {
     body: `<p class="section-title">Which times table?</p><div class="dan-grid">` +
       [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => {
         const stamp = S.stamps.includes(n), master = S.masteredDans.includes(n);
-        return `<button class="btn ${DAN_COLORS[(n - 1) % 5]} dan-card" data-act="dan" data-n="${n}"><span lang="${chantLang()}" translate="no">${danLabel(n)}</span><small>${master ? 'Master!' : stamp ? 'Stamp earned' : 'Practice'}</small>${master ? '<span class="stamp">👑</span>' : stamp ? '<span class="stamp">⭐</span>' : ''}</button>`;
+        const rid = LIMITED_BY_DAN[n], rit = rid && ITEM_BY_ID[rid], got = rid && S.items.includes(rid);
+        // マスターしたら もらえる ごほうび：まだの あいだは シルエット＋「？」（ひみつ）、もらったら カラー
+        const reward = rit ? `<span class="reward ${got ? 'got' : 'secret'}" aria-hidden="true"><span class="r-art">${rit.cat === 'room' && !got ? '🏠' : thumb(rit)}</span>${got ? '' : '<b>?</b>'}</span>` : '';
+        return `<button class="btn ${DAN_COLORS[(n - 1) % 5]} dan-card" data-act="dan" data-n="${n}">${reward}<span lang="${chantLang()}" translate="no">${danLabel(n)}</span><small>${master ? 'Master!' : stamp ? 'Stamp earned' : 'Practice'}</small>${master ? '<span class="stamp">👑</span>' : stamp ? '<span class="stamp">⭐</span>' : ''}</button>`;
       }).join('') + '</div>',
   });
 };
