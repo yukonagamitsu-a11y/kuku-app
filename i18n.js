@@ -1,6 +1,6 @@
 /* 日本語表示：英語の画面文言を、ひらがな中心の日本語に置きかえる */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-14.70'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-15.71'; // ファイルの新旧チェック用
 
 const JA_EXACT = {
   // 共通
@@ -53,6 +53,7 @@ const JA_EXACT = {
   'Nothing yet. Get some from the Shop or Capsules!': 'まだ ないよ。ショップや ガチャで てにいれよう！',
   Owned: 'もってる', 'Score 100 on a test': 'テスト 100てんで', 'Shop or Capsules': 'ショップ・ガチャ',
   'What will come out? More ★ means rarer!': 'なにが でるかな？ ★が おおいほど レア！',
+  '⚠️ Progress could not be saved on this device. Ask a grown-up: free up storage or leave Private Browsing, then keep this page open.': '⚠️ このたんまつに ほぞんできませんでした。おうちの人に そうだんしてね：ようりょうを あけるか、プライベートモードを やめて、このがめんを ひらいたままに してね。',
   'Not enough coins. Play to earn more!': 'コインが たりないよ。あそんで ためよう！',
   'Buy!': 'かう！', 'Got it! Put it on in Dress Up': 'てにいれたよ！ きせかえで つけてみよう',
   'You got it again!': 'また でたよ！', '✨ New friend!': '✨ あたらしい なかま！',

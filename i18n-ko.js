@@ -1,6 +1,6 @@
 /* 한국어 표시：영어 화면 문구를 한국어로 바꿔 줍니다 (친구에게 확인 받을 것) */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-10-14.70'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-10-15.71'; // ファイルの新旧チェック用
 
 const KO_EXACT = {
   // 공통
@@ -53,6 +53,7 @@ const KO_EXACT = {
   'Nothing yet. Get some from the Shop or Capsules!': '아직 없어요. 상점이나 뽑기에서 얻어 봐요!',
   Owned: '가지고 있어요', 'Score 100 on a test': '시험에서 100점', 'Shop or Capsules': '상점 · 뽑기',
   'What will come out? More ★ means rarer!': '뭐가 나올까요? ★이 많을수록 귀해요!',
+  '⚠️ Progress could not be saved on this device. Ask a grown-up: free up storage or leave Private Browsing, then keep this page open.': '⚠️ 이 기기에 저장하지 못했어요. 보호자에게 알려 주세요: 저장 공간을 비우거나 사생활 보호 모드를 끄고, 이 화면을 열어 둔 채로 두세요.',
   'Not enough coins. Play to earn more!': '코인이 부족해요. 놀면서 모아 봐요!',
   'Buy!': '사기!', 'Got it! Put it on in Dress Up': '얻었어요! 꾸미기에서 입어 봐요',
   'You got it again!': '또 나왔어요!', '✨ New friend!': '✨ 새 친구!',

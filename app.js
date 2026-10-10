@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-14.70'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-15.71'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-14.70';
+const APP_VERSION = '2026-10-15.71';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -43,23 +43,58 @@ const defaultState = () => ({
 });
 function defaultLang() { const l = navigator.language || ''; return /^ja/i.test(l) ? 'ja' : /^ko/i.test(l) ? 'ko' : 'en'; }
 const LANG_NAMES = { en: 'English', ja: '日本語', ko: '한국어' };
+const BACKUP_KEY = KEY + '-backup', CORRUPT_KEY = KEY + '-corrupt';
+const isObj = v => v && typeof v === 'object' && !Array.isArray(v);
+const strArr = v => Array.isArray(v) ? v.filter(x => typeof x === 'string') : [];
+const numObj = v => { const o = {}; if (isObj(v)) for (const k of Object.keys(v)) if (typeof v[k] === 'number' && isFinite(v[k])) o[k] = v[k]; return o; };
+// 保存データの かたを チェック：おかしい ところだけ 初期値に もどし、ただしい 進み具合は のこす
+function sanitize(raw) {
+  const d = defaultState(), r = isObj(raw) ? raw : {};
+  const s = Object.assign(d, r);
+  s.coins = typeof r.coins === 'number' && isFinite(r.coins) && r.coins >= 0 ? Math.floor(r.coins) : 0;
+  s.items = Array.isArray(r.items) ? strArr(r.items) : defaultState().items;
+  defaultState().items.forEach(id => { if (!s.items.includes(id)) s.items.push(id); });
+  s.items = s.items.filter((id, i, a) => a.indexOf(id) === i); // ダブり ぜんぶ 1つに
+  s.avatar = Object.assign(defaultState().avatar, isObj(r.avatar) ? r.avatar : {});
+  s.streak = Object.assign(defaultState().streak, isObj(r.streak) ? r.streak : {});
+  s.settings = Object.assign(defaultState().settings, isObj(r.settings) ? r.settings : {});
+  s.today = Object.assign(defaultState().today, isObj(r.today) ? r.today : {});
+  s.myroom = Object.assign(defaultState().myroom, isObj(r.myroom) ? r.myroom : {});
+  s.myroom.items = strArr(s.myroom.items).filter((id, i, a) => a.indexOf(id) === i);
+  if (!isObj(s.myroom.placed)) s.myroom.placed = {};
+  s.daily = Object.assign(defaultState().daily, isObj(r.daily) ? r.daily : {});
+  if (!isObj(s.daily.counts)) s.daily.counts = {};
+  s.cocoDays = Object.assign(defaultState().cocoDays, isObj(r.cocoDays) ? r.cocoDays : {});
+  for (const k of ['mastery', 'mistakes', 'attempts', 'correct']) s[k] = numObj(r[k]);
+  s.masteredDans = Array.isArray(r.masteredDans) ? r.masteredDans.filter(n => Number.isInteger(n)) : [];
+  s.stamps = Array.isArray(r.stamps) ? r.stamps : [];
+  if (typeof s.name !== 'string') s.name = '';
+  if (typeof s.streak.days !== 'number' || !isFinite(s.streak.days)) s.streak.days = 0;
+  return s;
+}
+function readSaved(key) { // {ok, raw, text}  ok=false なら よめない/こわれている
+  let text = null;
+  try { text = localStorage.getItem(key); } catch (e) { return { ok: false, raw: null, text: null }; }
+  if (text == null) return { ok: true, raw: null, text: null }; // まだ ない
+  try { const raw = JSON.parse(text); return isObj(raw) ? { ok: true, raw, text } : { ok: false, raw: null, text }; } catch (e) { return { ok: false, raw: null, text }; }
+}
 function loadState() {
   const d = defaultState();
   try {
-    const raw = JSON.parse(localStorage.getItem(KEY) || 'null');
+    let got = readSaved(KEY), raw = got.raw;
+    if (!got.ok) { // こわれていた：そのまま とっておき（けさない）、バックアップから もどす
+      try { if (got.text != null) localStorage.setItem(CORRUPT_KEY, got.text); } catch (e) { /* ok */ }
+      const b = readSaved(BACKUP_KEY);
+      if (b.ok && b.raw) { raw = b.raw; window.__restoredFromBackup = true; }
+    }
     if (raw && typeof raw === 'object') {
-      const s = Object.assign(d, raw);
-      s.avatar = Object.assign(defaultState().avatar, raw.avatar || {});
-      s.streak = Object.assign(defaultState().streak, raw.streak || {});
-      s.settings = Object.assign(defaultState().settings, raw.settings || {});
-      s.today = Object.assign(defaultState().today, raw.today || {});
-      s.myroom = Object.assign(defaultState().myroom, raw.myroom || {});
+      const s = sanitize(raw);
       (s.masteredDans || []).forEach(dn => { const id = LIMITED_BY_DAN[dn]; if (id && !s.items.includes(id)) s.items.push(id); });
       syncRoomGifts(s);
       if (s.myroom.has && !s.myroom.items.includes('m_plain')) { // すでに おへやが ある人にも、ふつうの まどを プレゼント
         s.myroom.items.push('m_plain'); if (!s.myroom.placed.window) s.myroom.placed.window = 'm_plain';
       }
-      const existing = (raw.coins > 0) || (raw.streak && raw.streak.lastPlayed) || (raw.items && raw.items.length > 4);
+      const existing = (s.coins > 0) || s.streak.lastPlayed || s.items.length > 4;
       if (!s.settings.limitOff) { s.settings.dailyLimitMinutes = 0; s.settings.limitOff = true; } // 初期の20分制限をやめる
       if (!s.name) s.name = existing ? 'Non' : '';
       if (!s.settings.lang) s.settings.lang = existing ? 'en' : defaultLang();
@@ -70,7 +105,28 @@ function loadState() {
   return d;
 }
 let S = loadState();
-function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* 保存できなくても あそべる */ } }
+let saveFailed = false;
+function showSaveWarning() {
+  if (document.getElementById('saveWarn')) return;
+  const b = document.createElement('div'); b.id = 'saveWarn'; b.className = 'save-warn'; b.setAttribute('role', 'alert');
+  b.innerHTML = '<span>⚠️ Progress could not be saved on this device. Ask a grown-up: free up storage or leave Private Browsing, then keep this page open.</span><button class="btn small" type="button">OK</button>';
+  b.querySelector('button').onclick = () => b.remove();
+  document.body.appendChild(b); try { I18N.apply(b); } catch (e) { /* ok */ }
+}
+function save() {
+  let text;
+  try { text = JSON.stringify(S); } catch (e) { return false; }
+  try {
+    const prev = readSaved(KEY); // いまの ただしい データを バックアップに（こわれていれば そのまま）
+    if (prev.ok && prev.text) { try { localStorage.setItem(BACKUP_KEY, prev.text); } catch (e) { /* バックアップだけ しっぱい */ } }
+    localStorage.setItem(KEY, text);
+    if (saveFailed) { saveFailed = false; const w = document.getElementById('saveWarn'); if (w) w.remove(); }
+    return true;
+  } catch (e) {
+    saveFailed = true; showSaveWarning(); return false;
+  }
+}
+try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) { /* ok */ }
 
 /* =============== 音 =============== */
 const Snd = {
@@ -1189,12 +1245,17 @@ actions['mr-place'] = el => {
   save(); Snd.play('tap'); go('closet');
 };
 actions['mr-none'] = el => { delete S.myroom.placed[el.dataset.c]; save(); Snd.play('tap'); go('closet'); };
+let buying = false; // かいものの さいちゅうは ほかの かいものを うけつけない
 actions['mr-buy'] = async el => {
+  if (buying) return;
   const it = MR_BY_ID[el.dataset.id];
+  if (!it || S.myroom.items.includes(it.id)) return;
   if (S.coins < it.price) { toast('Not enough coins. Play to earn more!'); return; }
-  const yes = await confirmDialog(it.name, `<div class="thumbbox">${mrThumb(it)}</div><p>Buy for 🪙 ${it.price}?</p>`, 'Buy!', 'Cancel');
-  if (!yes || S.coins < it.price) return;
-  S.coins -= it.price; S.myroom.items.push(it.id); S.myroom.placed[it.slot] = it.id; save();
+  buying = true; el.disabled = true;
+  let yes = false;
+  try { yes = await confirmDialog(it.name, `<div class="thumbbox">${mrThumb(it)}</div><p>Buy for 🪙 ${it.price}?</p>`, 'Buy!', 'Cancel'); } finally { buying = false; }
+  if (!yes || S.myroom.items.includes(it.id) || S.coins < it.price) { if (el.isConnected) el.disabled = false; return; } // 話している うちに かわったかも：もういちど たしかめる
+  S.coins -= it.price; if (!S.myroom.items.includes(it.id)) S.myroom.items.push(it.id); S.myroom.placed[it.slot] = it.id; save();
   Snd.play('coin'); confetti(); toast('Placed in your room!'); go('closet');
 };
 actions.tab = el => { C.tab = el.dataset.t; go('closet'); };
@@ -1206,10 +1267,14 @@ actions.equip = el => {
 };
 actions.unequip = el => { S.avatar[el.dataset.cat] = null; save(); go('closet'); };
 actions.buy = async el => {
-  const it = ITEM_BY_ID[el.dataset.id], price = PRICE[it.rar];
+  if (buying) return;
+  const it = ITEM_BY_ID[el.dataset.id], price = it && PRICE[it.rar];
+  if (!it || isOwned(it.id)) return;
   if (S.coins < price) { toast('Not enough coins. Play to earn more!'); return; }
-  const yes = await confirmDialog(it.name, `<div class="thumbbox">${thumb(it)}</div><p>Buy for 🪙 ${price}?</p>`, 'Buy!', 'Cancel');
-  if (!yes || S.coins < price) return;
+  buying = true; el.disabled = true;
+  let yes = false;
+  try { yes = await confirmDialog(it.name, `<div class="thumbbox">${thumb(it)}</div><p>Buy for 🪙 ${price}?</p>`, 'Buy!', 'Cancel'); } finally { buying = false; }
+  if (!yes || isOwned(it.id) || S.coins < price) { if (el.isConnected) el.disabled = false; return; }
   S.coins -= price; grantItem(it.id); save(); Snd.play('coin'); confetti(); // 買っても すぐには きない：きせかえで じぶんで えらぶ
   toast('Got it! Put it on in Dress Up'); go('closet');
 };
