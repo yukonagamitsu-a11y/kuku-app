@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-30.91'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-31.92'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-30.91';
+const APP_VERSION = '2026-10-31.92';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -1836,7 +1836,9 @@ go('home');
   el.innerHTML = `<div class="sp-card"><div class="sp-coco">${avatarSVG(cocoCfg(), { face: 'happy' })}</div><div class="sp-title">Times Table Town</div><div class="sp-sub">Tap to start</div></div>`;
   document.body.appendChild(el);
   let gone = false;
-  const close = () => { if (gone) return; gone = true; el.classList.add('out'); setTimeout(() => el.remove(), 400); };
-  el.addEventListener('pointerdown', close);
+  const close = () => { if (gone) return; gone = true; el.classList.add('out'); setTimeout(() => el.remove(), 450); };
+  // タップは「クリック」まで この がめんで うけとめる（したの ボタンを おして しまわないように）
+  el.addEventListener('pointerdown', e => { e.preventDefault(); });
+  el.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); close(); });
   setTimeout(close, 2200);
 })();
