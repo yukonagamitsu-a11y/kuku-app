@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-25.85'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-25.86'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-25.85';
+const APP_VERSION = '2026-10-25.86';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -1279,11 +1279,12 @@ screens.result = () => {
     body: `<div class="cols"><div class="side">${avatarSVG(S.avatar, { face, cls: face === 'cheer' ? 'jump' : '' })}</div>
       <div class="result"><div class="big">${msg}</div>
         ${r.score != null ? `<div class="big" style="color:var(--pink-d)">${r.score} points</div>` : ''}
-        <div class="res-chips">${r.total ? `<span class="rchip">Correct: ${r.ok}${r.unit === 'q' ? '' : ` / ${r.total}`}</span>` : ''}<span class="rchip">🪙 Coins +${r.coins}</span>${r.bonus ? `<span class="rchip">🎁 Daily bonus +${r.bonus} (included)</span>` : ''}</div>
+        ${r.alt != null ? `<div class="res-hero">🚀 ${r.alt} m</div>${r.newRecord ? '<div class="res-record">🏆 New record!</div>' : `<div class="res-minor">Best: ${r.best} m</div>`}` : (r.total ? `<div class="res-hero">Correct: ${r.ok}${r.unit === 'q' ? '' : ` / ${r.total}`}</div>` : '')}
+        <div class="res-coins">🪙 Coins +${r.coins}</div>
+        ${(r.alt != null || r.bonus) ? `<div class="res-chips">${r.alt != null ? `<span class="rchip">⭐ ${r.stars || 0}</span>${r.maxCombo >= 2 ? `<span class="rchip">Best combo ×${r.maxCombo}</span>` : ''}` : ''}${r.bonus ? `<span class="rchip">🎁 Daily bonus +${r.bonus} (included)</span>` : ''}</div>` : ''}
         ${r.note ? `<div class="coin-line" style="margin-top:6px">${r.note}</div>` : ''}
         ${r.tired ? '<div class="tip">🌱 You practiced these a lot today, so coins are lower. Try other times tables!</div>' : ''}
         ${r.easy ? '<div class="tip">💡 Tip: bigger times tables earn more coins!</div>' : ''}
-        ${r.alt != null ? `<div class="res-chips"><span class="rchip">🚀 ${r.alt} m</span><span class="rchip">⭐ ${r.stars || 0}</span>${r.maxCombo >= 2 ? `<span class="rchip">Best combo ×${r.maxCombo}</span>` : ''}</div>${r.newRecord ? '<div class="coin-line" style="color:var(--pink-d);font-weight:900">🏆 New record!</div>' : `<div class="coin-line">Best: ${r.best} m</div>`}` : ''}
         ${r.sticker && r.sticker.id ? treatResultHTML(r.sticker) : ''}
         ${r.sticker && r.sticker.allHad ? '<div class="coin-line">🎉 Treat complete!</div><div class="tip">You got all the stickers!</div>' : ''}
         ${gainHTML ? `<div class="gain">${gainHTML}</div>` : ''}

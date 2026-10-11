@@ -677,3 +677,14 @@ html[lang="ko"] .menu .btn { word-break: keep-all; overflow-wrap: break-word; te
 .gain-card.compact .btn.small { min-height: 40px; margin-top: 4px; }
 .gain { gap: 8px; margin: 6px 0; }
 .result .big { margin-bottom: 2px; }
+
+/* ---- けっか画面：もじの おおきさに めりはりを ---- */
+.result .big { font-size: clamp(30px, 6.4vmin, 48px); line-height: 1.15; }
+.res-hero { font-size: clamp(46px, 12vmin, 84px); font-weight: 900; line-height: 1.05; color: var(--pink-d); letter-spacing: .01em; margin: 4px 0; }
+.res-record { font-size: clamp(22px, 4.6vmin, 32px); font-weight: 900; color: #e08a00; margin-bottom: 2px; }
+.res-coins { font-size: clamp(26px, 5.6vmin, 40px); font-weight: 900; margin: 2px 0 6px; }
+.res-minor { font-size: 15px; font-weight: 700; color: var(--ink-soft); margin-bottom: 2px; }
+.res-chips { margin: 2px 0 6px; }
+.rchip { font-size: 15px; font-weight: 700; padding: 3px 12px; color: var(--ink-soft); }
+.gain-card.compact b { font-size: 20px; }
+.gain-card.compact .gain-new { font-size: 14px; }
