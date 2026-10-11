@@ -1,6 +1,6 @@
 /* 한국어 표시：영어 화면 문구를 한국어로 바꿔 줍니다 (친구에게 확인 받을 것) */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-10-29.90'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-10-30.91'; // ファイルの新旧チェック用
 
 const KO_EXACT = {
   // 공통
@@ -131,6 +131,19 @@ const KO_EXACT = {
   'New record!': '신기록!',
   '🏆 New record!': '🏆 신기록!',
   'High five!': '하이파이브!',
+  'Backup code': '백업 코드',
+  'Save': '저장',
+  'Restore': '불러오기',
+  'Copy': '복사',
+  'Copied!': '복사했어요!',
+  'Press and hold the code to copy it': '코드를 길게 눌러서 복사하세요',
+  'Copy this code and keep it safe. You can use it to restore your progress.': '이 코드를 복사해서 잘 보관하세요. 나중에 데이터를 되살릴 수 있어요.',
+  'Restore from backup code': '백업 코드로 불러오기',
+  'Paste your backup code here.': '백업 코드를 여기에 붙여 넣으세요.',
+  'That code didn\'t work. Check it and try again.': '이 코드는 사용할 수 없어요. 다시 확인해 주세요.',
+  'Restore progress?': '데이터를 불러올까요?',
+  'Your current coins and items will be replaced.': '지금의 코인과 아이템이 바뀌어요.',
+  'Restored!': '불러왔어요!',
   'Try it on in the Dress-Up Room!': '옷 갈아입기 방에서 입어 봐요!',
   // 보호자
   'For Parents': '보호자 메뉴',

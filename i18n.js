@@ -1,6 +1,6 @@
 /* 日本語表示：英語の画面文言を、ひらがな中心の日本語に置きかえる */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-29.90'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-30.91'; // ファイルの新旧チェック用
 
 const JA_EXACT = {
   // 共通
@@ -131,6 +131,19 @@ const JA_EXACT = {
   'New record!': 'しんきろく！',
   '🏆 New record!': '🏆 しんきろく！',
   'High five!': 'ハイタッチ！',
+  'Backup code': 'バックアップコード',
+  'Save': 'ほぞん',
+  'Restore': 'よみこむ',
+  'Copy': 'コピー',
+  'Copied!': 'コピーしたよ！',
+  'Press and hold the code to copy it': 'コードを ながおしして コピーしてね',
+  'Copy this code and keep it safe. You can use it to restore your progress.': 'このコードを コピーして たいせつに とっておいてね。あとで データを もどせるよ。',
+  'Restore from backup code': 'バックアップコードから もどす',
+  'Paste your backup code here.': 'バックアップコードを ここに はってね。',
+  'That code didn\'t work. Check it and try again.': 'このコードは つかえないよ。もういちど たしかめてね。',
+  'Restore progress?': 'データを もどす？',
+  'Your current coins and items will be replaced.': 'いまの コインや もちものは おきかわるよ。',
+  'Restored!': 'もどしたよ！',
   'Try it on in the Dress-Up Room!': 'きせかえルームで つけてみよう！',
   // ほごしゃ
   'For Parents': 'ほごしゃの かたへ',

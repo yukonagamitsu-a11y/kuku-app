@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-29.90'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-30.91'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-29.90';
+const APP_VERSION = '2026-10-30.91';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -1535,6 +1535,7 @@ screens.parent = () => {
       <div class="set-row">Voice reading<button class="btn small toggle ${S.settings.voice ? 'on' : ''}" data-act="set-voice">${S.settings.voice ? 'ON' : 'OFF'}</button></div>
       <div class="set-row">Daily play limit (today: ${mins} min)<button class="btn small" data-act="set-limit">${lim ? lim + ' min' : 'None'}</button></div>
       <h2>🗑️ Data</h2>
+      <div class="set-row">Backup code<span style="display:flex;gap:8px"><button class="btn small" data-act="bk-save">Save</button><button class="btn small" data-act="bk-load">Restore</button></span></div>
       <div class="set-row">Erase all progress<button class="btn small danger" data-act="reset">Reset</button></div>
       <p style="color:var(--ink-soft);font-size:17px">Progress is saved only on this device and is never sent anywhere.</p>
       <p style="color:var(--ink-soft);font-size:15px">v${APP_VERSION} · view ${innerHeight}/${window.visualViewport ? Math.round(visualViewport.height) : "-"}/${screen.height} · shop prices ${PRICE[1]}/${PRICE[2]}/${PRICE[3]} · capsule ${GACHA_COST}</p></div>`,
@@ -1556,6 +1557,44 @@ actions['set-limit'] = async () => {
   const cur1 = S.settings.dailyLimitMinutes;
   const k = await modal({ title: 'Daily play limit', buttons: LIMIT_OPTS.map(m => ({ label: m ? m + ' min' : 'None', cls: m === cur1 ? 'mint' : '' })) });
   S.settings.dailyLimitMinutes = LIMIT_OPTS[k]; save(); go('parent');
+};
+/* ---- バックアップ コード（ほぞんデータを もじで かきだし／よみこみ） ---- */
+function bkEncode() {
+  const json = JSON.stringify(S);
+  return 'KUKU1:' + btoa(unescape(encodeURIComponent(json)));
+}
+function bkDecode(txt) {
+  const t = String(txt || '').replace(/\s+/g, '');
+  const m = t.match(/KUKU1:([A-Za-z0-9+/=]+)/);
+  if (!m) return null;
+  try {
+    const raw = JSON.parse(decodeURIComponent(escape(atob(m[1]))));
+    if (!isObj(raw) || typeof raw.coins !== 'number') return null;
+    return sanitize(raw);
+  } catch (e) { return null; }
+}
+actions['bk-save'] = async () => {
+  const code = bkEncode();
+  const i = await modal({ title: 'Backup code', html: `<p>Copy this code and keep it safe. You can use it to restore your progress.</p><textarea id="bkText" class="bk-text" readonly rows="5">${code}</textarea>`, buttons: [{ label: 'Close', cls: 'lemon' }, { label: 'Copy', cls: 'pink' }] });
+  if (i === 1) {
+    let ok = false;
+    try { await navigator.clipboard.writeText(code); ok = true; } catch (e) { /* ok */ }
+    toast(ok ? 'Copied!' : 'Press and hold the code to copy it');
+  }
+};
+actions['bk-load'] = () => {
+  const o = document.createElement('div'); o.className = 'overlay';
+  o.innerHTML = `<div class="modal" role="dialog" aria-modal="true"><h2>Restore from backup code</h2><p>Paste your backup code here.</p><textarea id="bkIn" class="bk-text" rows="5" placeholder="KUKU1:..."></textarea><p class="bk-err" id="bkErr"></p><div class="row-btns"><button class="btn lemon" data-i="0">Cancel</button><button class="btn pink" data-i="1">Restore</button></div></div>`;
+  o.addEventListener('click', async e => {
+    const b = e.target.closest('button[data-i]'); if (!b) return;
+    if (b.dataset.i === '0') { o.remove(); return; }
+    const st = bkDecode($('#bkIn', o).value);
+    if (!st) { $('#bkErr', o).textContent = "That code didn't work. Check it and try again."; return; }
+    o.remove();
+    if (!(await confirmDialog('Restore progress?', `<p>Your current coins and items will be replaced.</p><p>🪙 ${st.coins}</p>`, 'Restore', 'Cancel'))) return;
+    S = st; save(); I18N.refreshMeta(); toast('Restored!'); go('home');
+  });
+  document.body.appendChild(o);
 };
 actions.reset = async () => {
   if (!(await confirmDialog('Erase progress?', '<p>Coins and items will be deleted too.</p>', 'Next', 'Cancel'))) return;

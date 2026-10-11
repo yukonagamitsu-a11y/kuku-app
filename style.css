@@ -727,3 +727,6 @@ html[lang="ko"] .menu .btn { word-break: keep-all; overflow-wrap: break-word; te
   .home-side .menu .btn .ico.ico-svg { width: 36px; height: 36px; }
 }
 .char .name { white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; padding: 2px 12px; }
+
+.bk-text { width: 100%; box-sizing: border-box; font-size: 14px; line-height: 1.35; font-family: monospace; padding: 8px; border-radius: 14px; border: 2px solid var(--pink); resize: none; user-select: text; -webkit-user-select: text; word-break: break-all; color: var(--ink); background: #fff; }
+.bk-err { color: #c2476b; font-weight: 800; font-size: 15px; min-height: 22px; margin: 4px 0 0; }
