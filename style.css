@@ -593,3 +593,37 @@ html[lang="ko"] .menu .btn { word-break: keep-all; overflow-wrap: break-word; te
 .sp-sub { font-size: clamp(16px, 3.2vmin, 24px); font-weight: 800; color: var(--ink-soft); background: #fff; border-radius: 999px; padding: 6px 20px; box-shadow: 0 4px 0 #f2d3de; }
 @media (prefers-reduced-motion: reduce) { .sp-coco { animation: none; } .splash { transition: none; } }
 @media (max-width: 560px) { .top.home-top .chip { padding: 4px 9px; font-size: 14px; } .top.home-top .chip b { font-size: 17px; } .top.home-top { gap: 8px; } }
+
+/* ---- ロケットで おほしさまへ ---- */
+.rk-wrap { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 10px; height: 100%; min-height: 0; }
+@media (orientation: landscape) and (min-width: 620px) { .rk-wrap { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); } }
+.rk-sky { position: relative; overflow: hidden; border-radius: 30px; min-height: 120px; box-shadow: inset 0 0 0 4px #fff, 0 5px 0 #f2d3de; background: #cdeaff; }
+.rk-layer { position: absolute; inset: 0; opacity: 0; transition: opacity 1.2s ease; }
+.rk-layer.z0 { background: linear-gradient(#bfe6ff, #fff3fb 78%); opacity: 1; }
+.rk-layer.z1 { background: linear-gradient(#ffc7dd, #ffe7c9 80%); }
+.rk-layer.z2 { background: linear-gradient(#6a5ba8, #c9a8f0 85%); }
+.rk-layer.z3 { background: linear-gradient(#2f2a5a, #6a5ba8 90%); }
+.rk-sky[data-z="1"] .z1, .rk-sky[data-z="2"] .z2, .rk-sky[data-z="3"] .z3 { opacity: 1; }
+.rk-drift i { position: absolute; top: -12%; width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,.85); animation: rkdrift 4.5s linear infinite; }
+.rk-drift .d1 { left: 10%; animation-duration: 5.2s; } .rk-drift .d2 { left: 28%; animation-delay: -1.8s; width: 18px; height: 18px; }
+.rk-drift .d3 { left: 46%; animation-delay: -3s; animation-duration: 6s; } .rk-drift .d4 { left: 64%; animation-delay: -.8s; width: 20px; height: 20px; }
+.rk-drift .d5 { left: 80%; animation-delay: -2.4s; animation-duration: 5.6s; } .rk-drift .d6 { left: 90%; animation-delay: -4s; width: 16px; height: 16px; }
+@keyframes rkdrift { from { transform: translateY(0); } to { transform: translateY(125%); } }
+.rk-hud { position: absolute; left: 12px; right: 12px; top: 10px; display: flex; justify-content: space-between; gap: 8px; z-index: 4; }
+.rk-alt, .rk-best { background: #fff; border-radius: 999px; padding: 4px 14px; font-weight: 900; font-size: 20px; box-shadow: 0 3px 0 #f2d3de; color: var(--ink); }
+.rk-best { font-size: 15px; font-weight: 800; color: var(--ink-soft); align-self: center; }
+.rk-best:empty { display: none; }
+.rk-rocket { position: absolute; left: 50%; bottom: 8%; width: clamp(70px, 24%, 130px); transform: translateX(-50%); z-index: 3; animation: rkbob 1.6s ease-in-out infinite; filter: drop-shadow(0 4px 0 rgba(120,80,150,.22)); }
+.rk-rocket svg { display: block; width: 100%; height: auto; overflow: visible; }
+.rk-win { position: absolute; left: 50%; top: 35.5%; width: 34%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; overflow: hidden; background: #cdeaff; }
+.rk-win svg { width: 100%; height: 100%; }
+.rk-rocket .flame { transform-origin: 60px 152px; animation: rkflame .35s ease-in-out infinite alternate; }
+@keyframes rkflame { from { transform: scaleY(.85); } to { transform: scaleY(1.2); } }
+@keyframes rkbob { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-6px); } }
+.rk-rocket.boost { animation: rkboost .5s ease-out; }
+@keyframes rkboost { 0% { transform: translateX(-50%) translateY(14px) scale(.96); } 60% { transform: translateX(-50%) translateY(-18px) scale(1.04); } 100% { transform: translateX(-50%) translateY(0); } }
+.rk-rocket.wob { animation: rkwob .5s ease; }
+@keyframes rkwob { 0%, 100% { transform: translateX(-50%) rotate(0); } 25% { transform: translateX(-50%) rotate(-7deg); } 75% { transform: translateX(-50%) rotate(7deg); } }
+.rk-panel { display: flex; flex-direction: column; gap: 8px; justify-content: center; min-height: 0; }
+.rk-panel .qbanner { font-size: clamp(36px, 8vmin, 70px); }
+@media (prefers-reduced-motion: reduce) { .rk-drift i, .rk-rocket, .rk-rocket .flame { animation: none; } .rk-layer { transition: none; } }

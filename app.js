@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-22.82'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-23.83'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-22.82';
+const APP_VERSION = '2026-10-23.83';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -42,6 +42,7 @@ const defaultState = () => ({
   myroom: { has: false, items: [], placed: {}, seen: false },
   treat: { date: null, shown: null, pick: null, keys: [], playDone: false, done: false },
   stickers: [],
+  rocketBest: 0,
   book: { n: 1 },
   bookRoom: [],
   guest: { look: null, until: 0, seen: false },
@@ -75,6 +76,7 @@ function sanitize(raw) {
   s.treat.keys = strArr(s.treat.keys);
   if (s.treat.pick !== 'play' && s.treat.pick !== 'practice') s.treat.pick = null;
   s.stickers = strArr(r.stickers).filter((id, i, a) => a.indexOf(id) === i && typeof STICKER_BY_ID !== 'undefined' && STICKER_BY_ID[id]);
+  s.rocketBest = Number.isFinite(r.rocketBest) && r.rocketBest > 0 ? Math.floor(r.rocketBest) : 0;
   s.book = Object.assign(defaultState().book, isObj(r.book) ? r.book : {});
   if (!Number.isInteger(s.book.n) || s.book.n < 1) s.book.n = 1;
   s.bookRoom = strArr(r.bookRoom).filter((id, i, a) => a.indexOf(id) === i);
@@ -428,8 +430,8 @@ function go(name, params) {
   if (name !== 'result') bankPartial();
   if (cleanup) { try { cleanup(); } catch (e) { /* 無視 */ } cleanup = null; }
   Voice.cancel(); setWake(false);
-  if (['balloon', 'shopgame', 'mole', 'frog'].includes(name)) resetCoins();
-  SC.live = ['balloon', 'shopgame', 'mole', 'frog', 'test'].includes(name);
+  if (['balloon', 'shopgame', 'mole', 'frog', 'rocket'].includes(name)) resetCoins();
+  SC.live = ['balloon', 'shopgame', 'mole', 'frog', 'rocket', 'test'].includes(name);
   cur = name;
   screens[name](params || {});
   Voice.refresh();
@@ -671,6 +673,7 @@ screens.play = () => {
         <button class="btn mint" data-act="g-shop"><span class="ico ico-svg">${cupcakeIcon()}</span>Sweet Shop<small>Fill the orders</small></button>
         <button class="btn lav" data-act="g-mole"><span class="ico ico-svg">${moleIcon()}</span>Whack-a-Mole<small>Tap the right mole</small></button>
         <button class="btn sky" data-act="g-frog"><span class="ico ico-svg">${frogSVG('happy')}</span>Froggy Hop<small>Hop to the right leaf</small></button>
+        <button class="btn lemon" data-act="g-rocket"><span class="ico ico-svg">${rocketIcon()}</span>Rocket to the Stars<small>${S.rocketBest > 0 ? `Best: ${S.rocketBest} m` : 'How high can you fly?'}</small></button>
       </div>`,
   });
 };
@@ -678,6 +681,7 @@ actions['g-balloon'] = () => guardPlay(() => go('balloon'));
 actions['g-shop'] = () => guardPlay(() => go('shopgame'));
 actions['g-mole'] = () => guardPlay(() => go('mole'));
 actions['g-frog'] = () => guardPlay(() => go('frog'));
+actions['g-rocket'] = () => guardPlay(() => go('rocket'));
 
 /* ---- ふうせんわり ---- */
 let G = null;
@@ -776,6 +780,79 @@ screens.balloon = () => {
   });
   cleanup = () => { G.over = true; cancelAnimationFrame(G.raf); window.removeEventListener('resize', measure); clearTimeout(G.ft); };
   nextQ(); G.raf = requestAnimationFrame(tick);
+};
+
+
+/* ---- ロケットで おほしさまへ（じかんない に どこまで たかく いけるか） ---- */
+const rocketArt = () => `<svg viewBox="0 0 120 200" aria-hidden="true"><g class="flame"><path d="M44 152 Q60 206 76 152Z" fill="#ffb347"/><path d="M52 152 Q60 188 68 152Z" fill="#ffe27a"/></g><path d="M24 118 L2 160 L26 150Z M96 118 L118 160 L94 150Z" fill="#c9b6ff" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><path d="M60 6 C90 28 98 70 98 112 L98 150 Q60 164 22 150 L22 112 C22 70 30 28 60 6Z" fill="#fff" stroke="#ffc2d8" stroke-width="4"/><path d="M60 6 C74 18 84 36 88 54 L32 54 C36 36 46 18 60 6Z" fill="#ff8fb8"/><rect x="22" y="126" width="76" height="14" fill="#ffd0e2"/><circle cx="60" cy="92" r="25" fill="#cdeaff" stroke="#fff" stroke-width="6"/></svg>`;
+const rocketIcon = () => `<svg viewBox="0 0 120 200" aria-hidden="true"><path d="M44 152 Q60 206 76 152Z" fill="#ffb347"/><path d="M24 118 L2 160 L26 150Z M96 118 L118 160 L94 150Z" fill="#c9b6ff" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><path d="M60 6 C90 28 98 70 98 112 L98 150 Q60 164 22 150 L22 112 C22 70 30 28 60 6Z" fill="#fff" stroke="#ffc2d8" stroke-width="4"/><path d="M60 6 C74 18 84 36 88 54 L32 54 C36 36 46 18 60 6Z" fill="#ff8fb8"/><rect x="22" y="126" width="76" height="14" fill="#ffd0e2"/><circle cx="60" cy="92" r="25" fill="#cdeaff" stroke="#fff" stroke-width="6"/><circle cx="52" cy="90" r="3.4" fill="#5a3e48"/><circle cx="68" cy="90" r="3.4" fill="#5a3e48"/><path d="M52 100 Q60 108 68 100" fill="none" stroke="#5a3e48" stroke-width="3" stroke-linecap="round"/></svg>`;
+let RK = null;
+const RK_STEP = 10, RK_TIME = 60;
+function rkZone(alt) { return alt < 100 ? 0 : alt < 300 ? 1 : alt < 600 ? 2 : 3; }
+screens.rocket = () => {
+  RK = { dans: [...selDans], t: RK_TIME, alt: 0, ok: 0, q: null, last: null, wrong: false, over: false, best: S.rocketBest || 0, iv: 0 };
+  app.innerHTML = frame({
+    title: 'Rocket to the Stars', back: 'play', mainCls: 'fl',
+    body: `<div class="rk-wrap">
+      <div class="rk-sky" id="rkSky" data-z="0">
+        <div class="rk-layer z0"></div><div class="rk-layer z1"></div><div class="rk-layer z2"></div><div class="rk-layer z3"></div>
+        <div class="rk-drift"><i class="d1"></i><i class="d2"></i><i class="d3"></i><i class="d4"></i><i class="d5"></i><i class="d6"></i></div>
+        <div class="rk-hud"><span class="rk-alt" id="rkAlt">0 m</span><span class="rk-best" id="rkBest">${RK.best > 0 ? `Best: ${RK.best} m` : ''}</span></div>
+        <div class="rk-rocket" id="rkRocket">${rocketArt()}<div class="rk-win">${avatarSVG(S.avatar, { face: 'happy', view: '36 8 88 88' })}</div></div>
+      </div>
+      <div class="rk-panel"><div class="qbanner" id="rq"></div><div class="timebar"><i id="rtb"></i></div><div class="choices" id="rch"></div></div>
+    </div>`,
+  });
+  setWake(true); resetCoins();
+  const sky = $('#rkSky');
+  const nextQ = () => {
+    RK.q = pickQ(RK.dans, RK.last); RK.last = qkey(RK.q.a, RK.q.b); RK.wrong = false;
+    const { a, b } = RK.q;
+    $('#rq').textContent = `${a}×${b}＝？`;
+    $('#rch').innerHTML = choices(a, b).map(v => `<button class="btn" data-act="rk-ans" data-v="${v}">${v}</button>`).join('');
+  };
+  RK.sky = sky; RK.next = nextQ;
+  const end = () => {
+    if (RK.over) return;
+    RK.over = true; clearInterval(RK.iv);
+    const newRecord = RK.alt > RK.best && RK.alt > 0;
+    if (newRecord) { S.rocketBest = RK.alt; save(); Snd.play('fan'); confetti(); }
+    bigPraise(sky, newRecord ? 'New record!' : "Time's up! Great effort!", 'soft');
+    $('#rch').querySelectorAll('button').forEach(b => { b.disabled = true; });
+    setTimeout(() => {
+      if (cur !== 'rocket') return;
+      finishSession({ kind: 'game', title: 'Rocket to the Stars', ok: RK.ok, total: RK.ok, coins: sessionCoins(RK.ok), unit: 'q', alt: RK.alt, best: Math.max(RK.best, RK.alt), newRecord, retry: () => go('rocket') });
+    }, 1800);
+  };
+  RK.end = end;
+  RK.iv = setInterval(() => {
+    if (RK.over) return;
+    RK.t -= .1; $('#rtb').style.width = Math.max(0, RK.t / RK_TIME * 100) + '%';
+    if (RK.t <= 0) end();
+  }, 100);
+  cleanup = () => { if (RK) { RK.over = true; clearInterval(RK.iv); } };
+  nextQ();
+};
+actions['rk-ans'] = el => {
+  const g = RK; if (!g || g.over || cur !== 'rocket') return;
+  const v = +el.dataset.v, { a, b } = g.q, ans = a * b;
+  if (v === ans) {
+    earn(a, b);
+    if (!g.wrong) record(a, b, true);
+    g.ok++; g.alt += RK_STEP;
+    $('#rkAlt').textContent = `${g.alt} m`;
+    const sky = g.sky, z = rkZone(g.alt);
+    if (+sky.dataset.z !== z) { sky.dataset.z = z; Snd.play('reveal'); }
+    const r = $('#rkRocket'); r.classList.remove('boost'); void r.offsetWidth; r.classList.add('boost');
+    Snd.play('ok'); burstEl(el);
+    bigPraise(sky, pick(OK_MSG));
+    g.next();
+  } else {
+    if (!g.wrong) { g.wrong = true; record(a, b, false); }
+    el.classList.add('wrong'); el.disabled = true; Snd.play('ng');
+    const r = $('#rkRocket'); r.classList.remove('wob'); void r.offsetWidth; r.classList.add('wob');
+    bigPraise(g.sky, pick(NG_MSG), 'soft');
+  }
 };
 
 /* ---- かわいいおみせやさん ---- */
@@ -1156,6 +1233,7 @@ screens.result = () => {
         ${r.tired ? '<div class="tip">🌱 You practiced these a lot today, so coins are lower. Try other times tables!</div>' : ''}
         ${r.easy ? '<div class="tip">💡 Tip: bigger times tables earn more coins!</div>' : ''}
         ${r.masters.length ? `<div class="coin-line">🎉 ${r.masters.map(m => danLabel(m.dan)).join(', ')} mastered!</div>` : ''}
+        ${r.alt != null ? `<div class="coin-line">🚀 ${r.alt} m</div>${r.newRecord ? '<div class="big" style="color:var(--pink-d)">🏆 New record!</div>' : `<div class="coin-line">Best: ${r.best} m</div>`}` : ''}
         ${r.sticker && r.sticker.id ? treatResultHTML(r.sticker) : ''}
         ${r.sticker && r.sticker.allHad ? '<div class="coin-line">🎉 Treat complete!</div><div class="tip">You got all the stickers!</div>' : ''}
         ${gainHTML ? `<div class="gain">${gainHTML}</div>` : ''}
