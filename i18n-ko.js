@@ -1,6 +1,6 @@
 /* 한국어 표시：영어 화면 문구를 한국어로 바꿔 줍니다 (친구에게 확인 받을 것) */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-10-21.80'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-10-22.81'; // ファイルの新旧チェック用
 
 const KO_EXACT = {
   // 공통
@@ -125,6 +125,7 @@ const KO_EXACT = {
   'Pumpkin Garland': '호박 가랜드',
   '🎃 Seasonal': '🎃 시즌',
   'It will be waiting in your room!': '방에 도착할 거예요!',
+  'Tap to start': '탭해서 시작해요',
   'Try it on in the Dress-Up Room!': '옷 갈아입기 방에서 입어 봐요!',
   // 보호자
   'For Parents': '보호자 메뉴',

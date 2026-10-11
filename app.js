@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-21.80'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-22.81'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-21.80';
+const APP_VERSION = '2026-10-22.81';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -418,7 +418,7 @@ function statsHTML() {
 }
 function updateCoin() { const c = $('#coinChip b'); if (c) c.textContent = S.coins; }
 function frame({ title, back, body, home, mainCls = '' }) {
-  return `<div class="screen"><header class="top">
+  return `<div class="screen"><header class="top ${home ? 'home-top' : ''}">
     ${back ? `<button class="btn round" data-act="go" data-to="${back}" aria-label="Back">←</button>` : ''}
     <h1>${title}</h1><div class="stats">${statsHTML()}</div>
     ${home ? '<button class="btn round gear" id="gear" aria-label="Parents">⚙️</button>' : ''}
@@ -1660,3 +1660,13 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitBubbles
 tickTime();
 I18N.start();
 go('home');
+/* アプリを ひらいた ときだけ、ぜんがめんで タイトルを みせる（ホームの ヘッダーからは タイトルを はずして ひろく つかう） */
+(function showSplash() {
+  const el = document.createElement('div'); el.id = 'splash'; el.className = 'splash';
+  el.innerHTML = `<div class="sp-card"><div class="sp-coco">${avatarSVG(cocoCfg(), { face: 'happy' })}</div><div class="sp-title">Times Table Town</div><div class="sp-sub">Tap to start</div></div>`;
+  document.body.appendChild(el);
+  let gone = false;
+  const close = () => { if (gone) return; gone = true; el.classList.add('out'); setTimeout(() => el.remove(), 400); };
+  el.addEventListener('pointerdown', close);
+  setTimeout(close, 2200);
+})();

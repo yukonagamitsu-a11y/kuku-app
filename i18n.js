@@ -1,6 +1,6 @@
 /* 日本語表示：英語の画面文言を、ひらがな中心の日本語に置きかえる */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-21.80'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-22.81'; // ファイルの新旧チェック用
 
 const JA_EXACT = {
   // 共通
@@ -125,6 +125,7 @@ const JA_EXACT = {
   'Pumpkin Garland': 'かぼちゃの ガーランド',
   '🎃 Seasonal': '🎃 シーズン',
   'It will be waiting in your room!': 'おへやに とどくよ！',
+  'Tap to start': 'タップして はじめよう',
   'Try it on in the Dress-Up Room!': 'きせかえルームで つけてみよう！',
   // ほごしゃ
   'For Parents': 'ほごしゃの かたへ',

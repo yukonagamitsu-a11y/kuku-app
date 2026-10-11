@@ -578,3 +578,18 @@ html[lang="ko"] .menu .btn { word-break: keep-all; overflow-wrap: break-word; te
 .tabs .tab .ti { font-size: 24px; line-height: 1.1; }
 .tabs .tab .tl { text-align: center; word-break: keep-all; overflow-wrap: anywhere; text-wrap: balance; }
 @media (max-height: 480px) { .tabs .tab { min-height: 44px; flex-direction: row; gap: 6px; font-size: 14px; } .tabs .tab .ti { font-size: 18px; } }
+
+/* ---- ホーム：タイトルを はずして ヘッダーを ひろく ---- */
+.top.home-top h1 { display: none; }
+.top.home-top .stats { order: 0; flex: 1 1 0; justify-content: flex-start; min-width: 0; }
+@media (max-width: 560px) { .top.home-top .stats { flex: 1 1 0; order: 0; justify-content: flex-start; } }
+/* ---- さいしょの ぜんがめん タイトル ---- */
+.splash { position: fixed; inset: 0; z-index: 300; display: grid; place-items: center; background: #FFF1F5; opacity: 1; transition: opacity .4s ease; cursor: pointer; }
+.splash.out { opacity: 0; pointer-events: none; }
+.sp-card { display: flex; flex-direction: column; align-items: center; gap: clamp(10px, 2.5vh, 22px); padding: 0 6%; text-align: center; }
+.sp-coco { width: clamp(110px, 30vmin, 210px); animation: bob 2.4s ease-in-out infinite; }
+.sp-coco svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 6px 0 rgba(240,180,200,.55)); }
+.sp-title { font-size: clamp(34px, 9vmin, 72px); font-weight: 900; line-height: 1.15; color: var(--ink); text-shadow: 0 4px 0 #ffd0e2, 0 0 0 #fff; text-wrap: balance; word-break: keep-all; overflow-wrap: break-word; }
+.sp-sub { font-size: clamp(16px, 3.2vmin, 24px); font-weight: 800; color: var(--ink-soft); background: #fff; border-radius: 999px; padding: 6px 20px; box-shadow: 0 4px 0 #f2d3de; }
+@media (prefers-reduced-motion: reduce) { .sp-coco { animation: none; } .splash { transition: none; } }
+@media (max-width: 560px) { .top.home-top .chip { padding: 4px 9px; font-size: 14px; } .top.home-top .chip b { font-size: 17px; } .top.home-top { gap: 8px; } }
