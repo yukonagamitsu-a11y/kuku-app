@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-27.88'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-28.89'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-27.88';
+const APP_VERSION = '2026-10-28.89';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -521,6 +521,7 @@ screens.home = () => {
         <button class="btn lav" data-act="go" data-to="closet"><span class="ico ico-svg">${dressIcon()}</span>Dress-Up Room<small>Rewards and outfits</small></button>
       </nav></div></div>`,
   });
+  document.querySelectorAll('.duo .avatar').forEach(v => v.setAttribute('preserveAspectRatio', 'xMidYMax meet')); // ひくい がめんでは したに そろえて ちぢむ
   S.seenHello = true; save();
   if (!S.name) askName(true).then(() => { if (cur === 'home') go('home'); });
   else treatOnHome(); // その日の さいしょの ひらきで ポップアップ

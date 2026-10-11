@@ -688,3 +688,42 @@ html[lang="ko"] .menu .btn { word-break: keep-all; overflow-wrap: break-word; te
 .rchip { font-size: 15px; font-weight: 700; padding: 3px 12px; color: var(--ink-soft); }
 .gain-card.compact b { font-size: 20px; }
 .gain-card.compact .gain-new { font-size: 14px; }
+
+/* ---- ホーム：たかさが たりないとき、キャラが ふきだしの したに もぐらないように ちぢめる ---- */
+.home-chars { min-height: 0; overflow: hidden; }
+.bubble { flex: none; }
+.duo { min-height: 0; overflow: visible; }
+.duo .char { min-height: 0; }
+.duo .avatar { flex: 0 1 auto; min-height: 0; height: auto; }
+.duo .homepet { flex: 0 1 38%; }
+
+/* アバターの たかさは、わく（.char）に あわせる：ひくい がめんでは ふきだしの したに もぐらない */
+.duo .char { position: relative; overflow: visible; height: 100%; max-height: 34vh; }
+.duo .char .stage { position: relative; flex: 1 1 0; min-height: 0; width: 100%; display: block; }
+.duo .char .stage > .avatar { position: absolute; left: 0; top: 0; width: 100%; height: 100%; max-height: none; }
+.duo .char .stage > .homepet { position: absolute; right: -4%; bottom: 0; width: 34%; height: auto; max-height: 36%; margin: 0; flex: none; }
+.duo .char > .avatar { flex: 1 1 0; min-height: 0; width: 100%; height: auto; max-height: none; }
+.duo .char .name { flex: none; }
+@media (orientation: landscape) and (min-width: 721px) { .duo .char { max-height: 62vh; } }
+
+/* ---- ひくい たてがた スマホ：キャラの ばしょを たしかに のこす ---- */
+@media (orientation: portrait) and (max-height: 760px) {
+  .home { gap: 8px; }
+  .home .bubble { padding: 8px 14px; margin-bottom: 8px; font-size: clamp(15px, 4.4vw, 20px); border-radius: 20px; }
+  .home .bubble::after { bottom: -10px; border-width: 10px; }
+  .home-side { gap: 8px; }
+  .home-side .menu { gap: 10px; }
+  .home-side .menu .btn { min-height: 74px; padding: 4px 8px; font-size: 20px; border-radius: 28px; }
+  .home-side .menu .btn .ico.ico-svg { width: 44px; height: 44px; }
+  .home-side .menu .btn small { display: none; }
+  .treat-main { min-height: 52px; padding: 4px 12px; }
+  .tc-art { height: 38px; width: 42px; }
+  .tc-text b { font-size: 16px; } .tc-text small { font-size: 14px; }
+  .treat-book { width: 64px; }
+  .tb-art { width: 30px; height: 32px; }
+}
+@media (orientation: portrait) and (max-height: 640px) {
+  .home-side .menu .btn { min-height: 64px; }
+  .home-side .menu .btn .ico.ico-svg { width: 36px; height: 36px; }
+}
+.char .name { white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; padding: 2px 12px; }
