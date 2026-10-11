@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-25.86'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-26.87'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-25.86';
+const APP_VERSION = '2026-10-26.87';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -684,6 +684,7 @@ actions['g-frog'] = () => guardPlay(() => go('frog'));
 actions['g-rocket'] = () => guardPlay(() => go('rocket'));
 
 /* ---- ふうせんわり ---- */
+const GAME_SECONDS = 45; // じかんせいげんの ある ゲーム（ふうせん・もぐら・ロケット）の ながさ
 let G = null;
 screens.balloon = () => {
   const dans = [...selDans];
@@ -693,7 +694,7 @@ screens.balloon = () => {
       <div class="field" id="field"><div class="mascot l" id="mL"></div><div class="mascot r" id="mR"></div></div>`,
   });
   setWake(true); resetCoins();
-  G = { dans, t: 60, ok: 0, total: 0, q: null, last: null, bal: [], over: false, wrong: false, lastSpawn: 0, mist: new Set(), fr: shuffle(FRIENDS).slice(0, 2), raf: 0 };
+  G = { dans, t: GAME_SECONDS, ok: 0, total: 0, q: null, last: null, bal: [], over: false, wrong: false, lastSpawn: 0, mist: new Set(), fr: shuffle(FRIENDS).slice(0, 2), raf: 0 };
   const field = $('#field'); let W = 0, H = 0;
   const measure = () => { const r = field.getBoundingClientRect(); W = r.width; H = r.height; };
   measure(); window.addEventListener('resize', measure);
@@ -737,7 +738,7 @@ screens.balloon = () => {
   const tick = now => {
     if (G.over) return;
     const dt = Math.min(.05, (now - prev) / 1000); prev = now;
-    G.t -= dt; $('#tb').style.width = Math.max(0, G.t / 60 * 100) + '%';
+    G.t -= dt; $('#tb').style.width = Math.max(0, G.t / GAME_SECONDS * 100) + '%';
     if (G.t <= 0) { end(); return; }
     for (const b of G.bal.slice()) {
       if (b.popped) continue;
@@ -787,7 +788,7 @@ screens.balloon = () => {
 const rocketArt = () => `<svg viewBox="0 0 120 200" aria-hidden="true"><g class="flame"><path d="M44 152 Q60 206 76 152Z" fill="#ffb347"/><path d="M52 152 Q60 188 68 152Z" fill="#ffe27a"/></g><path d="M24 118 L2 160 L26 150Z M96 118 L118 160 L94 150Z" fill="#c9b6ff" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><path d="M60 6 C90 28 98 70 98 112 L98 150 Q60 164 22 150 L22 112 C22 70 30 28 60 6Z" fill="#fff" stroke="#ffc2d8" stroke-width="4"/><path d="M60 6 C74 18 84 36 88 54 L32 54 C36 36 46 18 60 6Z" fill="#ff8fb8"/><rect x="22" y="126" width="76" height="14" fill="#ffd0e2"/><circle cx="60" cy="92" r="25" fill="#cdeaff" stroke="#fff" stroke-width="6"/></svg>`;
 const rocketIcon = () => `<svg viewBox="0 0 120 200" aria-hidden="true"><path d="M44 152 Q60 206 76 152Z" fill="#ffb347"/><path d="M24 118 L2 160 L26 150Z M96 118 L118 160 L94 150Z" fill="#c9b6ff" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><path d="M60 6 C90 28 98 70 98 112 L98 150 Q60 164 22 150 L22 112 C22 70 30 28 60 6Z" fill="#fff" stroke="#ffc2d8" stroke-width="4"/><path d="M60 6 C74 18 84 36 88 54 L32 54 C36 36 46 18 60 6Z" fill="#ff8fb8"/><rect x="22" y="126" width="76" height="14" fill="#ffd0e2"/><circle cx="60" cy="92" r="25" fill="#cdeaff" stroke="#fff" stroke-width="6"/><circle cx="52" cy="90" r="3.4" fill="#5a3e48"/><circle cx="68" cy="90" r="3.4" fill="#5a3e48"/><path d="M52 100 Q60 108 68 100" fill="none" stroke="#5a3e48" stroke-width="3" stroke-linecap="round"/></svg>`;
 let RK = null;
-const RK_STEP = 10, RK_TIME = 60;
+const RK_STEP = 10, RK_TIME = GAME_SECONDS;
 function rkZone(alt) { return alt < 100 ? 0 : alt < 300 ? 1 : alt < 600 ? 2 : 3; }
 // そらに うかぶ かざり（たかさ ごとに ちがう ものが ながれてくる）
 const RK_DECO = {
@@ -1004,7 +1005,7 @@ screens.mole = () => {
   });
   setWake(true); resetCoins();
   const holes = [...document.querySelectorAll('.hole')];
-  MO = { dans: [...selDans], t: 60, ok: 0, q: null, last: null, wrong: false, over: false, last_spawn: 0, slots: holes.map(() => ({ v: null, hide: 0 })) };
+  MO = { dans: [...selDans], t: GAME_SECONDS, ok: 0, q: null, last: null, wrong: false, over: false, last_spawn: 0, slots: holes.map(() => ({ v: null, hide: 0 })) };
   const field = $('#moles');
   const say = (txt, cls) => {
     field.querySelectorAll('.msg').forEach(m => m.remove());
@@ -1029,7 +1030,7 @@ screens.mole = () => {
   };
   const tick = () => {
     if (MO.over) return;
-    MO.t -= .1; $('#mtb').style.width = Math.max(0, MO.t / 60 * 100) + '%';
+    MO.t -= .1; $('#mtb').style.width = Math.max(0, MO.t / GAME_SECONDS * 100) + '%';
     if (MO.t <= 0) { end(); return; }
     const now = Date.now(), ans = MO.q.a * MO.q.b;
     MO.slots.forEach((s, i) => { if (s.v !== null && now > s.hide) hide(i); });
