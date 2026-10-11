@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-11-01.94'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-11-01.95'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-11-01.94';
+const APP_VERSION = '2026-11-01.95';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -473,9 +473,13 @@ function touchCocoDay() {
   if (S.cocoDays.date !== t) { S.cocoDays.date = t; S.cocoDays.count += 1; save(); }
 }
 function cocoLookIndex() {
-  const n = COCO_DAYS;
   touchCocoDay();
-  return (Math.floor((S.cocoDays.count - 1) / n) * 4) % COCO_LOOKS.length; // 4とびで ぐるぐる（となりあう ふくが にない）
+  // 3にちごとに「いつもの ふく」と「きがえ」を こうごに くりかえす：
+  //   1-3にち=いつもの / 4-6=きがえA / 7-9=いつもの / 10-12=きがえB / 13-15=いつもの …
+  const block = Math.floor((S.cocoDays.count - 1) / COCO_DAYS);
+  if (block % 2 === 0) return 0;
+  const k = (block - 1) / 2, others = COCO_LOOKS.length - 1;
+  return 1 + (k * 3) % others; // 3とびで ぐるぐる（となりあう ふくが にない・ぜんぶ でる）
 }
 function guestActive() { return !!(S.guest && S.guest.look && S.cocoDays && S.cocoDays.count < S.guest.until); }
 function cocoCfg() {
