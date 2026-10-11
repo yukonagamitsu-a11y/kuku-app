@@ -30,6 +30,25 @@
 <div id="app"></div>
 <div id="fx" aria-hidden="true"></div>
 <noscript>Please turn on JavaScript</noscript>
+<script>
+/* がめんの たかさを、じっさいに みえている ぶんに あわせる（アプリを ひらいた ときに したが きれる ふぐあいの たいさく） */
+(function () {
+  var root = document.documentElement;
+  function setH() {
+    var vv = window.visualViewport, cands = [window.innerHeight];
+    if (vv && vv.height) cands.push(vv.height);
+    if (root.clientHeight) cands.push(root.clientHeight);
+    var h = Math.min.apply(null, cands.filter(function (v) { return v > 100; }));
+    if (isFinite(h)) root.style.setProperty('--app-h', Math.round(h) + 'px');
+  }
+  window.__setAppH = setH;
+  setH();
+  ['resize', 'orientationchange', 'pageshow', 'focus', 'load'].forEach(function (e) { window.addEventListener(e, setH); });
+  document.addEventListener('visibilitychange', setH);
+  if (window.visualViewport) { window.visualViewport.addEventListener('resize', setH); window.visualViewport.addEventListener('scroll', setH); }
+  [60, 200, 500, 1000, 2000, 4000].forEach(function (t) { setTimeout(setH, t); });
+})();
+</script>
 <script src="data.js"></script>
 <script src="avatar.js"></script>
 <script src="myroom.js"></script>
@@ -39,7 +58,7 @@
 <script>
 /* ファイルの新旧が まざっていたら、じぶんで さいしん版を とりなおして 1回だけ 読みこみなおす */
 (function () {
-  var EXPECT = '2026-10-26.87', B = window.FILE_BUILD || {};
+  var EXPECT = '2026-10-27.88', B = window.FILE_BUILD || {};
   var bad = ['data', 'avatar', 'myroom', 'i18n-ko', 'i18n', 'app'].filter(function (k) { return B[k] !== EXPECT; });
   if (!bad.length) return;
   try { if (sessionStorage.getItem('kuku-healed') === EXPECT) return; sessionStorage.setItem('kuku-healed', EXPECT); } catch (e) { return; }

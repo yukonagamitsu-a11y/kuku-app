@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-26.87'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-27.88'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-26.87';
+const APP_VERSION = '2026-10-27.88';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -1536,7 +1536,7 @@ screens.parent = () => {
       <h2>🗑️ Data</h2>
       <div class="set-row">Erase all progress<button class="btn small danger" data-act="reset">Reset</button></div>
       <p style="color:var(--ink-soft);font-size:17px">Progress is saved only on this device and is never sent anywhere.</p>
-      <p style="color:var(--ink-soft);font-size:15px">v${APP_VERSION} · shop prices ${PRICE[1]}/${PRICE[2]}/${PRICE[3]} · capsule ${GACHA_COST}</p></div>`,
+      <p style="color:var(--ink-soft);font-size:15px">v${APP_VERSION} · view ${innerHeight}/${window.visualViewport ? Math.round(visualViewport.height) : "-"}/${screen.height} · shop prices ${PRICE[1]}/${PRICE[2]}/${PRICE[3]} · capsule ${GACHA_COST}</p></div>`,
   });
 };
 actions['edit-name'] = () => askName(false).then(ok => { if (ok) { toast('Name saved!'); go('parent'); } });

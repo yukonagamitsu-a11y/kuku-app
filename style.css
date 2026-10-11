@@ -25,11 +25,11 @@ body {
     var(--bg);
 }
 button { font: inherit; color: inherit; }
-#app { height: 100dvh; }
+#app { height: var(--app-h, 100dvh); }
 #fx { position: fixed; inset: 0; pointer-events: none; z-index: 90; overflow: hidden; }
 
 /* ---------- 画面の骨組み ---------- */
-.screen { height: 100dvh; display: flex; flex-direction: column; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); animation: fadein .25s ease; }
+.screen { height: var(--app-h, 100dvh); display: flex; flex-direction: column; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); animation: fadein .25s ease; }
 .top { display: flex; align-items: center; gap: 12px; padding: 10px 16px 6px; flex: none; }
 .top h1 { margin: 0; font-size: clamp(22px, 3.6vmin, 34px); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .stats { display: flex; gap: 8px; flex: none; }
