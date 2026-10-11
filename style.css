@@ -665,3 +665,15 @@ html[lang="ko"] .menu .btn { word-break: keep-all; overflow-wrap: break-word; te
 .rk-lines i { width: 3px; height: 26%; background: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,.9)); border-radius: 3px; }
 .rk-sky[data-c="2"] .rk-lines i { width: 4px; background: linear-gradient(rgba(255,226,122,0), rgba(255,240,170,.95)); }
 .rk-sky[data-c="1"] .rk-lines, .rk-sky[data-c="2"] .rk-lines { opacity: .85; }
+
+/* ---- けっか画面：みじかく・ごほうびは 1つずつ コンパクトに ---- */
+.res-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 6px 0; }
+.rchip { background: #fff; border-radius: 999px; padding: 6px 14px; font-weight: 800; font-size: 18px; box-shadow: 0 3px 0 #f2d3de; }
+.gain-card.compact { display: flex; align-items: center; gap: 12px; text-align: left; padding: 8px 14px; width: 100%; max-width: 420px; min-width: 0; }
+.gain-card.compact .thumbbox, .gain-card.compact .stk-mini { width: 72px; height: 76px; margin: 0; flex: none; }
+.gain-card.compact .stk-mini svg { width: 100%; height: 100%; }
+.gain-card.compact .gc-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.gain-card.compact .gc-sub { font-size: 15px; font-weight: 800; color: var(--ink-soft); }
+.gain-card.compact .btn.small { min-height: 40px; margin-top: 4px; }
+.gain { gap: 8px; margin: 6px 0; }
+.result .big { margin-bottom: 2px; }

@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-24.84'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-25.85'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-24.84';
+const APP_VERSION = '2026-10-25.85';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -367,7 +367,7 @@ function checkMasters() {
     if (S.masteredDans.includes(d)) continue;
     let all = true;
     for (let b = 1; b <= 9; b++) if ((S.mastery[qkey(d, b)] || 0) < 3) { all = false; break; }
-    if (all) { S.masteredDans.push(d); const id = LIMITED_BY_DAN[d]; if (id) grantItem(id); out.push({ dan: d, item: id }); }
+    if (all) { S.masteredDans.push(d); const id = LIMITED_BY_DAN[d]; if (id) grantItem(id); out.push({ dan: d, item: id }); break; } // 1かいに 1つだけ（のこりは つぎの あそびで わたす）
   }
   return out;
 }
@@ -1254,6 +1254,7 @@ function finishSession(r) {
   const masters = checkMasters();
   const gained = (r.gained || []).slice();
   masters.forEach(m => m.item && gained.push(m.item));
+  for (let i = gained.length - 1; i >= 0; i--) if (gained.indexOf(gained[i]) !== i) gained.splice(i, 1);
   const sticker = treatCheck(r); // おたのしみを やりおえていたら シールを わたす
   if (sticker && sticker.event && (sticker.event.kind === 'item' || sticker.event.kind === 'room')) { /* ごほうびは けっか画面で ひょうじ */ }
   touchStreak(); syncRoomGifts(); save();
@@ -1271,21 +1272,18 @@ screens.result = () => {
   else msg = "Good effort! Let's try again together";
   const gainHTML = r.gained.map(id => {
     const it = ITEM_BY_ID[id], m = r.masters.find(x => x.item === id);
-    return `<div class="gain-card"><div class="gain-new">🎁 You got a new prize!</div><div class="thumbbox">${thumb(it)}</div><div>${m ? `${danLabel(m.dan)} Master!<br>` : ''}<b>${it.name}</b><div class="stars-lg" style="font-size:20px">${'★'.repeat(it.rar)}</div>${it.cat !== 'room' ? `<button class="btn small mint" data-act="wear-prize" data-id="${it.id}">✨ Wear it now!</button><div class="gain-where">Try it on in the Dress-Up Room!</div>` : ''}</div></div>`;
+    return `<div class="gain-card compact"><div class="thumbbox">${thumb(it)}</div><div class="gc-body"><div class="gain-new">🎁 You got a new prize!</div>${m ? `<div class="gc-sub">${danLabel(m.dan)} Master!</div>` : ''}<b>${it.name}</b><span class="stars-lg" style="font-size:18px"> ${'★'.repeat(it.rar)}</span>${it.cat !== 'room' ? `<div><button class="btn small mint" data-act="wear-prize" data-id="${it.id}">✨ Wear it now!</button></div>` : ''}</div></div>`;
   }).join('');
   app.innerHTML = frame({
     title: esc(r.title), back: 'home',
     body: `<div class="cols"><div class="side">${avatarSVG(S.avatar, { face, cls: face === 'cheer' ? 'jump' : '' })}</div>
       <div class="result"><div class="big">${msg}</div>
         ${r.score != null ? `<div class="big" style="color:var(--pink-d)">${r.score} points</div>` : ''}
-        ${r.total ? `<div class="coin-line">Correct: ${r.ok}${r.unit === 'q' ? '' : ` / ${r.total}`}</div>` : ''}
-        <div class="coin-line">🪙 Coins +${r.coins}</div>
-        ${r.bonus ? `<div class="coin-line">🎁 Daily bonus +${r.bonus} (included)</div>` : ''}
+        <div class="res-chips">${r.total ? `<span class="rchip">Correct: ${r.ok}${r.unit === 'q' ? '' : ` / ${r.total}`}</span>` : ''}<span class="rchip">🪙 Coins +${r.coins}</span>${r.bonus ? `<span class="rchip">🎁 Daily bonus +${r.bonus} (included)</span>` : ''}</div>
         ${r.note ? `<div class="coin-line" style="margin-top:6px">${r.note}</div>` : ''}
         ${r.tired ? '<div class="tip">🌱 You practiced these a lot today, so coins are lower. Try other times tables!</div>' : ''}
         ${r.easy ? '<div class="tip">💡 Tip: bigger times tables earn more coins!</div>' : ''}
-        ${r.masters.length ? `<div class="coin-line">🎉 ${r.masters.map(m => danLabel(m.dan)).join(', ')} mastered!</div>` : ''}
-        ${r.alt != null ? `<div class="coin-line">🚀 ${r.alt} m　⭐ ${r.stars || 0}</div>${r.maxCombo >= 2 ? `<div class="coin-line">Best combo ×${r.maxCombo}</div>` : ''}${r.newRecord ? '<div class="big" style="color:var(--pink-d)">🏆 New record!</div>' : `<div class="coin-line">Best: ${r.best} m</div>`}` : ''}
+        ${r.alt != null ? `<div class="res-chips"><span class="rchip">🚀 ${r.alt} m</span><span class="rchip">⭐ ${r.stars || 0}</span>${r.maxCombo >= 2 ? `<span class="rchip">Best combo ×${r.maxCombo}</span>` : ''}</div>${r.newRecord ? '<div class="coin-line" style="color:var(--pink-d);font-weight:900">🏆 New record!</div>' : `<div class="coin-line">Best: ${r.best} m</div>`}` : ''}
         ${r.sticker && r.sticker.id ? treatResultHTML(r.sticker) : ''}
         ${r.sticker && r.sticker.allHad ? '<div class="coin-line">🎉 Treat complete!</div><div class="tip">You got all the stickers!</div>' : ''}
         ${gainHTML ? `<div class="gain">${gainHTML}</div>` : ''}
@@ -1674,7 +1672,7 @@ function bookEventHTML(ev, noHead) {
 }
 function treatResultHTML(st) {
   const it = STICKER_BY_ID[st.id];
-  return `<div class="gain"><div class="gain-card treat-got"><div class="gain-new">🎉 Treat complete!</div><div class="stk-big">${stickerSVG(st.id)}</div><b>${it.name}</b><button class="btn small mint" data-act="go" data-to="stickers">Sticker Book</button></div></div>${bookEventHTML(st.event)}`;
+  return `<div class="gain"><div class="gain-card compact treat-got"><div class="stk-mini">${stickerSVG(st.id)}</div><div class="gc-body"><div class="gain-new">🎉 Treat complete!</div><b>${it.name}</b><div><button class="btn small mint" data-act="go" data-to="stickers">Sticker Book</button></div></div></div></div>${bookEventHTML(st.event)}`;
 }
 function showTreatPopup() {
   const t = treatToday();
