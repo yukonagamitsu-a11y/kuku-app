@@ -627,3 +627,41 @@ html[lang="ko"] .menu .btn { word-break: keep-all; overflow-wrap: break-word; te
 .rk-panel { display: flex; flex-direction: column; gap: 8px; justify-content: center; min-height: 0; }
 .rk-panel .qbanner { font-size: clamp(36px, 8vmin, 70px); }
 @media (prefers-reduced-motion: reduce) { .rk-drift i, .rk-rocket, .rk-rocket .flame { animation: none; } .rk-layer { transition: none; } }
+
+/* ---- ロケット v2：にぎやかな そら ---- */
+.rk-deco { position: absolute; top: -90px; z-index: 1; animation: rkfall var(--dur, 4.5s) linear forwards; pointer-events: none; }
+.rk-deco svg { display: block; width: 100%; height: auto; }
+.rk-deco.bird, .rk-deco.butterfly { animation-name: rkfallwave; }
+@keyframes rkfall { from { transform: translateY(0); } to { transform: translateY(calc(var(--skyh, 520px) + 120px)); } }
+@keyframes rkfallwave { 0% { transform: translate(0, 0); } 25% { transform: translate(14px, 25%); } 50% { transform: translate(-14px, 50%); } 75% { transform: translate(14px, 75%); } 100% { transform: translate(0, calc(var(--skyh, 520px) + 120px)); } }
+.rk-sky { --skyh: 520px; }
+.rk-combo { background: #ffe27a; color: #5a3e48; border-radius: 999px; padding: 4px 14px; font-weight: 900; font-size: 18px; box-shadow: 0 3px 0 #e0bd45; min-height: 26px; }
+.rk-combo:empty { visibility: hidden; }
+.rk-combo.pop { animation: rkpop .35s ease; }
+@keyframes rkpop { 0% { transform: scale(.6); } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
+.rk-stars { background: #fff; border-radius: 999px; padding: 4px 12px; font-weight: 900; font-size: 17px; box-shadow: 0 3px 0 #f2d3de; }
+.rk-hud { flex-wrap: nowrap; align-items: center; }
+.rk-lines { position: absolute; inset: 0; z-index: 2; opacity: 0; transition: opacity .25s; pointer-events: none; }
+.rk-lines i { position: absolute; top: -30%; width: 4px; height: 40%; border-radius: 2px; background: rgba(255,255,255,.75); animation: rklines .5s linear infinite; }
+.rk-lines i:nth-child(1) { left: 12%; animation-delay: -.1s; } .rk-lines i:nth-child(2) { left: 28%; animation-delay: -.3s; } .rk-lines i:nth-child(3) { left: 44%; animation-delay: -.2s; }
+.rk-lines i:nth-child(4) { left: 60%; animation-delay: -.4s; } .rk-lines i:nth-child(5) { left: 76%; animation-delay: -.05s; } .rk-lines i:nth-child(6) { left: 90%; animation-delay: -.25s; }
+@keyframes rklines { from { transform: translateY(0); } to { transform: translateY(380%); } }
+.rk-sky[data-c="1"] .rk-lines, .rk-sky[data-c="2"] .rk-lines { opacity: .7; }
+.rk-sky[data-c="2"] .rk-lines i { background: rgba(255,226,122,.95); width: 6px; }
+.rk-sky[data-c="1"] .rk-rocket .flame path:first-child, .rk-sky[data-c="2"] .rk-rocket .flame path:first-child { fill: #ff6fa5; }
+.rk-sky[data-c="2"] .rk-rocket .flame path:first-child { fill: #8fd0ff; }
+.rk-rocket .flame { transform-origin: 60px 152px; }
+.rk-sky[data-c="1"] .rk-rocket .flame { transform: scaleY(1.5); } .rk-sky[data-c="2"] .rk-rocket .flame { transform: scaleY(2); }
+.rk-friend { position: absolute; z-index: 5; width: clamp(60px, 22%, 100px); top: 28%; pointer-events: none; }
+.rk-friend svg { display: block; width: 100%; height: auto; }
+.rk-friend.l { left: -30%; animation: rkfl 2.5s ease-out forwards; }
+.rk-friend.r { right: -30%; animation: rkfr 2.5s ease-out forwards; }
+@keyframes rkfl { 0% { left: -30%; } 25%, 75% { left: 6%; } 100% { left: -30%; } }
+@keyframes rkfr { 0% { right: -30%; } 25%, 75% { right: 6%; } 100% { right: -30%; } }
+.rk-friend.r svg { transform: scaleX(-1); }
+@media (prefers-reduced-motion: reduce) { .rk-deco, .rk-lines i, .rk-friend { animation: none; } .rk-friend { left: 6%; } }
+
+/* スピードライン：ほそく・かるく（ぼうに みえないように） */
+.rk-lines i { width: 3px; height: 26%; background: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,.9)); border-radius: 3px; }
+.rk-sky[data-c="2"] .rk-lines i { width: 4px; background: linear-gradient(rgba(255,226,122,0), rgba(255,240,170,.95)); }
+.rk-sky[data-c="1"] .rk-lines, .rk-sky[data-c="2"] .rk-lines { opacity: .85; }

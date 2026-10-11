@@ -1,6 +1,6 @@
 /* 日本語表示：英語の画面文言を、ひらがな中心の日本語に置きかえる */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-23.83'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-10-24.84'; // ファイルの新旧チェック用
 
 const JA_EXACT = {
   // 共通
@@ -130,6 +130,7 @@ const JA_EXACT = {
   'How high can you fly?': 'どこまで たかく とべるかな？',
   'New record!': 'しんきろく！',
   '🏆 New record!': '🏆 しんきろく！',
+  'High five!': 'ハイタッチ！',
   'Try it on in the Dress-Up Room!': 'きせかえルームで つけてみよう！',
   // ほごしゃ
   'For Parents': 'ほごしゃの かたへ',
@@ -202,6 +203,8 @@ function jaTr(s) {
   return null;
 }
 const JA_PATTERNS = [
+  [/^Combo ×(\d+)$/, m => `れんぞく ×${m[1]}`],
+  [/^Best combo ×(\d+)$/, m => `いちばん れんぞく ×${m[1]}`],
   [/^Best: (\d+) m$/, m => `ベスト ${m[1]}m`],
   [/^🚀 (\d+) m$/, m => `🚀 ${m[1]}m`],
   [/^Until (\d+)\/(\d+)$/, m => `${m[1]}がつ ${m[2]}にち まで`],

@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-23.83'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-10-24.84'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-10-23.83';
+const APP_VERSION = '2026-10-24.84';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -789,15 +789,55 @@ const rocketIcon = () => `<svg viewBox="0 0 120 200" aria-hidden="true"><path d=
 let RK = null;
 const RK_STEP = 10, RK_TIME = 60;
 function rkZone(alt) { return alt < 100 ? 0 : alt < 300 ? 1 : alt < 600 ? 2 : 3; }
+// そらに うかぶ かざり（たかさ ごとに ちがう ものが ながれてくる）
+const RK_DECO = {
+  cloud: c => `<svg viewBox="0 0 80 44"><circle cx="24" cy="28" r="14" fill="${c || '#fff'}"/><circle cx="42" cy="20" r="18" fill="${c || '#fff'}"/><circle cx="60" cy="28" r="14" fill="${c || '#fff'}"/><rect x="18" y="26" width="48" height="16" rx="8" fill="${c || '#fff'}"/></svg>`,
+  balloon: c => `<svg viewBox="0 0 40 70"><path d="M20 50 C16 58 24 62 20 68" fill="none" stroke="#c9a8b6" stroke-width="2"/><ellipse cx="20" cy="24" rx="15" ry="19" fill="${c}"/><ellipse cx="14" cy="16" rx="4" ry="7" fill="#fff" opacity=".6"/></svg>`,
+  bird: c => `<svg viewBox="0 0 60 30"><path d="M4 18 Q16 2 30 16 Q44 2 56 18 Q44 12 30 24 Q16 12 4 18Z" fill="${c}"/></svg>`,
+  butterfly: c => `<svg viewBox="0 0 50 40"><ellipse cx="14" cy="14" rx="12" ry="13" fill="${c}"/><ellipse cx="36" cy="14" rx="12" ry="13" fill="${c}"/><ellipse cx="16" cy="30" rx="8" ry="9" fill="#fff" opacity=".7"/><ellipse cx="34" cy="30" rx="8" ry="9" fill="#fff" opacity=".7"/><rect x="23" y="8" width="4" height="26" rx="2" fill="#5a3e48"/></svg>`,
+  star: c => `<svg viewBox="0 0 40 40"><polygon points="${starPts(20, 20, 18, 8)}" fill="${c}" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>`,
+  heart: c => `<svg viewBox="0 0 40 40"><path transform="translate(20 22)" d="M0 14 C-18 2 -15 -14 -6 -14 C-3 -14 0 -10 0 -8 C0 -10 3 -14 6 -14 C15 -14 18 2 0 14Z" fill="${c}"/></svg>`,
+  planet: c => `<svg viewBox="0 0 80 50"><circle cx="40" cy="25" r="16" fill="${c}"/><ellipse cx="40" cy="26" rx="34" ry="8" fill="none" stroke="#fff" stroke-width="4" opacity=".85" transform="rotate(-16 40 26)"/><ellipse cx="34" cy="19" rx="5" ry="3" fill="#fff" opacity=".6"/></svg>`,
+  moon: () => `<svg viewBox="0 0 50 50"><path d="M34 6 A20 20 0 1 0 34 44 A15 15 0 1 1 34 6Z" fill="#fff7c0"/></svg>`,
+};
+const RK_POOL = [
+  ['cloud', 'cloud', 'balloon', 'bird'],              // くも・ふうせん・とり
+  ['cloud', 'butterfly', 'balloon', 'heart', 'bird'], // ゆうやけ
+  ['star', 'star', 'moon', 'heart', 'star'],          // よぞら
+  ['planet', 'star', 'planet', 'heart', 'star'],      // うちゅう
+];
+const RK_COL = ['#ff8fb8', '#ffe27a', '#8fd0ff', '#c9b6ff', '#8fe3c8', '#ffb3c9'];
+function rkSpawnDeco() {
+  const g = RK; if (!g || g.over || reduced) return;
+  const sky = g.sky, z = rkZone(g.alt), kind = pick(RK_POOL[z]);
+  const col = kind === 'cloud' ? (z === 1 ? '#fff0f6' : z >= 2 ? '#e6dcff' : '#fff') : pick(RK_COL);
+  const d = document.createElement('div'); d.className = 'rk-deco ' + kind;
+  const size = kind === 'cloud' || kind === 'planet' ? 54 + rnd(40) : 26 + rnd(24);
+  const dur = Math.max(1.6, (3.8 + Math.random() * 2) / (1 + g.combo * .25));
+  d.style.cssText = `left:${4 + rnd(88)}%;width:${size}px;--dur:${dur.toFixed(2)}s;`;
+  d.innerHTML = RK_DECO[kind](col);
+  sky.insertBefore(d, sky.querySelector('.rk-hud'));
+  d.addEventListener('animationend', () => d.remove());
+}
+// ともだちが とおりかかって ハイタッチ（100mごと）
+function rkFriend() {
+  const g = RK, sky = g.sky, k = pick(FRIENDS), fromLeft = Math.random() < .5;
+  const el = document.createElement('div'); el.className = 'rk-friend ' + (fromLeft ? 'l' : 'r');
+  el.innerHTML = `${avatarSVG(NPC[k], { face: 'cheer' })}`;
+  sky.appendChild(el); setTimeout(() => el.remove(), 2600);
+  g.alt += 20; g.stars += 3;
+  Snd.play('fan');
+  bigPraise(sky, 'High five!', 'soft');
+}
 screens.rocket = () => {
-  RK = { dans: [...selDans], t: RK_TIME, alt: 0, ok: 0, q: null, last: null, wrong: false, over: false, best: S.rocketBest || 0, iv: 0 };
+  RK = { dans: [...selDans], t: RK_TIME, alt: 0, ok: 0, combo: 0, maxCombo: 0, stars: 0, nextFriend: 100, q: null, last: null, wrong: false, over: false, best: S.rocketBest || 0, iv: 0, dv: 0 };
   app.innerHTML = frame({
     title: 'Rocket to the Stars', back: 'play', mainCls: 'fl',
     body: `<div class="rk-wrap">
-      <div class="rk-sky" id="rkSky" data-z="0">
+      <div class="rk-sky" id="rkSky" data-z="0" data-c="0">
         <div class="rk-layer z0"></div><div class="rk-layer z1"></div><div class="rk-layer z2"></div><div class="rk-layer z3"></div>
-        <div class="rk-drift"><i class="d1"></i><i class="d2"></i><i class="d3"></i><i class="d4"></i><i class="d5"></i><i class="d6"></i></div>
-        <div class="rk-hud"><span class="rk-alt" id="rkAlt">0 m</span><span class="rk-best" id="rkBest">${RK.best > 0 ? `Best: ${RK.best} m` : ''}</span></div>
+        <div class="rk-lines"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="rk-hud"><span class="rk-alt" id="rkAlt">0 m</span><span class="rk-combo" id="rkCombo"></span><span class="rk-stars" id="rkStars">⭐ 0</span></div>
         <div class="rk-rocket" id="rkRocket">${rocketArt()}<div class="rk-win">${avatarSVG(S.avatar, { face: 'happy', view: '36 8 88 88' })}</div></div>
       </div>
       <div class="rk-panel"><div class="qbanner" id="rq"></div><div class="timebar"><i id="rtb"></i></div><div class="choices" id="rch"></div></div>
@@ -805,6 +845,7 @@ screens.rocket = () => {
   });
   setWake(true); resetCoins();
   const sky = $('#rkSky');
+  sky.style.setProperty('--skyh', sky.clientHeight + 'px');
   const nextQ = () => {
     RK.q = pickQ(RK.dans, RK.last); RK.last = qkey(RK.q.a, RK.q.b); RK.wrong = false;
     const { a, b } = RK.q;
@@ -814,14 +855,15 @@ screens.rocket = () => {
   RK.sky = sky; RK.next = nextQ;
   const end = () => {
     if (RK.over) return;
-    RK.over = true; clearInterval(RK.iv);
+    RK.over = true; clearInterval(RK.iv); clearInterval(RK.dv);
     const newRecord = RK.alt > RK.best && RK.alt > 0;
     if (newRecord) { S.rocketBest = RK.alt; save(); Snd.play('fan'); confetti(); }
+    sky.dataset.c = '0';
     bigPraise(sky, newRecord ? 'New record!' : "Time's up! Great effort!", 'soft');
     $('#rch').querySelectorAll('button').forEach(b => { b.disabled = true; });
     setTimeout(() => {
       if (cur !== 'rocket') return;
-      finishSession({ kind: 'game', title: 'Rocket to the Stars', ok: RK.ok, total: RK.ok, coins: sessionCoins(RK.ok), unit: 'q', alt: RK.alt, best: Math.max(RK.best, RK.alt), newRecord, retry: () => go('rocket') });
+      finishSession({ kind: 'game', title: 'Rocket to the Stars', ok: RK.ok, total: RK.ok, coins: sessionCoins(RK.ok), unit: 'q', alt: RK.alt, best: Math.max(RK.best, RK.alt), newRecord, stars: RK.stars, maxCombo: RK.maxCombo, retry: () => go('rocket') });
     }, 1800);
   };
   RK.end = end;
@@ -830,27 +872,37 @@ screens.rocket = () => {
     RK.t -= .1; $('#rtb').style.width = Math.max(0, RK.t / RK_TIME * 100) + '%';
     if (RK.t <= 0) end();
   }, 100);
-  cleanup = () => { if (RK) { RK.over = true; clearInterval(RK.iv); } };
+  RK.dv = setInterval(rkSpawnDeco, 520);
+  for (let n = 0; n < 5; n++) setTimeout(rkSpawnDeco, n * 160);
+  cleanup = () => { if (RK) { RK.over = true; clearInterval(RK.iv); clearInterval(RK.dv); } };
   nextQ();
 };
 actions['rk-ans'] = el => {
   const g = RK; if (!g || g.over || cur !== 'rocket') return;
   const v = +el.dataset.v, { a, b } = g.q, ans = a * b;
+  const comboEl = $('#rkCombo'), rocket = $('#rkRocket');
   if (v === ans) {
     earn(a, b);
     if (!g.wrong) record(a, b, true);
-    g.ok++; g.alt += RK_STEP;
-    $('#rkAlt').textContent = `${g.alt} m`;
-    const sky = g.sky, z = rkZone(g.alt);
-    if (+sky.dataset.z !== z) { sky.dataset.z = z; Snd.play('reveal'); }
-    const r = $('#rkRocket'); r.classList.remove('boost'); void r.offsetWidth; r.classList.add('boost');
-    Snd.play('ok'); burstEl(el);
-    bigPraise(sky, pick(OK_MSG));
+    g.ok++; g.combo = g.wrong ? 1 : g.combo + 1; g.maxCombo = Math.max(g.maxCombo, g.combo);
+    const lv = g.combo >= 5 ? 3 : g.combo >= 3 ? 2 : 1; // 3れんぞくで 2ばい、5れんぞくで 3ばい
+    g.alt += RK_STEP * lv; g.stars += lv;
+    $('#rkAlt').textContent = `${g.alt} m`; $('#rkStars').textContent = `⭐ ${g.stars}`;
+    comboEl.textContent = g.combo >= 2 ? `Combo ×${g.combo}` : '';
+    g.sky.dataset.c = String(lv - 1 > 0 ? lv - 1 : 0);
+    comboEl.classList.remove('pop'); void comboEl.offsetWidth; comboEl.classList.add('pop');
+    const z = rkZone(g.alt);
+    if (+g.sky.dataset.z !== z) { g.sky.dataset.z = z; Snd.play('reveal'); }
+    rocket.classList.remove('boost'); void rocket.offsetWidth; rocket.classList.add('boost');
+    Snd.play('ok'); if (g.combo >= 3) Snd.play('pop'); burstEl(el);
+    bigPraise(g.sky, g.combo >= 3 ? `Combo ×${g.combo}` : pick(OK_MSG));
+    if (g.alt >= g.nextFriend) { g.nextFriend = Math.floor(g.alt / 100) * 100 + 100; setTimeout(() => { if (RK === g && !g.over) { rkFriend(); $('#rkAlt').textContent = `${g.alt} m`; $('#rkStars').textContent = `⭐ ${g.stars}`; } }, 650); }
     g.next();
   } else {
     if (!g.wrong) { g.wrong = true; record(a, b, false); }
+    g.combo = 0; comboEl.textContent = ''; g.sky.dataset.c = '0';
     el.classList.add('wrong'); el.disabled = true; Snd.play('ng');
-    const r = $('#rkRocket'); r.classList.remove('wob'); void r.offsetWidth; r.classList.add('wob');
+    rocket.classList.remove('wob'); void rocket.offsetWidth; rocket.classList.add('wob');
     bigPraise(g.sky, pick(NG_MSG), 'soft');
   }
 };
@@ -1233,7 +1285,7 @@ screens.result = () => {
         ${r.tired ? '<div class="tip">🌱 You practiced these a lot today, so coins are lower. Try other times tables!</div>' : ''}
         ${r.easy ? '<div class="tip">💡 Tip: bigger times tables earn more coins!</div>' : ''}
         ${r.masters.length ? `<div class="coin-line">🎉 ${r.masters.map(m => danLabel(m.dan)).join(', ')} mastered!</div>` : ''}
-        ${r.alt != null ? `<div class="coin-line">🚀 ${r.alt} m</div>${r.newRecord ? '<div class="big" style="color:var(--pink-d)">🏆 New record!</div>' : `<div class="coin-line">Best: ${r.best} m</div>`}` : ''}
+        ${r.alt != null ? `<div class="coin-line">🚀 ${r.alt} m　⭐ ${r.stars || 0}</div>${r.maxCombo >= 2 ? `<div class="coin-line">Best combo ×${r.maxCombo}</div>` : ''}${r.newRecord ? '<div class="big" style="color:var(--pink-d)">🏆 New record!</div>' : `<div class="coin-line">Best: ${r.best} m</div>`}` : ''}
         ${r.sticker && r.sticker.id ? treatResultHTML(r.sticker) : ''}
         ${r.sticker && r.sticker.allHad ? '<div class="coin-line">🎉 Treat complete!</div><div class="tip">You got all the stickers!</div>' : ''}
         ${gainHTML ? `<div class="gain">${gainHTML}</div>` : ''}

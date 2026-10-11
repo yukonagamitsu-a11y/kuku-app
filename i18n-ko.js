@@ -1,6 +1,6 @@
 /* 한국어 표시：영어 화면 문구를 한국어로 바꿔 줍니다 (친구에게 확인 받을 것) */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-10-23.83'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-10-24.84'; // ファイルの新旧チェック用
 
 const KO_EXACT = {
   // 공통
@@ -130,6 +130,7 @@ const KO_EXACT = {
   'How high can you fly?': '얼마나 높이 날 수 있을까?',
   'New record!': '신기록!',
   '🏆 New record!': '🏆 신기록!',
+  'High five!': '하이파이브!',
   'Try it on in the Dress-Up Room!': '옷 갈아입기 방에서 입어 봐요!',
   // 보호자
   'For Parents': '보호자 메뉴',
@@ -184,6 +185,8 @@ const KO_EXACT = {
 const KO_GOODS = { cookies: '쿠키', candies: '사탕', strawberries: '딸기', cupcakes: '컵케이크', apples: '사과', tangerines: '귤', chocolates: '초콜릿', donuts: '도넛' };
 function koTr(s) { return Object.prototype.hasOwnProperty.call(KO_EXACT, s) ? KO_EXACT[s] : null; }
 const KO_PATTERNS = [
+  [/^Combo ×(\d+)$/, m => `연속 ×${m[1]}`],
+  [/^Best combo ×(\d+)$/, m => `최고 연속 ×${m[1]}`],
   [/^Best: (\d+) m$/, m => `최고 ${m[1]}m`],
   [/^🚀 (\d+) m$/, m => `🚀 ${m[1]}m`],
   [/^Until (\d+)\/(\d+)$/, m => `${m[1]}월 ${m[2]}일까지`],
