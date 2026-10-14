@@ -1,6 +1,6 @@
 /* データ：九九の読み方・アイテム・文言 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['data'] = '2026-11-01.95'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['data'] = '2026-11-02.96'; // ファイルの新旧チェック用
 
 // 九九の読み方（数式から自動生成せず、手で持つ）kukuReading[段][かける数]
 const KUKU_TEXT = {
@@ -91,6 +91,7 @@ const ITEMS = [
   { id: 'hw_dress', cat: 'outfit', name: 'Pumpkin Dress', rar: 2, sp: true, hidden: true, season: 'halloween', sprice: 30, def: { top: '#ffb04a', bottom: '#ffb04a', type: 'dress', sleeve: 0, deco: 'pumpkin', acc: '#8a5bd6' } },
   { id: 'hw_hat', cat: 'hat', name: 'Pink Witch Hat', rar: 2, sp: true, hidden: true, season: 'halloween', sprice: 20, def: { kind: 'witch', c1: '#ff8fb8' } },
   { id: 'hw_wings', cat: 'accessory', name: 'Bat Wings', rar: 2, sp: true, hidden: true, season: 'halloween', sprice: 20, def: { kind: 'batwings', c1: '#9b7be0' } },
+  { id: 'hw_shoes', cat: 'shoes', name: 'Pumpkin Boots', rar: 2, sp: true, hidden: true, season: 'halloween', sprice: 20, def: { color: '#ffa94a', stripe: '#8a5bd6', tall: true } },
   { id: 'hw_ghost', cat: 'pet', name: 'Little Ghost', rar: 2, sp: true, hidden: true, season: 'halloween', sprice: 30, def: { kind: 'ghost' } },
   { id: 'ev_lamb', cat: 'pet', name: 'Sparkle Lamb', rar: 3, sp: true, ev: true, hidden: true, def: { kind: 'lamb' } },
   // アクセサリー
@@ -180,7 +181,7 @@ const BOOK_ITEM_REWARDS = [ // 2さつめ・4さつめ・6さつめ・8さつめ
 
 /* シーズンもの：from/to は [つき, ひ]。つきを またぐ きせつは from > to */
 const SEASONS = [
-  { id: 'halloween', name: 'Halloween', icon: '🎃', from: [10, 1], to: [10, 31], items: ['hw_dress', 'hw_hat', 'hw_wings', 'hw_ghost'], room: ['c_pumpkin'] },
+  { id: 'halloween', name: 'Halloween', icon: '🎃', from: [10, 1], to: [10, 31], items: ['hw_dress', 'hw_hat', 'hw_shoes', 'hw_wings', 'hw_ghost'], room: ['c_pumpkin'] } // 1シーズン 6こ（ふく・ぼうし・くつ・アクセ・ペット・おへやの かざり）,
 ];
 function activeSeason(date) {
   const dt = date || new Date(), md = (dt.getMonth() + 1) * 100 + dt.getDate();

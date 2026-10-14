@@ -1,6 +1,6 @@
 /* 日本語表示：英語の画面文言を、ひらがな中心の日本語に置きかえる */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-11-01.95'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-11-02.96'; // ファイルの新旧チェック用
 
 const JA_EXACT = {
   // 共通
@@ -144,6 +144,7 @@ const JA_EXACT = {
   'Restore progress?': 'データを もどす？',
   'Your current coins and items will be replaced.': 'いまの コインや もちものは おきかわるよ。',
   'Restored!': 'もどしたよ！',
+  'Pumpkin Boots': 'かぼちゃの ブーツ',
   'Try it on in the Dress-Up Room!': 'きせかえルームで つけてみよう！',
   // ほごしゃ
   'For Parents': 'ほごしゃの かたへ',
