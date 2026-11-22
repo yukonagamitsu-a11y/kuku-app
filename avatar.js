@@ -1,6 +1,6 @@
 /* ブロック風アバター・ペット・おへやのSVG（すべてオリジナル） */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['avatar'] = '2026-11-02.96'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['avatar'] = '2026-11-22.97'; // ファイルの新旧チェック用
 
 const SKIN = '#FFDFC9';
 const INK = '#4a3340';
@@ -131,6 +131,8 @@ function decoSVG(kind, o) {
       }).join('');
     case 'pumpkin':
       return `<rect x="75" y="88" width="10" height="8" rx="3" fill="#5cc27a"/><path d="M62 112 L72 112 L67 104Z M88 112 L98 112 L93 104Z" fill="#7a3b12"/><path d="M62 124 Q70 136 80 128 Q90 136 98 124 L98 130 Q90 142 80 134 Q70 142 62 130Z" fill="#7a3b12"/>`;
+    case 'santa':
+      return `<rect x="52" y="90" width="56" height="10" rx="5" fill="#fff"/><rect x="54" y="124" width="52" height="9" fill="#3a2a30"/><rect x="72" y="121" width="16" height="15" rx="2" fill="#ffd84a" stroke="#e0a800" stroke-width="2"/><circle cx="66" cy="110" r="2.6" fill="#fff"/><circle cx="94" cy="114" r="2.6" fill="#fff"/><circle cx="80" cy="106" r="2.2" fill="#fff"/>`;
     case 'galaxy':
       return `<polygon points="${starPts(68, 108, 6, 3)}" fill="${acc}"/><polygon points="${starPts(92, 126, 8, 4)}" fill="${acc}"/><circle cx="72" cy="136" r="2" fill="#fff"/><circle cx="96" cy="104" r="2" fill="#fff"/><circle cx="62" cy="124" r="1.6" fill="#fff"/>`;
     default: return '';
@@ -190,6 +192,8 @@ function hatSVG(h) {
     }
     case 'tiara':
       return `<path d="M44 16 Q80 -14 116 16" fill="none" stroke="#d8d8ff" stroke-width="6" stroke-linecap="round"/><polygon points="${starPts(80, -2, 11, 5)}" fill="#ffd0e6" stroke="#ff8fb8" stroke-width="2" stroke-linejoin="round"/><circle cx="56" cy="8" r="4" fill="#8fd0ff"/><circle cx="104" cy="8" r="4" fill="#c9b6ff"/>`;
+    case 'santa':
+      return `<path d="M40 16 C44 -18 82 -34 112 -16 C122 -10 122 2 120 16Z" fill="${c}"/><rect x="36" y="8" width="88" height="15" rx="7.5" fill="#fff"/><circle cx="114" cy="-20" r="10" fill="#fff"/><circle cx="60" cy="0" r="2" fill="#fff" opacity=".7"/><circle cx="84" cy="-10" r="2" fill="#fff" opacity=".7"/>`;
     case 'witch':
       return `<rect x="26" y="10" width="108" height="11" rx="5.5" fill="${c}"/><path d="M50 12 L78 -28 L108 12 Z" fill="${c}" stroke="${c}" stroke-width="3" stroke-linejoin="round"/><rect x="52" y="2" width="54" height="8" fill="#ffd84a"/><polygon points="${starPts(84, -8, 6, 3)}" fill="#ffd84a"/>`;
     default: return '';
@@ -288,6 +292,8 @@ function petSVG(kind) {
       return `<rect x="14" y="56" width="12" height="7" rx="3" fill="#ffab40"/><rect x="34" y="56" width="12" height="7" rx="3" fill="#ffab40"/><rect x="10" y="14" width="40" height="44" rx="14" fill="#4a4a6a"/><rect x="17" y="30" width="26" height="26" rx="10" fill="#fff"/><rect x="4" y="30" width="9" height="20" rx="4" fill="#4a4a6a"/><rect x="47" y="30" width="9" height="20" rx="4" fill="#4a4a6a"/>${eye(23, 26)}${eye(37, 26)}<path d="M25 30 L35 30 L30 37Z" fill="#ffab40"/><circle cx="17" cy="32" r="3" fill="#ff9bb5" opacity=".6"/><circle cx="43" cy="32" r="3" fill="#ff9bb5" opacity=".6"/>`;
     case 'unicorn':
       return `<path d="M50 38 q14 4 8 22 q-10 -6 -8 -22z" fill="#c9b6ff"/><path d="M50 40 q10 4 6 16" fill="none" stroke="#ff8fb8" stroke-width="3"/>${legs('#fff')}<rect x="10" y="34" width="38" height="22" rx="8" fill="#fff" stroke="#eee7ff" stroke-width="2"/><rect x="8" y="10" width="40" height="30" rx="9" fill="#fff" stroke="#eee7ff" stroke-width="2"/><rect x="10" y="6" width="8" height="26" rx="4" fill="#ff8fb8"/><rect x="18" y="8" width="7" height="22" rx="3.5" fill="#ffe27a"/><rect x="25" y="10" width="6" height="14" rx="3" fill="#8fd0ff" transform="translate(0 -1)"/><path d="M34 12 L38 -10 L42 12Z" fill="#ffd84a" stroke="#f0a800" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 12 L10 2 L20 10Z" fill="#fff" stroke="#eee7ff" stroke-width="1.5"/>${eye(34, 26)}<circle cx="42" cy="32" r="3.5" fill="#ff9bb5" opacity=".6"/>`;
+    case 'snowman':
+      return `<circle cx="30" cy="46" r="16" fill="#fff" stroke="#dbe9f7" stroke-width="2"/><circle cx="30" cy="22" r="13" fill="#fff" stroke="#dbe9f7" stroke-width="2"/><path d="M15 40 L2 32 M45 40 L58 32" stroke="#8a5a3a" stroke-width="3" stroke-linecap="round"/><rect x="17" y="32" width="26" height="6" rx="3" fill="#e8404f"/><rect x="38" y="34" width="6" height="14" rx="3" fill="#e8404f"/>${eye(25, 20)}${eye(35, 20)}<path d="M30 24 L44 27 L30 29Z" fill="#ff9f43"/><circle cx="21" cy="26" r="3" fill="#ff9bb5" opacity=".6"/><circle cx="30" cy="48" r="2.2" fill="#3a2a30"/><circle cx="30" cy="56" r="2.2" fill="#3a2a30"/><rect x="18" y="6" width="24" height="5" rx="2" fill="#3a2a30"/><rect x="22" y="-4" width="16" height="12" rx="2" fill="#3a2a30"/><rect x="22" y="3" width="16" height="3" fill="#e8404f"/>`;
     case 'lamb': // キラキラひつじ
       return `<rect x="18" y="52" width="6" height="11" rx="3" fill="#8d6f7a"/><rect x="36" y="52" width="6" height="11" rx="3" fill="#8d6f7a"/><circle cx="30" cy="42" r="17" fill="#fff" stroke="#f0e4ec" stroke-width="2"/><circle cx="15" cy="38" r="11" fill="#fff" stroke="#f0e4ec" stroke-width="2"/><circle cx="45" cy="38" r="11" fill="#fff" stroke="#f0e4ec" stroke-width="2"/><circle cx="30" cy="12" r="9" fill="#fff" stroke="#f0e4ec" stroke-width="2"/><ellipse cx="9" cy="26" rx="8" ry="5" fill="#ffd0bc" transform="rotate(-20 9 26)"/><ellipse cx="51" cy="26" rx="8" ry="5" fill="#ffd0bc" transform="rotate(20 51 26)"/><rect x="15" y="14" width="30" height="28" rx="13" fill="#ffe3d0"/>${eye(23, 27)}${eye(37, 27)}<path d="M26 33 Q30 37 34 33" fill="none" stroke="${INK}" stroke-width="2" stroke-linecap="round"/><circle cx="18" cy="34" r="3.5" fill="#ff9bb5" opacity=".6"/><circle cx="42" cy="34" r="3.5" fill="#ff9bb5" opacity=".6"/><path transform="translate(8 8)" d="M0 -6 L1.8 -1.8 L6 0 L1.8 1.8 L0 6 L-1.8 1.8 L-6 0 L-1.8 -1.8Z" fill="#ffd84a"/><path transform="translate(54 14)" d="M0 -5 L1.5 -1.5 L5 0 L1.5 1.5 L0 5 L-1.5 1.5 L-5 0 L-1.5 -1.5Z" fill="#8fd0ff"/><path transform="translate(52 52)" d="M0 -5 L1.5 -1.5 L5 0 L1.5 1.5 L0 5 L-1.5 1.5 L-5 0 L-1.5 -1.5Z" fill="#ff9fc4"/><path transform="translate(6 50)" d="M0 -4 L1.2 -1.2 L4 0 L1.2 1.2 L0 4 L-1.2 1.2 L-4 0 L-1.2 -1.2Z" fill="#c9b6ff"/>`;
     case 'ghost':
