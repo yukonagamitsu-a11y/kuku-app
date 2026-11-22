@@ -1,6 +1,6 @@
 /* 日本語表示：英語の画面文言を、ひらがな中心の日本語に置きかえる */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-11-28.105'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-11-29.106'; // ファイルの新旧チェック用
 
 const JA_EXACT = {
   // 共通
@@ -182,6 +182,8 @@ const JA_EXACT = {
   'Rainbow Window': 'にじの まど',
   'Kitty Poster': 'ねこの ポスター',
   'Butterfly Wings': 'ちょうちょの はね',
+  'Pastel Headphones': 'パステルの ヘッドホン',
+  'Strawberry Hat': 'いちごの ぼうし',
   'Try it on in the Dress-Up Room!': 'きせかえルームで つけてみよう！',
   // ほごしゃ
   'For Parents': 'ほごしゃの かたへ',

@@ -1,6 +1,6 @@
 /* データ：九九の読み方・アイテム・文言 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['data'] = '2026-11-28.105'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['data'] = '2026-11-29.106'; // ファイルの新旧チェック用
 
 // 九九の読み方（数式から自動生成せず、手で持つ）kukuReading[段][かける数]
 const KUKU_TEXT = {
@@ -86,7 +86,9 @@ const ITEMS = [
   { id: 't_bunny', cat: 'hat', name: 'Bunny Ears Band', rar: 2, nr: true, def: { kind: 'bunnyears', c1: '#ff8fb8' } },
   { id: 't_sun', cat: 'hat', name: 'Sun Hat', rar: 1, nr: true, def: { kind: 'sunhat', c1: '#ff8fb8' } },
   { id: 't_heartband', cat: 'hat', name: 'Heart Band', rar: 2, nr: true, def: { kind: 'heartband', c1: '#ff5d8f' } },
-  { id: 't_bear', cat: 'hat', name: 'Bear Ears', rar: 1, nr: true, def: { kind: 'bearears', c1: '#b07a5a' } },
+  { id: 't_bear', cat: 'hat', name: 'Bear Ears', rar: 1, sp: true, hidden: true, nr: true, def: { kind: 'bearears', c1: '#b07a5a' } }, // もう おみせ・ガチャには ださない（もっている人は そのまま）
+  { id: 't_phones', cat: 'hat', name: 'Pastel Headphones', rar: 2, nr: true, def: { kind: 'headphones', c1: '#ff8fb8' } },
+  { id: 't_berry', cat: 'hat', name: 'Strawberry Hat', rar: 2, nr: true, def: { kind: 'strawhat', c1: '#ff4d6d' } },
   { id: 'lim3', cat: 'hat', name: 'Sparkle Tiara', rar: 3, lim: 3, def: { kind: 'tiara', c1: '#e8e8ff' } },
   { id: 'lim8', cat: 'hat', name: 'Magic Hat', rar: 3, lim: 8, def: { kind: 'witch', c1: '#7a5ccc' } },
   { id: 'sp_gold', cat: 'hat', name: 'Gold Crown', rar: 3, sp: true, def: { kind: 'crown', c1: '#ffc400', big: true } },
