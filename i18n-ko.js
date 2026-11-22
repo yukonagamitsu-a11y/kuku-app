@@ -1,6 +1,6 @@
 /* 한국어 표시：영어 화면 문구를 한국어로 바꿔 줍니다 (친구에게 확인 받을 것) */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-11-29.106'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-11-30.107'; // ファイルの新旧チェック用
 
 const KO_EXACT = {
   // 공통
@@ -183,7 +183,7 @@ const KO_EXACT = {
   'Kitty Poster': '고양이 포스터',
   'Butterfly Wings': '나비 날개',
   'Pastel Headphones': '파스텔 헤드폰',
-  'Strawberry Hat': '딸기 모자',
+  'Strawberry Hairpin': '딸기 핀',
   'Try it on in the Dress-Up Room!': '옷 갈아입기 방에서 입어 봐요!',
   // 보호자
   'For Parents': '보호자 메뉴',

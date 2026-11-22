@@ -1,6 +1,6 @@
 /* ブロック風アバター・ペット・おへやのSVG（すべてオリジナル） */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['avatar'] = '2026-11-29.106'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['avatar'] = '2026-11-30.107'; // ファイルの新旧チェック用
 
 const SKIN = '#FFDFC9';
 const INK = '#4a3340';
@@ -202,8 +202,10 @@ function hatSVG(h) {
       return `<path d="M42 18 Q80 -4 118 18" fill="none" stroke="#ffd0e2" stroke-width="6" stroke-linecap="round"/><path d="M58 4 L52 -16 M102 4 L108 -16" stroke="#ffd0e2" stroke-width="3" stroke-linecap="round"/>${HEART(52, -24, 1.1, c)}${HEART(108, -24, 1.1, c)}`;
     case 'headphones':
       return `<path d="M46 44 Q44 -8 80 -8 Q116 -8 114 44" fill="none" stroke="${c}" stroke-width="8" stroke-linecap="round"/><path d="M52 30 Q56 4 80 2" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".6"/><rect x="28" y="34" width="22" height="38" rx="11" fill="${c}" stroke="#fff" stroke-width="2.5"/><rect x="33" y="41" width="12" height="24" rx="6" fill="#fff" opacity=".45"/><rect x="110" y="34" width="22" height="38" rx="11" fill="${c}" stroke="#fff" stroke-width="2.5"/><rect x="115" y="41" width="12" height="24" rx="6" fill="#fff" opacity=".45"/>`;
-    case 'strawhat':
-      return `<path d="M36 26 C30 -6 50 -24 80 -22 C110 -24 130 -6 124 26 C114 34 46 34 36 26Z" fill="${c}" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/><ellipse cx="62" cy="2" rx="2.4" ry="3.6" fill="#ffe27a"/><ellipse cx="82" cy="-6" rx="2.4" ry="3.6" fill="#ffe27a"/><ellipse cx="100" cy="4" rx="2.4" ry="3.6" fill="#ffe27a"/><ellipse cx="72" cy="16" rx="2.4" ry="3.6" fill="#ffe27a"/><ellipse cx="94" cy="18" rx="2.4" ry="3.6" fill="#ffe27a"/><ellipse cx="50" cy="16" rx="2.4" ry="3.6" fill="#ffe27a"/><ellipse cx="112" cy="16" rx="2.4" ry="3.6" fill="#ffe27a"/><path d="M52 -14 L66 -30 L80 -20 L94 -30 L108 -14 L80 -8Z" fill="#5cc27a" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><ellipse cx="56" cy="-4" rx="9" ry="4" fill="#fff" opacity=".5" transform="rotate(-24 56 -4)"/>`;
+    case 'strawclip': { // おおきな いちごの ヘアピン（あたまの ひだりがわ）
+      const g = (dx, dy) => `<ellipse cx="${dx}" cy="${dy}" rx="1.8" ry="2.8" fill="#ffe27a"/>`;
+      return `<g transform="rotate(-18 58 20)"><rect x="40" y="26" width="40" height="7" rx="3.5" fill="#ffd0e2" stroke="#fff" stroke-width="1.5"/><path d="M58 40 C40 34 36 14 46 8 C52 5 58 9 58 9 C58 9 64 5 70 8 C80 14 76 34 58 40Z" fill="${c}" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>${g(49, 18)}${g(66, 17)}${g(58, 25)}${g(52, 31)}${g(64, 31)}<path d="M46 9 L58 -3 L70 9 L58 13Z" fill="#5cc27a" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><ellipse cx="50" cy="15" rx="5" ry="2.6" fill="#fff" opacity=".6" transform="rotate(-30 50 15)"/></g>`;
+    }
     case 'bearears':
       return `<circle cx="52" cy="14" r="15" fill="${c}"/><circle cx="52" cy="15" r="8" fill="#ecc8ac"/><circle cx="108" cy="14" r="15" fill="${c}"/><circle cx="108" cy="15" r="8" fill="#ecc8ac"/>`;
     case 'witch':
