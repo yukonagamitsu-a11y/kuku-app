@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-11-26.102'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-11-27.104'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-11-26.102';
+const APP_VERSION = '2026-11-27.104';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -631,7 +631,7 @@ function renderDQ() {
   if (q.blank === 'ans') opts = choices(n, b);
   else { const o = new Set([b]); while (o.size < 4) o.add(1 + rnd(9)); opts = shuffle([...o]); }
   DQ.ans = q.blank === 'ans' ? n * b : b; DQ.wrong = false; DQ.locked = false;
-  const eq = q.blank === 'ans' ? `${n}×${b}＝<span class="ans-box" id="qbox">？</span>` : `${n}×<span class="ans-box" id="qbox">？</span>＝${n * b}`;
+  const eq = q.blank === 'ans' ? `${n}×${b}＝<span class="ans-box one" id="qbox">？</span>` : `${n}×<span class="ans-box one" id="qbox">？</span>＝${n * b}`;
   app.innerHTML = frame({
     title: `Quiz ${i + 1}/9`, back: 'dan-back', mainCls: 'fl',
     body: `<div class="panel q-panel">
@@ -1844,10 +1844,16 @@ function fitBubble(el) {
   const textH = () => { const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().height; };
   while (textH() > room + 1 && size > 12) { size -= 1; el.style.fontSize = size + 'px'; }
 }
+// もんだいの しきは かならず 1ぎょうに：はみだす ときは もじを ちいさく して おさめる
+function fitBanner(el) {
+  el.style.fontSize = '';
+  let size = parseFloat(getComputedStyle(el).fontSize);
+  while (el.scrollWidth > el.clientWidth + 1 && size > 18) { size -= 2; el.style.fontSize = size + 'px'; }
+}
 let fitQueued = false;
 function fitBubbles() {
   if (fitQueued) return; fitQueued = true;
-  requestAnimationFrame(() => { fitQueued = false; document.querySelectorAll('.bubble').forEach(fitBubble); });
+  requestAnimationFrame(() => { fitQueued = false; document.querySelectorAll('.bubble').forEach(fitBubble); document.querySelectorAll('.qbanner').forEach(fitBanner); });
 }
 new MutationObserver(fitBubbles).observe(app, { childList: true, subtree: true, characterData: true });
 addEventListener('resize', fitBubbles);

@@ -735,3 +735,12 @@ html[lang="ko"] .menu .btn { word-break: keep-all; overflow-wrap: break-word; te
 .cell.locked .tb { filter: grayscale(.55) opacity(.7); }
 .lock-note { font-size: 14px; font-weight: 800; color: var(--ink-soft); line-height: 1.25; }
 .room-lock-note { background: #fff8d6; border-radius: 18px; padding: 8px 14px; margin: 4px 0 10px; font-weight: 800; font-size: 15px; line-height: 1.4; color: var(--ink); }
+
+/* もんだいの しきは 1ぎょうに おさめる（□の はこを ちいさく・おりかえさない） */
+.qbanner { white-space: nowrap; }
+.ans-box.one { min-width: 1.15em; text-align: center; padding: 0 .15em; border-bottom-width: 5px; }
+@media (max-width: 400px) { .qbanner { font-size: clamp(38px, 13vw, 64px); } .q-panel .qbanner { font-size: clamp(34px, min(8.5vh, 13vw), 64px); } }
+
+.ans-box { min-width: 2.1em; }
+.ans-box.one { min-width: 1.15em; }
+.qbanner { overflow: hidden; }
