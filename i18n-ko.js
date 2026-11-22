@@ -1,6 +1,6 @@
 /* 한국어 표시：영어 화면 문구를 한국어로 바꿔 줍니다 (친구에게 확인 받을 것) */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-11-22.98'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-11-23.99'; // ファイルの新旧チェック用
 
 const KO_EXACT = {
   // 공통
@@ -153,6 +153,10 @@ const KO_EXACT = {
   'Little Snowman': '작은 눈사람',
   'Christmas Tree': '크리스마스 트리',
   '🎄 Seasonal': '🎄 시즌',
+  'Christmas Garland': '크리스마스 가랜드',
+  'Christmas Rug': '크리스마스 러그',
+  'Snowy Window': '눈 내리는 창문',
+  'Wreath Poster': '리스 포스터',
   'Try it on in the Dress-Up Room!': '옷 갈아입기 방에서 입어 봐요!',
   // 보호자
   'For Parents': '보호자 메뉴',

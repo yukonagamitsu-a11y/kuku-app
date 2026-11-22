@@ -1,6 +1,6 @@
 /* 日本語表示：英語の画面文言を、ひらがな中心の日本語に置きかえる */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-11-22.98'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-11-23.99'; // ファイルの新旧チェック用
 
 const JA_EXACT = {
   // 共通
@@ -153,6 +153,10 @@ const JA_EXACT = {
   'Little Snowman': 'ちいさな ゆきだるま',
   'Christmas Tree': 'クリスマスツリー',
   '🎄 Seasonal': '🎄 シーズン',
+  'Christmas Garland': 'クリスマスガーランド',
+  'Christmas Rug': 'クリスマスの カーペット',
+  'Snowy Window': 'ゆきの まど',
+  'Wreath Poster': 'リースの ポスター',
   'Try it on in the Dress-Up Room!': 'きせかえルームで つけてみよう！',
   // ほごしゃ
   'For Parents': 'ほごしゃの かたへ',

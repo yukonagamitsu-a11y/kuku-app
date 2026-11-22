@@ -1,6 +1,6 @@
 /* マイルーム：アイテムを8割そろえると買える、自分だけのお部屋（壁紙・ゆか・家具をだんかいてきに買う） */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['myroom'] = '2026-11-22.98'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['myroom'] = '2026-11-23.99'; // ファイルの新旧チェック用
 
 const ROOM_UNLOCK = 0.7;      // 集めた割合（ショップ・ガチャで手に入るアイテム）
 const MR_TIER_NEED = { 1: 0, 2: 6, 3: 14 }; // その段階の家具を買うために必要な「買った家具の数」
@@ -70,6 +70,10 @@ const MR_ITEMS = [
 ];
 // シールちょうの コンプリートで もらえる（おみせには でない）
 MR_ITEMS.push(
+  { id: 'c_xgarland', slot: 'ceiling', name: 'Christmas Garland', price: 0, tier: 1, ev: true, season: 'christmas', sprice: 30 },
+  { id: 'r_xrug', slot: 'rug', name: 'Christmas Rug', price: 0, tier: 1, ev: true, season: 'christmas', sprice: 30 },
+  { id: 'm_xwindow', slot: 'window', name: 'Snowy Window', price: 0, tier: 1, ev: true, season: 'christmas', sprice: 30 },
+  { id: 'p_xwreath', slot: 'poster', name: 'Wreath Poster', price: 0, tier: 1, ev: true, season: 'christmas', sprice: 30 },
   { id: 'x_xmastree', slot: 'corner', name: 'Christmas Tree', price: 0, tier: 1, ev: true, season: 'christmas', sprice: 30 },
   { id: 'c_pumpkin', slot: 'ceiling', name: 'Pumpkin Garland', price: 0, tier: 1, ev: true, season: 'halloween', sprice: 30 },
   { id: 'm_sticker', slot: 'window', name: 'Sticker Window', price: 0, tier: 1, ev: true },
@@ -133,6 +137,10 @@ function mrDrawRaw(id) {
     case 'r_rainbow': return ['#ff6b7a', '#ffa45c', '#ffe27a', '#8fe3c8', '#8fd0ff', '#c9b6ff'].map((c, i) => `<ellipse cx="240" cy="246" rx="${100 - i * 14}" ry="${20 - i * 2.6}" fill="${c}"/>`).join('');
     // てんじょう
     case 'c_garland': { let s = '<path d="M0 8 Q120 44 240 14 T480 8" fill="none" stroke="#e8b4c8" stroke-width="3"/>'; const cols = ['#ff8fb8', '#ffe27a', '#8fe3c8', '#8fd0ff', '#c9b6ff']; for (let i = 0; i < 11; i++) { const x = 20 + i * 44, y = 8 + Math.sin(i / 10 * Math.PI * 2 + .6) * 4 + (i % 5 === 2 ? 14 : 18); s += `<polygon points="${x - 11},${y - 6} ${x + 11},${y - 6} ${x},${y + 20}" fill="${cols[i % 5]}"/>`; } return s; }
+    case 'c_xgarland': { let s = '<path d="M0 6 Q120 42 240 12 T480 6" fill="none" stroke="#3f9a5a" stroke-width="9" stroke-linecap="round"/><path d="M0 6 Q120 42 240 12 T480 6" fill="none" stroke="#5cbf77" stroke-width="4" stroke-dasharray="3 7" stroke-linecap="round"/>'; for (let i = 0; i < 10; i++) { const x = 24 + i * 48, y = 10 + Math.sin(i / 9 * Math.PI * 2 + .5) * 5 + (i % 2 ? 18 : 12); s += `<circle cx="${x}" cy="${y + 4}" r="5.5" fill="${['#ff5d7f', '#ffd84a', '#8fd0ff'][i % 3]}"/>`; if (i % 3 === 1) s += `<path d="M${x} ${y - 2} l-12 -10 v20 z M${x} ${y - 2} l12 -10 v20 z" fill="#e8404f"/><circle cx="${x}" cy="${y - 2}" r="4" fill="#c2303d"/>`; } return s; }
+    case 'r_xrug': return '<ellipse cx="240" cy="246" rx="104" ry="21" fill="#e8404f"/><ellipse cx="240" cy="246" rx="104" ry="21" fill="none" stroke="#fff" stroke-width="6"/><ellipse cx="240" cy="246" rx="74" ry="14" fill="#3f9a5a"/><ellipse cx="240" cy="246" rx="44" ry="8" fill="#fff" opacity=".9"/>' + mrStar(240, 246, 9, 4, '#e8404f') + [[170, 246], [310, 246], [205, 237], [275, 237], [205, 255], [275, 255]].map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="2.6" fill="#ffd84a"/>`).join('');
+    case 'm_xwindow': return '<path d="M118 24 H146 V112 Q132 100 118 112Z" fill="#e8404f"/><path d="M206 24 H178 V112 Q192 100 206 112Z" fill="#e8404f"/><rect x="132" y="28" width="60" height="78" rx="6" fill="#bcd9f7" stroke="#fff" stroke-width="6"/><path d="M162 28 V106 M132 67 H192" stroke="#fff" stroke-width="4"/>' + [[146, 44, 5], [176, 52, 4], [150, 86, 4], [180, 90, 5], [164, 70, 3]].map(p => mrStar(p[0], p[1], p[2] * 1.6, p[2] * .6, '#fff')).join('') + '<path d="M132 106 Q147 94 162 106 T192 106 V112 H132Z" fill="#fff"/>';
+    case 'p_xwreath': return '<rect x="372" y="28" width="90" height="78" rx="8" fill="#fffdf5" stroke="#ffd6e4" stroke-width="5"/><circle cx="417" cy="64" r="25" fill="none" stroke="#3f9a5a" stroke-width="13"/><circle cx="417" cy="64" r="25" fill="none" stroke="#5cbf77" stroke-width="5" stroke-dasharray="4 6"/>' + [[417, 40], [441, 64], [393, 64], [417, 88]].map((p, i) => `<circle cx="${p[0]}" cy="${p[1]}" r="3.6" fill="${i % 2 ? '#ffd84a' : '#e8404f'}"/>`).join('') + '<path d="M417 92 l-12 14 h24z M417 92 l-12 -4 v12 z M417 92 l12 -4 v12 z" fill="#e8404f"/><circle cx="417" cy="92" r="4" fill="#c2303d"/>';
     case 'x_xmastree': return '<rect x="331" y="228" width="10" height="12" rx="2" fill="#8a5a3a"/><polygon points="336,150 354,186 318,186" fill="#5cbf77"/><polygon points="336,172 358,214 314,214" fill="#4fae6a"/><polygon points="336,196 362,234 310,234" fill="#3f9a5a"/><circle cx="330" cy="180" r="3.4" fill="#ff5d7f"/><circle cx="344" cy="206" r="3.4" fill="#ffd84a"/><circle cx="326" cy="222" r="3.6" fill="#8fd0ff"/><circle cx="348" cy="228" r="3.4" fill="#ff5d7f"/><circle cx="336" cy="196" r="3" fill="#ffd84a"/>' + mrStar(336, 148, 9, 4, '#ffd84a');
     case 'c_pumpkin': { let s = '<path d="M0 6 Q120 40 240 12 T480 6" fill="none" stroke="#c9a8b6" stroke-width="3"/>'; for (let i = 0; i < 9; i++) { const x = 30 + i * 52, y = 20 + (i % 2) * 10 + Math.sin(i * .9) * 5; s += `<rect x="${x - 2}" y="${y - 12}" width="4" height="7" fill="#5cc27a"/><ellipse cx="${x}" cy="${y + 6}" rx="13" ry="11" fill="${i % 3 === 1 ? '#c9b6ff' : '#ffa94a'}"/><path d="M${x - 6} ${y + 2} l3 -4 l3 4z M${x + 6} ${y + 2} l-3 -4 l-3 4z" fill="#7a3b12"/><path d="M${x - 6} ${y + 9} q3 4 6 0 q3 4 6 0" fill="none" stroke="#7a3b12" stroke-width="2" stroke-linecap="round"/>`; } return s; }
     case 'c_lamp': return '<rect x="149" y="0" width="3" height="26" fill="#8d6f7a"/><path d="M128 52 L140 24 H162 L174 52Z" fill="#ffe27a" stroke="#f0c040" stroke-width="2" stroke-linejoin="round"/><ellipse cx="151" cy="54" rx="22" ry="4" fill="#fff7c0" opacity=".8"/>';
