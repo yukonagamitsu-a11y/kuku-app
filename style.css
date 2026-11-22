@@ -730,3 +730,8 @@ html[lang="ko"] .menu .btn { word-break: keep-all; overflow-wrap: break-word; te
 
 .bk-text { width: 100%; box-sizing: border-box; font-size: 14px; line-height: 1.35; font-family: monospace; padding: 8px; border-radius: 14px; border: 2px solid var(--pink); resize: none; user-select: text; -webkit-user-select: text; word-break: break-all; color: var(--ink); background: #fff; }
 .bk-err { color: #c2476b; font-weight: 800; font-size: 15px; min-height: 22px; margin: 4px 0 0; }
+
+.cell.locked { opacity: .8; }
+.cell.locked .tb { filter: grayscale(.55) opacity(.7); }
+.lock-note { font-size: 14px; font-weight: 800; color: var(--ink-soft); line-height: 1.25; }
+.room-lock-note { background: #fff8d6; border-radius: 18px; padding: 8px 14px; margin: 4px 0 10px; font-weight: 800; font-size: 15px; line-height: 1.4; color: var(--ink); }

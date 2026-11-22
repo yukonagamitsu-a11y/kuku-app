@@ -1,6 +1,6 @@
 /* ブロック風アバター・ペット・おへやのSVG（すべてオリジナル） */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['avatar'] = '2026-11-23.99'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['avatar'] = '2026-11-24.100'; // ファイルの新旧チェック用
 
 const SKIN = '#FFDFC9';
 const INK = '#4a3340';

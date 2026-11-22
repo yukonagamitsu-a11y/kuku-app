@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-11-23.99'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-11-24.100'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-11-23.99';
+const APP_VERSION = '2026-11-24.100';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -1413,15 +1413,19 @@ function seasonHTML(se) {
     ? `<div class="cell dim"><div class="tb">${thumb(i)}</div>${i.name}<span class="tag">✅</span><span>Owned</span></div>`
     : `<button class="cell" data-act="season-buy" data-id="${i.id}"><div class="tb">${thumb(i)}</div>${i.name}<span class="price">🪙 ${i.sprice}</span></button>`)
     .concat((se.room || []).map(id => MR_BY_ID[id]).filter(Boolean).map(i => seasonOwned(i.id)
-      ? `<div class="cell dim"><div class="tb">${mrThumb(i)}</div>${i.name}<span class="tag">✅</span><span>Owned</span></div>`
-      : `<button class="cell" data-act="season-buy" data-id="${i.id}"><div class="tb">${mrThumb(i)}</div>${i.name}<span class="price">🪙 ${i.sprice}</span></button>`));
-  return `<p class="section-title" style="margin-top:0">${se.icon} ${se.name}</p><p class="lang-note" style="margin-top:0">Until ${se.to[0]}/${se.to[1]}</p><div class="grid">${cells.join('')}</div>`;
+      ? `<div class="cell dim"><div class="tb">${mrThumb(i)}</div>${i.name}<span class="tag">✅</span><span>${S.myroom.has ? 'Owned' : 'It will be waiting in your room!'}</span></div>`
+      : (S.myroom.has
+        ? `<button class="cell" data-act="season-buy" data-id="${i.id}"><div class="tb">${mrThumb(i)}</div>${i.name}<span class="price">🪙 ${i.sprice}</span></button>`
+        : `<div class="cell dim locked" aria-disabled="true"><div class="tb">${mrThumb(i)}</div>${i.name}<span class="lock-note">🔒 Get your own room first</span></div>`)));
+  const roomNote = S.myroom.has ? '' : `<p class="room-lock-note">🏡 Room decorations can be bought after you get your own room. (Collect 70% of the items to get one!)</p>`;
+  return `<p class="section-title" style="margin-top:0">${se.icon} ${se.name}</p><p class="lang-note" style="margin-top:0">Until ${se.to[0]}/${se.to[1]}</p>${roomNote}<div class="grid">${cells.join('')}</div>`;
 }
 actions['season-buy'] = async el => {
   if (buying) return;
   const se = activeSeason(); if (!se) return;
   const id = el.dataset.id, it = ITEM_BY_ID[id] || MR_BY_ID[id], isRoom = !ITEM_BY_ID[id];
   if (!it || !it.sprice || it.season !== se.id || seasonOwned(id)) return;
+  if (isRoom && !S.myroom.has) { toast('Get your own room first'); return; } // おへやが ないと かえない
   if (S.coins < it.sprice) { toast('Not enough coins. Play to earn more!'); return; }
   buying = true; el.disabled = true;
   let yes = false;

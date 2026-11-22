@@ -1,6 +1,6 @@
 /* 한국어 표시：영어 화면 문구를 한국어로 바꿔 줍니다 (친구에게 확인 받을 것) */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-11-23.99'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-11-24.100'; // ファイルの新旧チェック用
 
 const KO_EXACT = {
   // 공통
@@ -157,6 +157,9 @@ const KO_EXACT = {
   'Christmas Rug': '크리스마스 러그',
   'Snowy Window': '눈 내리는 창문',
   'Wreath Poster': '리스 포스터',
+  'Get your own room first': '먼저 내 방을 받아야 해요',
+  '🔒 Get your own room first': '🔒 내 방이 생기면 살 수 있어요',
+  '🏡 Room decorations can be bought after you get your own room. (Collect 70% of the items to get one!)': '🏡 방 장식은 내 방이 생긴 뒤에 살 수 있어요. (아이템을 70% 모으면 방을 받아요!)',
   'Try it on in the Dress-Up Room!': '옷 갈아입기 방에서 입어 봐요!',
   // 보호자
   'For Parents': '보호자 메뉴',

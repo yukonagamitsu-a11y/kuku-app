@@ -1,6 +1,6 @@
 /* 日本語表示：英語の画面文言を、ひらがな中心の日本語に置きかえる */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-11-23.99'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-11-24.100'; // ファイルの新旧チェック用
 
 const JA_EXACT = {
   // 共通
@@ -157,6 +157,9 @@ const JA_EXACT = {
   'Christmas Rug': 'クリスマスの カーペット',
   'Snowy Window': 'ゆきの まど',
   'Wreath Poster': 'リースの ポスター',
+  'Get your own room first': 'さきに じぶんの おへやを もらってね',
+  '🔒 Get your own room first': '🔒 おへやを もらってから かえるよ',
+  '🏡 Room decorations can be bought after you get your own room. (Collect 70% of the items to get one!)': '🏡 おへやの かざりは、じぶんの おへやを もらってから かえるよ。（アイテムを 7わり あつめると おへやが もらえるよ！）',
   'Try it on in the Dress-Up Room!': 'きせかえルームで つけてみよう！',
   // ほごしゃ
   'For Parents': 'ほごしゃの かたへ',
