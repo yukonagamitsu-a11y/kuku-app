@@ -1,6 +1,6 @@
 /* データ：九九の読み方・アイテム・文言 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['data'] = '2026-11-22.97'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['data'] = '2026-11-22.98'; // ファイルの新旧チェック用
 
 // 九九の読み方（数式から自動生成せず、手で持つ）kukuReading[段][かける数]
 const KUKU_TEXT = {
@@ -187,7 +187,7 @@ const BOOK_ITEM_REWARDS = [ // 2さつめ・4さつめ・6さつめ・8さつめ
 
 /* シーズンもの：from/to は [つき, ひ]。つきを またぐ きせつは from > to */
 const SEASONS = [
-  { id: 'christmas', name: 'Christmas', icon: '🎄', from: [12, 1], to: [12, 25], items: ['xm_dress', 'xm_hat', 'xm_shoes', 'xm_scarf', 'xm_pet'], room: ['x_xmastree'] }, // 6こ（ふく・ぼうし・くつ・アクセ・ペット・おへやの かざり）
+  { id: 'christmas', name: 'Christmas', icon: '🎄', from: [11, 1], to: [12, 25], items: ['xm_dress', 'xm_hat', 'xm_shoes', 'xm_scarf', 'xm_pet'], room: ['x_xmastree'] }, // 6こ（ふく・ぼうし・くつ・アクセ・ペット・おへやの かざり）
   { id: 'halloween', name: 'Halloween', icon: '🎃', from: [10, 1], to: [10, 31], items: ['hw_dress', 'hw_hat', 'hw_shoes', 'hw_wings', 'hw_ghost'], room: ['c_pumpkin'] } // 1シーズン 6こ（ふく・ぼうし・くつ・アクセ・ペット・おへやの かざり）,
 ];
 function activeSeason(date) {
