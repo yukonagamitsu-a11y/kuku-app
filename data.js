@@ -1,6 +1,6 @@
 /* データ：九九の読み方・アイテム・文言 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['data'] = '2026-11-25.101'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['data'] = '2026-11-26.102'; // ファイルの新旧チェック用
 
 // 九九の読み方（数式から自動生成せず、手で持つ）kukuReading[段][かける数]
 const KUKU_TEXT = {
@@ -71,6 +71,9 @@ const ITEMS = [
   { id: 's_white', cat: 'shoes', name: 'Sneakers', rar: 1, def: { color: '#ffffff', stripe: '#8fd0ff' } },
   { id: 's_red', cat: 'shoes', name: 'Red Shoes', rar: 1, def: { color: '#ff6b7a' } },
   { id: 's_boots', cat: 'shoes', name: 'Boots', rar: 2, def: { color: '#b07a5a', tall: true } },
+  { id: 's_rain', cat: 'shoes', name: 'Rain Boots', rar: 1, nr: true, def: { color: '#ffd84a', stripe: '#ffffff', tall: true } },
+  { id: 's_lav', cat: 'shoes', name: 'Lavender Sneakers', rar: 1, nr: true, def: { color: '#c9b6ff', stripe: '#ffffff' } },
+  { id: 's_glitter', cat: 'shoes', name: 'Sparkle Shoes', rar: 3, nr: true, def: { color: '#ffd84a', stripe: '#ffffff', spark: true } },
   { id: 'lim7', cat: 'shoes', name: 'Crystal Shoes', rar: 3, lim: 7, def: { color: '#a8e6ff', stripe: '#fff', spark: true } },
   // ぼうし
   { id: 't_ribbon', cat: 'hat', name: 'Big Ribbon', rar: 1, def: { kind: 'ribbon', c1: '#ff6fa5' } },
@@ -79,6 +82,11 @@ const ITEMS = [
   { id: 't_beret', cat: 'hat', name: 'Beret', rar: 2, def: { kind: 'beret', c1: '#ff8fb8' } },
   { id: 't_flower', cat: 'hat', name: 'Flower Crown', rar: 2, def: { kind: 'flower' } },
   { id: 't_crown', cat: 'hat', name: 'Crown', rar: 3, def: { kind: 'crown', c1: '#ffd84a' } },
+  // ---- あたらしい ていばんの こもの（おへやを もらう じょうけんには かぞえない：nr）----
+  { id: 't_bunny', cat: 'hat', name: 'Bunny Ears Band', rar: 2, nr: true, def: { kind: 'bunnyears', c1: '#ff8fb8' } },
+  { id: 't_sun', cat: 'hat', name: 'Sun Hat', rar: 1, nr: true, def: { kind: 'sunhat', c1: '#ff8fb8' } },
+  { id: 't_heartband', cat: 'hat', name: 'Heart Band', rar: 2, nr: true, def: { kind: 'heartband', c1: '#ff5d8f' } },
+  { id: 't_bear', cat: 'hat', name: 'Bear Ears', rar: 1, nr: true, def: { kind: 'bearears', c1: '#b07a5a' } },
   { id: 'lim3', cat: 'hat', name: 'Sparkle Tiara', rar: 3, lim: 3, def: { kind: 'tiara', c1: '#e8e8ff' } },
   { id: 'lim8', cat: 'hat', name: 'Magic Hat', rar: 3, lim: 8, def: { kind: 'witch', c1: '#7a5ccc' } },
   { id: 'sp_gold', cat: 'hat', name: 'Gold Crown', rar: 3, sp: true, def: { kind: 'crown', c1: '#ffc400', big: true } },
@@ -107,6 +115,10 @@ const ITEMS = [
   { id: 'a_wand', cat: 'accessory', name: 'Star Wand', rar: 2, def: { kind: 'wand' } },
   { id: 'a_cape', cat: 'accessory', name: 'Cape', rar: 2, def: { kind: 'cape', c1: '#ff6fa5' } },
   { id: 'a_wings', cat: 'accessory', name: 'Angel Wings', rar: 3, def: { kind: 'wings', c1: '#ffffff' } },
+  { id: 'a_pearl', cat: 'accessory', name: 'Pearl Necklace', rar: 2, nr: true, def: { kind: 'pearls' } },
+  { id: 'a_pack', cat: 'accessory', name: 'Pink Backpack', rar: 2, nr: true, def: { kind: 'backpack', c1: '#ff9fc4' } },
+  { id: 'a_hglass', cat: 'accessory', name: 'Heart Glasses', rar: 1, nr: true, def: { kind: 'heartglasses', c1: '#ff5d8f' } },
+  { id: 'a_mintscarf', cat: 'accessory', name: 'Mint Scarf', rar: 1, nr: true, def: { kind: 'scarf', c1: '#5cc9a8' } },
   { id: 'lim4', cat: 'accessory', name: 'Heart Wings', rar: 3, lim: 4, def: { kind: 'wings', c1: '#ffb6d5' } },
   // ペット
   { id: 'p_cat', cat: 'pet', name: 'Kitty', rar: 1, def: { kind: 'cat' } },

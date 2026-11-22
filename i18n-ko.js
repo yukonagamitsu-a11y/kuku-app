@@ -1,6 +1,6 @@
 /* 한국어 표시：영어 화면 문구를 한국어로 바꿔 줍니다 (친구에게 확인 받을 것) */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-11-25.101'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-11-26.102'; // ファイルの新旧チェック用
 
 const KO_EXACT = {
   // 공통
@@ -165,6 +165,22 @@ const KO_EXACT = {
   'Place it in your room now?': '지금 방에 놓을까요?',
   'Not now': '나중에',
   '🏡 Place it now!': '🏡 지금 놓기!',
+  'Bunny Ears Band': '토끼 머리띠',
+  'Sun Hat': '챙 넓은 모자',
+  'Heart Band': '하트 머리띠',
+  'Bear Ears': '곰돌이 귀',
+  'Pearl Necklace': '진주 목걸이',
+  'Pink Backpack': '분홍 배낭',
+  'Heart Glasses': '하트 안경',
+  'Mint Scarf': '민트 목도리',
+  'Rain Boots': '노란 장화',
+  'Lavender Sneakers': '라벤더 운동화',
+  'Sparkle Shoes': '반짝 구두',
+  'Rainbow Mobile': '무지개 모빌',
+  'Cloud Rug': '구름 러그',
+  'Big Teddy': '큰 곰돌이',
+  'Rainbow Window': '무지개 창문',
+  'Kitty Poster': '고양이 포스터',
   'Try it on in the Dress-Up Room!': '옷 갈아입기 방에서 입어 봐요!',
   // 보호자
   'For Parents': '보호자 메뉴',

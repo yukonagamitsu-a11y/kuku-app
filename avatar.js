@@ -1,6 +1,6 @@
 /* ブロック風アバター・ペット・おへやのSVG（すべてオリジナル） */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['avatar'] = '2026-11-25.101'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['avatar'] = '2026-11-26.102'; // ファイルの新旧チェック用
 
 const SKIN = '#FFDFC9';
 const INK = '#4a3340';
@@ -194,6 +194,14 @@ function hatSVG(h) {
       return `<path d="M44 16 Q80 -14 116 16" fill="none" stroke="#d8d8ff" stroke-width="6" stroke-linecap="round"/><polygon points="${starPts(80, -2, 11, 5)}" fill="#ffd0e6" stroke="#ff8fb8" stroke-width="2" stroke-linejoin="round"/><circle cx="56" cy="8" r="4" fill="#8fd0ff"/><circle cx="104" cy="8" r="4" fill="#c9b6ff"/>`;
     case 'santa':
       return `<path d="M40 16 C44 -18 82 -34 112 -16 C122 -10 122 2 120 16Z" fill="${c}"/><rect x="36" y="8" width="88" height="15" rx="7.5" fill="#fff"/><circle cx="114" cy="-20" r="10" fill="#fff"/><circle cx="60" cy="0" r="2" fill="#fff" opacity=".7"/><circle cx="84" cy="-10" r="2" fill="#fff" opacity=".7"/>`;
+    case 'bunnyears':
+      return `<ellipse cx="62" cy="-10" rx="10" ry="25" fill="#fff" stroke="#f0dde6" stroke-width="2" transform="rotate(-8 62 -10)"/><ellipse cx="62" cy="-8" rx="5" ry="16" fill="#ffc2d8" transform="rotate(-8 62 -8)"/><ellipse cx="98" cy="-10" rx="10" ry="25" fill="#fff" stroke="#f0dde6" stroke-width="2" transform="rotate(8 98 -10)"/><ellipse cx="98" cy="-8" rx="5" ry="16" fill="#ffc2d8" transform="rotate(8 98 -8)"/><path d="M42 18 Q80 -4 118 18" fill="none" stroke="${c}" stroke-width="6" stroke-linecap="round"/>`;
+    case 'sunhat':
+      return `<ellipse cx="80" cy="14" rx="66" ry="13" fill="#f6dfb0" stroke="#e2c690" stroke-width="2"/><path d="M50 14 Q50 -18 80 -18 Q110 -18 110 14Z" fill="#f6dfb0" stroke="#e2c690" stroke-width="2"/><rect x="50" y="2" width="60" height="9" fill="${c}"/><path d="M108 6 L124 -4 L124 16Z M108 6 L96 -4 L96 16Z" fill="${c}"/><circle cx="108" cy="6" r="5" fill="#ff5d8f"/>`;
+    case 'heartband':
+      return `<path d="M42 18 Q80 -4 118 18" fill="none" stroke="#ffd0e2" stroke-width="6" stroke-linecap="round"/><path d="M58 4 L52 -16 M102 4 L108 -16" stroke="#ffd0e2" stroke-width="3" stroke-linecap="round"/>${HEART(52, -24, 1.1, c)}${HEART(108, -24, 1.1, c)}`;
+    case 'bearears':
+      return `<circle cx="52" cy="14" r="15" fill="${c}"/><circle cx="52" cy="15" r="8" fill="#ecc8ac"/><circle cx="108" cy="14" r="15" fill="${c}"/><circle cx="108" cy="15" r="8" fill="#ecc8ac"/>`;
     case 'witch':
       return `<rect x="26" y="10" width="108" height="11" rx="5.5" fill="${c}"/><path d="M50 12 L78 -28 L108 12 Z" fill="${c}" stroke="${c}" stroke-width="3" stroke-linejoin="round"/><rect x="52" y="2" width="54" height="8" fill="#ffd84a"/><polygon points="${starPts(84, -8, 6, 3)}" fill="#ffd84a"/>`;
     default: return '';
@@ -212,6 +220,10 @@ function accBackSVG(a) {
     const c = a.c1, w = mx => `<g transform="${mx}"><path d="M50 100 L6 66 Q16 90 4 108 Q24 100 22 126 Q38 112 50 140 Z" fill="${c}" stroke="#6b4fb0" stroke-width="3" stroke-linejoin="round"/><path d="M40 108 Q24 100 14 78" fill="none" stroke="#fff" stroke-width="2.4" opacity=".5"/></g>`;
     return w('') + w('translate(160 0) scale(-1 1)');
   }
+  if (a.kind === 'backpack') { // ねこみみの リュック（からだの うしろ）
+    const c = a.c1;
+    return `<ellipse cx="62" cy="96" rx="8" ry="13" fill="${c}"/><ellipse cx="98" cy="96" rx="8" ry="13" fill="${c}"/><rect x="42" y="100" width="76" height="58" rx="18" fill="${c}"/><rect x="42" y="100" width="76" height="58" rx="18" fill="#000" opacity=".06"/><circle cx="80" cy="140" r="5" fill="#fff" opacity=".7"/>`;
+  }
   if (a.kind === 'cape') return `<path d="M46 92 L114 92 L132 196 L28 196 Z" fill="${a.c1}" stroke="${a.c1}" stroke-width="3" stroke-linejoin="round"/><path d="M46 92 L114 92 L132 196 L28 196 Z" fill="#000" opacity=".06"/>`;
   return '';
 }
@@ -220,6 +232,13 @@ function accFrontSVG(a) {
   switch (a.kind) {
     case 'necklace': return `<path d="M64 94 Q80 118 96 94" fill="none" stroke="#ffd84a" stroke-width="3.5" stroke-linecap="round"/>${HEART(80, 112, .8, '#ff5d8f')}`;
     case 'scarf': return `<rect x="52" y="88" width="56" height="14" rx="7" fill="${a.c1}"/><rect x="90" y="96" width="14" height="32" rx="6" fill="${a.c1}"/><rect x="90" y="108" width="14" height="5" fill="#fff" opacity=".5"/>`;
+    case 'pearls': {
+      let s = '';
+      for (let i = 0; i <= 8; i++) { const t = i / 8, x = (1 - t) * (1 - t) * 60 + 2 * (1 - t) * t * 80 + t * t * 100, y = (1 - t) * (1 - t) * 92 + 2 * (1 - t) * t * 118 + t * t * 92; s += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4.2" fill="#fff" stroke="#e3dcef" stroke-width="1.6"/><circle cx="${(x - 1.3).toFixed(1)}" cy="${(y - 1.3).toFixed(1)}" r="1.2" fill="#fff"/>`; }
+      return s;
+    }
+    case 'heartglasses': return `${HEART(63.5, 57, 1.5, a.c1)}${HEART(96.5, 57, 1.5, a.c1)}<path d="M72 54 Q80 50 88 54" fill="none" stroke="${a.c1}" stroke-width="3"/><ellipse cx="58" cy="50" rx="3" ry="2" fill="#fff" opacity=".7"/><ellipse cx="91" cy="50" rx="3" ry="2" fill="#fff" opacity=".7"/>`;
+    case 'backpack': return `<rect x="56" y="94" width="7" height="42" rx="3" fill="${a.c1}" stroke="#fff" stroke-width="1.5"/><rect x="97" y="94" width="7" height="42" rx="3" fill="${a.c1}" stroke="#fff" stroke-width="1.5"/>`;
     case 'glasses': return `<circle cx="63.5" cy="57" r="14" fill="#cfeaff" fill-opacity=".35" stroke="${a.c1}" stroke-width="3.5"/><circle cx="96.5" cy="57" r="14" fill="#cfeaff" fill-opacity=".35" stroke="${a.c1}" stroke-width="3.5"/><path d="M77 55 L83 55" stroke="${a.c1}" stroke-width="3.5"/>`;
     default: return '';
   }
@@ -263,11 +282,12 @@ function avatarInner(cfg, face) {
   s += `<rect x="54" y="92" width="52" height="58" rx="10" fill="${o.top}"/>` + decoSVG(o.deco, o);
   if (o.type === 'dress' && o.deco !== 'crownline') s += `<rect x="54" y="138" width="52" height="3" fill="#000" opacity=".06"/>`;
   s += armSVG('L', o, cheer, acc) + armSVG('R', o, cheer, acc);
-  s += accFrontSVG(acc && acc.kind !== 'glasses' ? acc : null);
+  const isGl = acc && (acc.kind === 'glasses' || acc.kind === 'heartglasses');
+  s += accFrontSVG(acc && !isGl ? acc : null);
   // あたま
   s += `<rect x="40" y="12" width="80" height="76" rx="16" fill="${SKIN}"/>`;
   s += faceSVG(face);
-  s += accFrontSVG(acc && acc.kind === 'glasses' ? acc : null);
+  s += accFrontSVG(isGl ? acc : null);
   s += hair.front + hatSVG(hat);
   return s;
 }

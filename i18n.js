@@ -1,6 +1,6 @@
 /* 日本語表示：英語の画面文言を、ひらがな中心の日本語に置きかえる */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-11-25.101'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n'] = '2026-11-26.102'; // ファイルの新旧チェック用
 
 const JA_EXACT = {
   // 共通
@@ -165,6 +165,22 @@ const JA_EXACT = {
   'Place it in your room now?': 'おへやに いま かざる？',
   'Not now': 'あとで',
   '🏡 Place it now!': '🏡 いま かざる！',
+  'Bunny Ears Band': 'うさみみカチューシャ',
+  'Sun Hat': 'つばひろ ぼうし',
+  'Heart Band': 'ハートの カチューシャ',
+  'Bear Ears': 'くまみみ',
+  'Pearl Necklace': 'パールの ネックレス',
+  'Pink Backpack': 'ピンクの リュック',
+  'Heart Glasses': 'ハートの めがね',
+  'Mint Scarf': 'ミントの マフラー',
+  'Rain Boots': 'きいろい レインブーツ',
+  'Lavender Sneakers': 'ラベンダーの スニーカー',
+  'Sparkle Shoes': 'キラキラ シューズ',
+  'Rainbow Mobile': 'にじの モビール',
+  'Cloud Rug': 'くもの ラグ',
+  'Big Teddy': 'おおきな くまさん',
+  'Rainbow Window': 'にじの まど',
+  'Kitty Poster': 'ねこの ポスター',
   'Try it on in the Dress-Up Room!': 'きせかえルームで つけてみよう！',
   // ほごしゃ
   'For Parents': 'ほごしゃの かたへ',
