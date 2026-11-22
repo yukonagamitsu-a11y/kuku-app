@@ -1,6 +1,6 @@
 /* ブロック風アバター・ペット・おへやのSVG（すべてオリジナル） */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['avatar'] = '2026-11-27.104'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['avatar'] = '2026-11-28.105'; // ファイルの新旧チェック用
 
 const SKIN = '#FFDFC9';
 const INK = '#4a3340';
@@ -218,6 +218,11 @@ function accBackSVG(a) {
   }
   if (a.kind === 'batwings') {
     const c = a.c1, w = mx => `<g transform="${mx}"><path d="M50 100 L6 66 Q16 90 4 108 Q24 100 22 126 Q38 112 50 140 Z" fill="${c}" stroke="#6b4fb0" stroke-width="3" stroke-linejoin="round"/><path d="M40 108 Q24 100 14 78" fill="none" stroke="#fff" stroke-width="2.4" opacity=".5"/></g>`;
+    return w('') + w('translate(160 0) scale(-1 1)');
+  }
+  if (a.kind === 'butterflywings') { // ちょうちょの はね
+    const c = a.c1, c2 = a.c2 || '#c9b6ff';
+    const w = mx => `<g transform="${mx}"><ellipse cx="16" cy="90" rx="25" ry="43" fill="${c}" stroke="#fff" stroke-width="3" transform="rotate(-22 16 90)"/><ellipse cx="14" cy="86" rx="12" ry="24" fill="#fff" opacity=".3" transform="rotate(-22 14 86)"/><ellipse cx="26" cy="136" rx="16" ry="27" fill="${c2}" stroke="#fff" stroke-width="3" transform="rotate(22 26 136)"/><circle cx="12" cy="76" r="5" fill="#fff" opacity=".85"/><circle cx="22" cy="104" r="3.4" fill="#fff" opacity=".85"/><circle cx="28" cy="138" r="4" fill="#fff" opacity=".85"/></g>`;
     return w('') + w('translate(160 0) scale(-1 1)');
   }
   if (a.kind === 'backpack') { // ねこみみの リュック（からだの うしろ）

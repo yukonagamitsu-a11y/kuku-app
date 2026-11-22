@@ -1,6 +1,6 @@
 /* データ：九九の読み方・アイテム・文言 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['data'] = '2026-11-27.104'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['data'] = '2026-11-28.105'; // ファイルの新旧チェック用
 
 // 九九の読み方（数式から自動生成せず、手で持つ）kukuReading[段][かける数]
 const KUKU_TEXT = {
@@ -116,7 +116,8 @@ const ITEMS = [
   { id: 'a_cape', cat: 'accessory', name: 'Cape', rar: 2, def: { kind: 'cape', c1: '#ff6fa5' } },
   { id: 'a_wings', cat: 'accessory', name: 'Angel Wings', rar: 3, def: { kind: 'wings', c1: '#ffffff' } },
   { id: 'a_pearl', cat: 'accessory', name: 'Pearl Necklace', rar: 2, nr: true, def: { kind: 'pearls' } },
-  { id: 'a_pack', cat: 'accessory', name: 'Pink Backpack', rar: 2, nr: true, def: { kind: 'backpack', c1: '#ff9fc4' } },
+  { id: 'a_pack', cat: 'accessory', name: 'Pink Backpack', rar: 2, sp: true, hidden: true, nr: true, def: { kind: 'backpack', c1: '#ff9fc4' } }, // もう おみせ・ガチャには ださない（もっている人は そのまま つかえる）
+  { id: 'a_bfly', cat: 'accessory', name: 'Butterfly Wings', rar: 2, nr: true, def: { kind: 'butterflywings', c1: '#ffb3d9', c2: '#c9b6ff' } },
   { id: 'a_hglass', cat: 'accessory', name: 'Heart Glasses', rar: 1, nr: true, def: { kind: 'heartglasses', c1: '#ff5d8f' } },
   { id: 'a_mintscarf', cat: 'accessory', name: 'Mint Scarf', rar: 1, nr: true, def: { kind: 'scarf', c1: '#5cc9a8' } },
   { id: 'lim4', cat: 'accessory', name: 'Heart Wings', rar: 3, lim: 4, def: { kind: 'wings', c1: '#ffb6d5' } },

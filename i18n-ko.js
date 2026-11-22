@@ -1,6 +1,6 @@
 /* 한국어 표시：영어 화면 문구를 한국어로 바꿔 줍니다 (친구에게 확인 받을 것) */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-11-27.104'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['i18n-ko'] = '2026-11-28.105'; // ファイルの新旧チェック用
 
 const KO_EXACT = {
   // 공통
@@ -181,6 +181,7 @@ const KO_EXACT = {
   'Big Teddy': '큰 곰돌이',
   'Rainbow Window': '무지개 창문',
   'Kitty Poster': '고양이 포스터',
+  'Butterfly Wings': '나비 날개',
   'Try it on in the Dress-Up Room!': '옷 갈아입기 방에서 입어 봐요!',
   // 보호자
   'For Parents': '보호자 메뉴',
