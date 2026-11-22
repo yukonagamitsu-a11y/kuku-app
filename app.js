@@ -1,9 +1,9 @@
 /* くくの ひみつのまち — アプリ本体 */
 'use strict';
-(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-11-24.100'; // ファイルの新旧チェック用
+(window.FILE_BUILD = window.FILE_BUILD || {})['app'] = '2026-11-25.101'; // ファイルの新旧チェック用
 
 const KEY = 'kuku-app-v1';
-const APP_VERSION = '2026-11-24.100';
+const APP_VERSION = '2026-11-25.101';
 const $ = (s, r = document) => r.querySelector(s);
 const app = document.getElementById('app');
 const rnd = n => Math.floor(Math.random() * n);
@@ -1435,9 +1435,23 @@ actions['season-buy'] = async el => {
   if (isRoom) { if (!S.bookRoom.includes(id)) S.bookRoom.push(id); syncRoomGifts(); }
   else grantItem(id);
   save(); Snd.play('coin'); confetti();
-  toast(isRoom && !S.myroom.has ? 'It will be waiting in your room!' : 'Got it! Put it on in Dress Up');
   go('closet');
+  if (isRoom) { if (!S.myroom.has) toast('It will be waiting in your room!'); else await offerPlace(it); } // おへやが なければ とどくのを まつ
+  else await offerWear(it);
 };
+/* かった あと：「いま つける？」「いま おへやに かざる？」を きいて、すぐに かえられる */
+async function offerWear(it) {
+  if (!it || !isOwned(it.id)) return;
+  if (it.cat === 'pet' && S.avatar.pet === it.id || S.avatar[it.cat] === it.id) return; // もう つけている
+  const i = await modal({ title: 'Got it!', html: `<div class="thumbbox">${thumb(it)}</div><p><b>${it.name}</b></p><p>Put it on now?</p>`, buttons: [{ label: 'Not now', cls: 'lemon' }, { label: '✨ Wear it now!', cls: 'mint' }] });
+  if (i === 1 && isOwned(it.id)) { S.avatar[it.cat] = it.id; save(); Snd.play('ok'); C.tab = 'wear'; C.cat = it.cat; go('closet'); }
+}
+async function offerPlace(it) {
+  if (!it || !S.myroom.has || !S.myroom.items.includes(it.id)) return;
+  if (S.myroom.placed[it.slot] === it.id) return; // もう かざって ある
+  const i = await modal({ title: 'Got it!', html: `<div class="thumbbox">${mrThumb(it)}</div><p><b>${it.name}</b></p><p>Place it in your room now?</p>`, buttons: [{ label: 'Not now', cls: 'lemon' }, { label: '🏡 Place it now!', cls: 'mint' }] });
+  if (i === 1 && S.myroom.items.includes(it.id)) { S.myroom.placed[it.slot] = it.id; save(); Snd.play('ok'); C.tab = 'myroom'; MRC.cat = it.slot; go('closet'); }
+}
 const MRC = { cat: 'wall' };
 function roomProgress() {
   const ob = ITEMS.filter(i => !i.lim && !i.sp && i.cat !== 'room'), owned = ob.filter(i => S.items.includes(i.id)).length, need = Math.ceil(ob.length * ROOM_UNLOCK);
@@ -1494,8 +1508,8 @@ actions.buy = async el => {
   let yes = false;
   try { yes = await confirmDialog(it.name, `<div class="thumbbox">${thumb(it)}</div><p>Buy for 🪙 ${price}?</p>`, 'Buy!', 'Cancel'); } finally { buying = false; }
   if (!yes || isOwned(it.id) || S.coins < price) { if (el.isConnected) el.disabled = false; return; }
-  S.coins -= price; grantItem(it.id); save(); Snd.play('coin'); confetti(); // 買っても すぐには きない：きせかえで じぶんで えらぶ
-  toast('Got it! Put it on in Dress Up'); go('closet');
+  S.coins -= price; grantItem(it.id); save(); Snd.play('coin'); confetti(); // かっても かってに きせない：「いま つける？」と きく
+  go('closet'); await offerWear(it);
 };
 actions.gacha = () => {
   if (C.rolling) return;
@@ -1512,8 +1526,11 @@ actions.gacha = () => {
     modal({
       title: dup ? 'You got it again!' : '✨ New friend!',
       html: `<div class="thumbbox">${thumb(it)}</div><p><b>${it.name}</b></p><div class="stars-lg">${starsOf(it.rar)}</div><p>${dup ? `Duplicate! 🪙 ${GACHA_REFUND} back to you` : 'Try it on in the Dress-Up Room!'}</p>`,
-      buttons: [{ label: 'Yay!', cls: 'pink' }],
-    }).then(() => { if (cur === 'closet') go('closet'); });
+      buttons: dup ? [{ label: 'Yay!', cls: 'pink' }] : [{ label: 'Yay!', cls: 'pink' }, { label: '✨ Wear it now!', cls: 'mint' }],
+    }).then(i => {
+      if (i === 1 && !dup && isOwned(it.id)) { S.avatar[it.cat] = it.id; save(); Snd.play('ok'); C.tab = 'wear'; C.cat = it.cat; go('closet'); return; }
+      if (cur === 'closet') go('closet');
+    });
   }, 1500);
 };
 
